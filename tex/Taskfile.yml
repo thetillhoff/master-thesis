@@ -1,0 +1,20 @@
+# https://taskfile.dev
+
+version: '3'
+
+silent: true
+
+tasks:
+  default:
+    cmds:
+      - task: run
+
+  run:
+    desc: Compile the latex `main.tex` to `main.pdf`
+    cmds:
+      - docker run -it --rm -e textype=xelatex -v ${PWD}:/tex ghcr.io/thetillhoff/latex:v1.0.0
+
+  windows:open:
+    desc: Open with default application on windows (when used with wsl)
+    cmds:
+      - wslview main.pdf

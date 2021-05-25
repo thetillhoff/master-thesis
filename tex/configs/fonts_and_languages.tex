@@ -1,0 +1,43 @@
+% While only one (XeLaTeX) is used in this document, two latex-flavors are set up here.
+
+% XeLaTeX
+\usepackage{polyglossia}
+\setmainlanguage[spelling=new,babelshorthands=true]{german}
+% import and set fonts
+\usepackage{fontspec}
+\setromanfont[Path = fonts/,BoldFont=OpenSans-Regular.ttf,ItalicFont=OpenSans-LightItalic.ttf,BoldItalicFont=OpenSans-Light.ttf]{OpenSans-Light.ttf}
+\setsansfont[Path = fonts/,BoldFont=Roboto-Regular.ttf,ItalicFont=Roboto-LightItalic.ttf,BoldItalicFont=Roboto-Light.ttf]{Roboto-Light.ttf}
+\setmonofont[Path = fonts/,Scale=0.7]{SourceCodePro-Regular.otf}
+\usepackage[]{unicode-math}
+% microtype autodetects available features for the used latex-compiler, be it f.e. pdflatex or xelatex.
+% It is about "enhancing the appearance and readability of a document while exhibiting a minimum degree of visual obtrusion" (taken from the microtype docs).
+\usepackage{microtype}
+
+% % pdfLaTeX
+% \usepackage{babel}
+% % font encoding - not "required" for xelatex and shouldn't be used together with fontspec (see https://tex.stackexchange.com/questions/2984/% frequently-loaded-packages-differences-between-pdflatex-and-xelatex/3000#3000)
+% % ! The options should be checked in the documentation when used
+% % [T1]: Helps latex to hyphenate words with umlauts, enabling such text for copy-paste (see https://tex.stackexchange.com/a/677)
+% % OT1 font encoding seems to work better than T1. Check the rendered
+% % PDF file to see if the fonts are encoded properly as vectors (instead
+% % of rendered bitmaps). You can do this by zooming very close to any letter
+% % - if the letter is shown pixelated, you should change this setting
+% %\usepackage[OT1]{fontenc} % vectors, instead of bitmaps
+% \usepackage{amsmath}
+% %\usepackage{lmodern}
+% \usepackage[adobe-utopia]{mathdesign}
+% \usepackage[utf8]{inputenc}
+% \usepackage[babel=true]{microtype}
+% % language
+% % [ngerman]: New style of writing (recommended), whereas [german] would be the old style of writing.
+% % Supports multiple languages; The last one is the default. Switch with \selectlanguage{lang} or temporary use it with \foreignlanguage{lang}{text}
+% \usepackage[english, ngerman]{babel}
+% % hyphenation
+% \usepackage{hyphenat}
+% % Add custom hypenations like this: \hyphenation{Mathe-matik wieder-gewinnen}
+
+
+\usepackage[autostyle=true,german=quotes]{csquotes} % adding as this is recommended for babel and polyglossia
+
+% The eurosym package provides a euro symbol. Use with \euro{}
+%\usepackage[right]{eurosym}

@@ -1,0 +1,9 @@
+% headlines
+\renewcommand{\headrulewidth}{0pt} % remove line at top of page | duplicate
+% headline-fonts
+\usepackage{fontspec}
+\usepackage{titlesec}
+\titleformat{\chapter}{\normalfont\sffamily}{\LARGE\thechapter}{25pt}{\LARGE} % set stype of chapter headline
+\titlespacing*{\chapter}{0pt}{0pt}{10pt} % remove spacing after chapter headline % please note, this is also set in 01front/01_abstract.tex
+\titleformat*{\section}{\normalfont\sffamily\Large} % set style of section headline
+\titleformat*{\subsection}{\normalfont\sffamily\large} % set style of subsection headline

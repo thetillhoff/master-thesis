@@ -1,0 +1,105 @@
+Most important influences:
+  - https://www.bgu.tum.de/msm/lehre/theses/structure/
+  - https://ti.uni-due.de/ti/en/education/finalthesis/thesis_guideline.pdf
+
+General style:
+- foreign words: |
+  In most cases, things can be expressed in common and plain words, you should use foreign words/technical terms only if
+  - something can be said with a (foreign) word that otherwise would need to be described at length
+  - there is a totally common technical term for what you are just writing about
+- abbreviations: |
+  Do not use to many abbreviations, they prevent a fluent reading. Ex-ceptions are widely used, common abbreviations (auch as “e.g.”) and technical abbreviations that are completely common to the target group of the text.
+- bibliography: |
+  It is sorted alphabetically by the authors' names and contains the titles of the source, the publisher and the year of publication.
+- presentation: https://www.overleaf.com/learn/latex/Beamer
+
+- Deckblatt:
+  - Titel
+  - Hochschule
+  - Studiengang
+  - Name
+  - Betreuer
+  - Gutachten
+- Abstract:
+  - zentrale Punkte der ARbeit zusammenfassen
+  - Leser informieren & neugierig machen
+- [opt] Vorwort:
+  - persönlicher Grund für Themenwahl
+  - Danksagung
+
+TOC:
+- Abbildungsverzeichnis: Common abbreviations (e.g. etc) do not need to be listed.
+- Tabellenverzeichnis: opt, The LoF list all Figures used in the text including the according page numbers. If a figure is taken from an external source, the source is mentioned in this list (if you do not use a LoF you have to state the source within the figures).
+- Abkürzungsverzeichnis
+
+- Einleitung (3-4 Seiten) / Introduction:
+  - |
+    The introduction shall provide the reader with an entryway to your topic. Commonly, the introduction is not too technical and provides the reader with a very general introduction why the topic of the thesis is relevant.
+    Last but not least, the introduction should also introduce the structure of the thesis (i.e., which chapters the reader should expect) in one paragraph.
+  - |
+    The introduction specifies the problem or task of the thesis as well as the result that the thesis aims at. Therefore it presents the context of the system (could be historical, institutional etc) and makes a state-ment about the scientific importance of the topic. Introductions sel-domly need more the 2 to 5 pages and should be comprehensible to readers with technical background who are not experts on the topic of the thesis. 
+  - Motivation / Relevanz
+  - Zielsetzung / (min. eine) Forschungsfrage
+  - Aufbau / Vorgehensweise
+- Theoretischer Teil / Rahmen, Literaturübersicht (15-30 Seiten) / Background & related work / Literature Review:
+  - |
+    The literature review is a core element of your thesis and shows that you are capable of working scientifically. As you explain what other researchers have found on your topic, the reader will realize that you know this topic extremely well. This will build trust that you can provide a piece of work yourself that is scientifically relevant.
+  	Equally important, you will need to identify a gap in the literature that you intent to fill. This is how you justify your thesis, and it helps the reader to assess the importance of your work. This gap may be methodological ("I will develop a new method that is able to answer my research question, which previously applied methods cannot as well."), use new data ("Other researchers used database X, but I will use data retrieved by Y."), or a new application ("This method has never been applied to the city of Munich.").
+  - |
+    The theory chapter presents existing approaches and other scientific contributions that are used or considered to be useful to solve the task. It should contain introductions into fields of sci-ence/engineering that are necessary to understand the applicant's approach. This is not always easy, as you have to decide on what you do expect as commonly known and what needs to be introduced. A discussion with your tutor is unavoidable on this matter.
+  - Literaturstudie (related work (seperated by subtopic))
+  - Theorien
+  - aktueller Stand der Forschung
+- Methodik (5-10 Seiten) / Data Collection / Argumentation:
+  - |
+    Describe in detail which data you use and how you collect these data. The description should be as detailed that a very good fellow student in your field would be able to more or less reproduce your work.
+  - |
+    The argumentation is the central part of your work. Here you make use of the theory which was presented in order to answer the ques-tion(s)/solve the task that is the topic of the thesis. In the argumenta-tion you decide and legitimate your approach/solution, you can de-velop your own ideas and trace them back to existing theories. The style of the argumentation depends on the type of thesis.
+    If a thesis includes the development of some software or hardware the argumentation chapter has to contain the analysis and the devel-opment. Describe the approach (algorithm, technique etc) used to solve the given task and why you chose exactly that one. If you make use of certain existing concepts or techniques (described in the theory part), the argumentation chapter gives the chance to show how these concepts are used. If there has been an explicit test phase, than this has to be described as well. The test setup and the achieved results should be included.
+    In most of the cases, a development process can be described in the steps requirement study, analysis, system development and implementa-tion. Details of the implementation are usually not part of a thesis text and can be put in the appendix. Only if there are details that are vital part of the problem solution they should be mentioned. The source of a software never appears in this documents at all (apart from snippets, if you need them to explain certain things), it is deliv-ered as source code on Floppy, CD or DVD together with the text. Check that your work at least contains 
+    - Requirement study
+    - Analysis and system development (use modelling languages and graphical descriptions like UML, Ward & Mellor, Nassi- Schneidermann Diags etc)
+    - Interaction system – outer world (e.g. context diagram, use cases, environmental model)
+    - Abstract description of the system (e.g. behavioural model, abstract class description, data dictionary)
+    - Basic algorithms/methods to solve the main problems
+    - Detailed description of the moduls and their interactions (e.g. behavioural model, class diagram, sequence diagram)
+    - Implementation prerequisites (e.g. implementation model, description of central classes/procedures/functions and their interfaces
+    - Manual (how to use your program/device)
+    For a work on a purely theoretical task (e.g. a proof, mathematical analysis), this chapter is even more vital than for the others as it somehow represents the thesis' work. Here you should lead from the basics (as described in the chapter on theory) to your result by giving arguments, proofs, mathematical derivations etc. It is important to point that your conclusion is sound and to prove why. If you include references to statements of other scientists do not forget that we do not do religion here – not everything that somebody states is there-fore correct, if the person is holding an academic title. Especially if you are working on the core of your argumentation, make sure that a referenced statement is sufficiently accepted by the scientific world. If it is not but you want to take it into account anyway, make clear why you think it is howere true. A typical setup for a theoretical text is to start with a hypothesis and makes use of argumentation and references to approve or disapprove of it.
+  - Wahl der Methode
+  - (Bestimmung der Stichprobe, Ablauf der Datenerhebung, Datenaufbereitung)
+- Ergebnisse (5-10 Seiten) / Analysis:
+  - |
+    Obviously, here you describe in great detail the actual analysis you conducted. The level of detail should be sufficient to allow a very smart fellow student in your field to reproduce more or less your research.
+  - Einteilung nach Teilfragen / Forschungsthema / Unterthema / Methode
+  - Ein Absatz pro Teilfrage / Forschungsthema / Unterthema / Methode
+  - [opt] Zusammenfassung der Ergebnisse
+- Diskussion (5-10 Seiten) / Discussion:
+  - Einleitung
+  - Erklärung der Ergebnisse
+  - Neue Erkenntnisse
+  - Einschränkungen
+  - Empfehlungen
+- Fazit (3-4 Seiten) / Conclusions:
+  - |
+    The most important at the beginning: The chapter Conclusions does not contain a summary of your thesis! The summary is provided in the abstract of the beginning of your thesis, but not here.
+    Instead, the conclusions shall do what the title suggests: Synthesize your findings and conclude what we learn from that. It will be useful to refer to your research question(s) and discuss if those were confirmed or rejected by your research. You may also refer back to you literature review and compare your findings with the findings that others have published.
+  - |
+    The conclusion chapter summarises the results of your work. As a part of that, you have to clarify if this result (or a developed system) meets the requirements as stated in the introduction. If your results include some finding, the conclusion chapter can compare these with the results other scientists/engineers presented on the same topic. The whole text should be concluded with an outlook on how the work could be continued (Ideas for further developments or a better technique, unsolved problems).
+  - Zusammenfassung der wichtigsten Ergebnisse
+  - Beantwortung der Forschungsfrage(n)
+  - Einteilung nach Teilfragen
+  - Einteilung nach Hypothesen
+  - Einschränkungen / Limitierungen / limitations: |
+    This is also a good place to talk about limitations of your research. By clearly stating what your research is not able to do well, your thesis becomes stronger. If you show that you understand what your methodology misses, you show the reader that you understand very well what you research has accomplished, and what may need further research.
+  - Ausblick / Outlook: |
+    Which brings us to another topic you should touch on in your conclusions: What are future research needs? If a fellow student of you wanted to build on your research, what would be the next logical step that (s)he should try to address?
+  - Abschluss / Final thoughts: |
+    Last but not least, you may also assess if your findings have practical implications. Examples: Should waste water engineers use an additional test to assess water quality? Should transportation planners use different data to assess the level of service?
+
+- Nachwort (1-2 Seiten): Reflexion über die Bearbeitungszeit der Thesis
+- Literaturverzeichnis / List of references / Bibliography
+- Anhang / Appendix / Appendices
+  - Aufbau der Anhänge
+  - ...
+- Eidesstattliche Erklärung  (kann auch vor Anhang kommen) / Statement of independent work

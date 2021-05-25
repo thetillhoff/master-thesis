@@ -1,0 +1,12 @@
+% bibliography and citation style
+\usepackage[
+  hyperref=true,
+  backref=true,      %optional for list of pages where cited
+  backend=biber,
+  style=numeric-comp,
+  citestyle=ieee,
+  %sorting=nty,      %this is for sorting after name-title-year
+  sorting=none,      %this is for sorting after occurence
+  maxbibnames=20     %optional for number of authors to be listed in bibliography
+]{biblatex}
+\addbibresource{bibliography.bib} % add bibliography file

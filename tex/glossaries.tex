@@ -1,0 +1,27 @@
+% use only with \gls{yaml}
+
+% Don’t use \gls in chapter or section headings as it can have some unpleasant
+% side-effects. Instead use \gls entrytextfor regular entries and one of
+% \glsentryshort, \glsentrylong or \glsentryfull for acronyms.
+% Alternatively useglossaries-extrawhich provides special commands for use in
+% section headings and captions, such as \glsfmtshort{〈label〉}.
+
+%\newglossaryentry{yaml}{
+%type=\acronymtype,
+%name=YAML,
+%first=Yet Another Markup Language (YAML),
+%see=[Glossary:]{\gls{yaml_g}},
+%description=\glslink{yaml_g}{YAML}
+%}
+%\newglossaryentry{yaml_g}{
+%name=YAML,
+%description={
+%YAML is yet another markup language.
+%}}
+
+\newglossaryentry{yaml}{
+  name={YAML},
+  description={YAML is yet another markup language.}
+}
+
+\newacronym{yamlacr}{YAML}{Yet Another Markup Language}
