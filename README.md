@@ -5,7 +5,7 @@
 ## Exposé ("Arbeitsplan")
 
 ### Vorläufiger Titel
-
+Leveraging (immutable) (open-source) infrastructure-as-code for enterprise environments
 
 ### Relevanz des Themas (aus praxisorientierter und wissenschaftlicher Perspektive)
 
