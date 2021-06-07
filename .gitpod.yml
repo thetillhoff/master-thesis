@@ -1,8 +1,2 @@
 image:
   file: Dockerfile
-tasks:
-  # git-signing requires to run 'tar -czvf - ./.gnupg | base64 -w 0' once on a local machine with gpg set up for github and placing the output into GNUPG env-var of gitpod
-  - command: clear && [[ ! -z $GNUGPG  ]] && cd ~ && rm -rf .gnupg && echo $GNUGPG | base64 -d | tar --no-same-owner -xzvf -; sudo wget https://github.com/tillhoff/serve/releases/download/v0.0.2/serve_linux_amd64 -O /opt/serve && sudo chmod +x /opt/serve && clear && task serve DEBUG=true
-  - command: clear && sudo wget https://github.com/tillhoff/temingo/releases/download/v0.0.1/temingo_linux_amd64 -O /opt/temingo && sudo chmod +x /opt/temingo && clear && printf "%s\n" "You can access port 3000 of this gitpod via \"$(gp url 3000)\"". && task watch
-ports:
-  - port: 3000
