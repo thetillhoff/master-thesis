@@ -281,3 +281,297 @@ TOSCA:
   - scheduling
     - f.e. allocate node with GPU
 
+## A review of existing cloud automation tools
+- "virtualization has reduced teh time required to deploy computing resources from weeks to few minutes"
+- cloud promises access to flexible and elastic compute resources at minimal cost
+- Managing the growing infrastructure is one of the major challenges
+- [1] system to create, configure and manage the CM deployments in the cloud
+  Juve, Deelman, Automating Applicatoin Deployment in Infrastructure Clouds
+- [2] automatic deployment mechanism with openstack
+  Zhang, Shang, An Automatic Deployment Mechanism on Cloud Computing Platform
+- [3] migration framework for infrastructure in the cloud
+  Callanan, O'Shea, Automated Environment Migration to the Cloud
+- [4] discussion of modules & their integration for mgmt & automation of cloud-based infrastructure
+  Wibowo, Cloud Management and Automation
+- terraform
+  - execution plans; how to reach desired state
+  - resource graph; parallelize wherever possible
+- cloudformation
+  - aws specific
+  - resource graph with automatic dependency detection
+
+## Bare-Metal Marketplace At The Bottom Of The Cloud
+- OpenCloudExchange (OCX) where multiple organizations freely cooperate & compete with each other for offering different hardware resources while customers can choose from numberous competing services instead of a single provider.
+- goals:
+  - bare-metal allocation and isolation service
+  - diskless rapid provisioning service
+  - security model
+  - market based incentive system
+- base questions:
+  - move hardware between clusters on-demand
+  - cluster set up fast enough to respond to rapid fluctuations in demand
+  - single system for a wide variety of scenarios, like multiple clusters of a single company to different tenants in the same colocation facility to new model of cloud with multiple providers
+  - design system that provides cluster owners incentives to offer their hardware resources to other clusters
+- provisioning systems:
+  - ironic
+  - maas
+  - emulab
+  - geni
+  - foreman
+  - xCat
+  - [25,8,28,4,11]
+- "Clusters are typically stood up with sufficient capacity to deal with peak demand; resulting in silos of under-utilized hardware."
+- "A tenant of the ESI [Elastic Secure Infrastructure] has to trust only a minimal functionality of the tenant that offers the hardware resources. Rest of the services can be deployed by each tenant themselves."
+- [7,17] custom deployment practices of organizations with on-prem requirements
+- [5] OCX Open Cloud eXchange model
+- note to self: OCX allows for easier 3-2-1 rule of data backups
+- "The goal of a cloud is to maximize its profits"
+- important bits:
+  - isolation & bare-metal access
+  - fast provisioning / migration of hosts
+  - security model; mechanism to verify whether a server matches the security standard for a cluster
+  - incentive model; offering unused resources has to pay off somehow
+- design principles & architecture
+  - give control to tenants as much as possible
+  - minimize shared services for security purposes and to enable new capabilities
+  - partition components into micro-services for maintenance and tenant support
+     - better scaling
+     - each service has its own development life-cycle
+     - each service has a well defined API interface
+     - loose coupling
+  - incentives instead of top-down decision making
+- services
+  - isolation service; allocates server to cluster, deallocates servers when unused
+    - Exokernel-like approach [19]
+    - partitions physical hardware & connectivity
+    - enables direct access to physical resources
+  - attestation service; checks integrity of server
+  - provisioning service; sets up os and apps
+    - serves os images with applications from remote-mounted boot-drives
+    - uses ceph as underlying storage [21,22]
+  - security model
+    - tenants can control trade-offs between security, price and performance
+    - self-hosting provisioning possible & therefore increased security
+  - incentive model
+    - tenant earn revenue for offering resources
+    - change of demand & supply is reflected by dynamic changes in the price of the resources
+    - auctions decide best placement of resources among competing demands
+- hardware isolation layer (HIL)
+  - exokernel-like approach [10]
+  - network isolation, so that multiple provisioning services can work in parallel for a different set of nodes
+  - "drivers" for different Oout-of-band-modules (OBM) used for power-cycling & switch specific drivers for network isolation
+  - fundamental operations
+    - allocation of physical nodes
+    - allocation of networks
+    - connecting nodes and networks
+  - 3000 loc that have to be trusted
+  - "ipmitool" checking whether all consoles are disconnected
+- bare-metal provisioning service (BMI)
+  - non-local boot-drives, and therefore no "installation" time; only boot
+- security model
+  - threat phases
+    - prior to occupancy; bad firmware threatens integrity, for example from prior tenant, or node provider
+    - during occupancy; communication between servers, communication between server and storage; denial of service
+    - after occupancy; storage and memory contents
+  - attestation service -> measuring firmware & software (compare "all values" plus signature)
+    - checking all values helps also against firmware with bugs [16,15,27,6,22,12]
+    - time incease between un-attested and full-attested (LUKS & IPSec) is from a total of 300s to 450s
+    - initrd, then network change, then kexec
+- uses
+  - LinuxBoot vs UEFI (Power-On-Self-Test on UEFI takes longer, but apart from that there is not much idfference)
+  - pxe
+  - ipxe
+  - keylime
+  - IPsec between node and boot-os-storage
+  - LUKS for disk encryption
+- foreman takes 11min for provisioning, 5min of that are os installation
+  - no security procedures and therefore faster than most cloud provisioning systems
+- incentive system
+  - centralized system more efficient [9,26,23,14,3,18]
+  - centralized may not suit a multi-provider cloud
+  - transparent "matching" of resources requests with resource availabilities
+  - minimum is same cost as before (when it was unused)
+  - orgs can set their minimum price
+- open questions
+  - marketplace feasible? proposal: PoC
+  - clusters are optimizied towards a specific goal; can this still work in a marketplace? proposal: probably yes
+  - get average "idle" resources in current implementation, how much more load can be taken on and is it generally feasable
+- allocation and isolation service: [13]
+- provisioning service [24,19]
+- security framework [21,20]
+- incentive model OSDI 2020, spring 2020
+sources:
+- [3] Anderson, D. P. Boinc: A system for public-resource computing and storage., 2004
+- [4] Berman, Chase: A federated testbed for innovative network experiments., 2014
+- [5] Bestavros,Krieger,: Toward an open cloud marketplace: Vision and first steps, 2014
+- [6] Bulygin,: Summary of attacks against BIOS and secure boot., 2014
+- [7] Butler, "Which is cheaper: Public or private clouds", 2016
+- [8] Canonical MaaS
+- [9] Duplyakin &  Johnson, "The part-time cloud: Enabling balanced elasticity between diverse computing environments", 2017
+- [10] Engler, D. R., Kaashoek, M. F., and Otoole, J. Exokernel: an operating system architecture for application-level resource management., 1995
+- [11] foreman
+- [12] heasman: Rootkit threats, 2006
+- [13] Hennessey,: Designing an exokernel for the data center., 2016
+- [14]Hindman,: Mesos: A platform for fine-grained resource sharing in the data center
+- [15]Hudson,: ThunderStrike 2: Sith Strike., 2015
+- [16]Hudson,: Thunderstrike: EFI firmware bootkits for Apple Macbooks., 2015
+- [17] Kirkwood & Suarez, "Cloud Wars! Public vs Private Cloud Economics", 2017
+- [18] Lai,: Tycoon: A distributed market-based resource allocation system: 2004
+- [19] Mohan & Turk, "M2: Malleable Metal as a Service", 2018
+- [20] Mosayyebzadeh & Mohan, "Supporting security sensitive tenants in a bare-metal cloud", 2019
+- [21] Mosayyebzadeh & Mohan, "A secure cloud with minimal provider trust", 2018
+- [22] Rutkowska,: Intel x86 considered harmful, 2015
+- [23] Schwarzkopf, "Omega ...", 2013
+- [24] Turk & Gudimetla, "An experiment on bare-metal bigdata provisioning", 2016
+- [25] openstack ironic wiki
+- [26] Verma, "Large-scale cluster management at google with borg", 2015
+- [27] Wagner: BIOS-rootkit LightEater
+- [28] White: An Integrated Experimental Environment for Distributed Systems and Networks, 2002
+
+## TOSCA wikipedia
+- approved by OASIS since 16.01.2014
+- related:
+  - AWS Cloudformation (JSON)
+  - OpenStack Heat (adopted TOSCA for standardized templating)
+  - Cloudify (TOSCA-based) (incorporates Alien4Cloud, which is an TOSCA-design-tool)
+  - Ubicity (tooling & orchestrators based on TOSCA)
+  - MiCADOscale (TOSCA-based resource orchestration framework for containerized apps)
+  - SeaClouds (multi-cloud management of service-based apps, supports TOSCA) (EU FP7 funded)
+  - DICE (modeldriven devops; TOSCA as pivot language between modelling & ops) (EU H2020 funded)
+  - Project COLA (pluggable framework for optimal & secure deployment & orchestration of cloud applications - uses MiCADOscale) (EU H2020 funded)
+
+## OASIS wikipedia
+standards:
+- AMQP: Advanced message queuing protocol
+- CAMP: Cloud application management for platforms
+- CAP: Common alerting protocol
+- DocBook: markup language for technical documentation
+- EML: Election Markup Language
+- MQTT: Message Queuing telemetry transport
+- OpenDocument: document format
+- PKCS #11: standard that defines a platofrm independent api to cryptographic tokens such as hardware security modules and smart cards (api is named cryptoki)
+- SAML: Security Assertion Markup Language
+- SARIF: Static Analysis Results Interchange Format
+- UBL: Universal Business Language; standard for electronic documents like invoice in xml
+- VirtIO: standard for paravirtualized devices
+- WSDM: Seb Services Distributed Management
+members:
+- Dell, GM, IBM, ISO/IEC, Microsoft, Oracle, RedHat,universities, government agencies, ...
+competition:
+- w3c
+addtional notes:
+- https://en.wikipedia.org/wiki/Service_choreography#Web_Service_Choreography
+  BPMN: https://en.wikipedia.org/wiki/Business_Process_Modeling_Notation
+  WS-CDL: https://en.wikipedia.org/wiki/WS-CDL
+- https://github.com/PrivateSky/privatesky
+- https://en.wikipedia.org/wiki/YAWL
+
+## https://www.cloudcomputing-insider.de/was-ist-oasis-tosca-a-883140/ 2019
+- initial specification by Cisco, Citrix, IBM, EMC, SAP, RedHAt, Capgemini, Software AG
+- XML & YAML are supported
+- highest level: topology template, node template, relationship template and management plan
+- structure of app is shown as graph in topology template: nodes and relationships are nodes and edges
+- management plans are workflows, f.e. to start or end a service
+- in total: cloud service is fully described by service template (which contains all the other templates and plans)
+- "supports TOSCA" means service template can be read & parsed
+- service definition is fully machine readable, management and orchestration are well defined
+- indepentent from cloud-providers
+- apps can be migrationed between environments & automated provisioning or management is possible
+- supporting TOSCA as cloud-provider allows for easier migration TO your cloud, not only from it
+- unique advantage of your platform if you support TOSCA
+
+## https://www.admin-magazin.de/Das-Heft/2018/02/TOSCA-Standard-fuer-die-Cloud 2018 - BOUGHT
+goals of tosca:
+- automation of deployment and management
+- portability of app(-description)
+- interoperability & reusablity of components
+notes:
+- XML-based metamodell for formal description of app-structure -> servicetemplate
+- servicetemplate contains topologytemplate, nodetype, relationshiptype and plans
+- topology is a graph
+- app-components and their relationships equivalents are Node templates and Relationship templates
+- Node type defines the strucutre of an node template
+  - more specific: node type defines the structure of the "watchable" properties of the app-component, its management functions, the potential states, the system requirements and the abilities it publishes
+  - properties are described with property definitions, requirement definitions and capacity definitions
+  - example contents for node type for a web-based crm: licence key, admin user&password, system requirements like versions of apache, mysql & php
+- relationship type has validSource and ValidTarget; it allows to describe action between valid interfaces
+- artefacts are a content-element or the information for executing a deployment or management operation of a app-component
+  - scripts, binaries, images, config files, libs etc are all artefacts
+  - metadata for those are contained in ArtifactType, which will then be put together in Artifact template
+- tosca requests to use plans, but doesn't care about the language for descripting them
+- plantype, with two predfined ones
+  - buildplan; describes the creation of service tmeplates
+  - terminationplan; ends a service instance
+- CSAR (cloud service archive) is a archive format for storing all tosca files
+  - actually a zip archive
+  - two folders have to exist in there:
+    - "Defintions": tosca defintions in files with the extension "tosca". One of those contains the service template, which acts as the entry point
+    - "TOSCA-Metadata": contains a file "TOSCA.meta" which holds metainformation about the CSAR file itself and other components of the environment
+  - The CSAR file could be processed on a third-party-platform. This requires an "TOSCA-container". Currently this is only implemented in OpenTOSCA and OpenStack
+advantages:
+- modelling of components, of processes and of dependencies
+- in order to use tosca, someone had to understand the app at some point at least
+- XML (&YAML) are more or less easy to use
+- non-functional stuff can also be described with aid of special policies
+- independent of cloud provider
+disadvantages:
+- doesn't reuse current specifications for describing infrastructure; those would make service description faster and easier
+- since 2013 there are almost no implementations; user friendly tools are missing
+- unknown collaboration with other standards, like CAMP or modelling technology like WS-BPEL
+
+## https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA 2018 - BOUGHT
+- two parts of tosca: topology to describe the relationship between apps, and orchestration, especially model-management of the app
+- "Apache-Incubator-Project" ARIA TOSCA: lib, cli tool
+  - orchestration-tool
+  - vendor & technology independend implementation
+  - cli for template development
+  - lib (sdk) for development of tosca-able software
+  - TOSCA DSL Parser; validates template & creates deployment-diagram & retrieves relationships
+  - declarative YAML
+  - technologyspecific types can be created & used via ARIA-plug-ins -> no need to change parser code
+  - supported: TOSC Simple profile 1.0 & TOSCA Simple Profile for NFV (Network Functions Virtualization)
+  - ARIA workflows: dynamic interactions with app template (define tasks and their ordner - tasks can be implemented as plug-ins)
+    Can be part of tosca template & therefore access the graph easily - at runtime, with dedicated API for runtime context
+    examples: installation, deinstallation, adjusting installation, repair installation
+  - implemented in python
+  - it is possible to combine different tech of single provider, but also tech of different providers
+  - existing plug-ins: 
+    - IaaS: OpenStack, VMware, AWS, GCP, Azure
+    - CM: Puppet, Chef, Ansible, Saltstack
+    - Container: Kubernetes, Docker, Mesos, Swarm
+    - SND: ODL, ONOS
+    - Skript: Bash, Python, ...
+  - plug-ins are part of template, and can be loaded dynamically
+  - aria tosca can work with cloudify - the most advanced tosca implementation
+  - plugins in WGN-format
+example-process:
+- store/load service-template
+- create service (based on template)
+- run installation workflow
+cloudify:
+- blueprint-composer: drag-and-drop service editor
+- again python
+openTOSCA: alternative to cloudify:
+- german software (stuttgart)
+- OpenTOSCA Container, a tosca runtime
+- Winery, a graphical modelling tool
+- vinothek, a portal for apps
+conclusion:
+- not user-friendly
+- webbased admin-interface & tools for modelling & tosca-editors are missing
+- could be cool, but currently is not so much
+
+## https://docs.vmware.com/en/VMware-Telco-Cloud-Automation/1.9/com.vmware.tca.userguide/GUID-43644485-9AAE-410E-89D2-3C4A56228794.html 2021
+- tosca on vmware
+- doc is incomplete af
+
+## https://www.oasis-open.org/committees/tosca/charter.php
+- should be compatible with BPMN 2.0 and WS-BPEL
+- interfaces should be expressed in a proper REST-style based on HTTP and specified via WSDL 1.1 & allows for the use of scripts
+
+
+- note to self: security by default, and not optional! -> better automation
+
+
+
+
