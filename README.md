@@ -23,6 +23,37 @@ Konkretisierung anhand von:
 - Nischenaspekte "vor dem Hintergrund von"
 - Blickwinkel "auf der Mitarbeiterebene / auf der technischen Ebene"
 - Beziehungen
+//
+- Goal is to allow dynamic provision of k8s clusters for users - including storage
+  - why multitenancy via multiple clusters
+- From the base up; not cloud-vendor specific!
+- Are VMs dead (are they even needed / the case for bare-metal)
+  - comparison of bare-metal approach vs vSphere and/or OpenStack approach
+  - constraints like
+    - Workload comparison; are there workloads which cannot run in containers and require VMs?
+    - minimum machine size defines minimum cluster size and therfore introduces unused resources
+  - -> VMs make sense! What about their overhead? They need "zone/node affinity" as well
+- OpenStack does a lot of those things, vSphere as well
+  - is there a more lightweight or open source approach? A lot features aren't needed
+
+
+- one mgmt server per rack for ipmi control, os distribution -> can this be done with top-of-rack-switch?
+- instead of special network topologies, scheduling stuff, just let all bm-hosts communicate with all other bm-hosts
+  - consider zone-affinity when allocating
+  - try to allocate "closest fitting" node
+- differentiate between bm-cluster and vm-cluster
+  - in bm-cluster everyone can talk with everyone, zones can be nested, zones can be distinguished via address-spaces
+  - in vm-cluster vlans & routes must be configured, vms should be placed close together (still consider node/zone affinity) to reduce hops
+  - chicken and egg bootstrapping problem (security-wise, control-cluster-wise)
+- two options for automated on-prem/non-cloud datacenter:
+  - openstack
+  - layers
+    - hypervisor provisioning (on-demand with IPMI)
+    - vm provisioning (on-demand via hypervisor API, f.e. vSphere)
+    - clustering via k8s, or, if necessary, allow direct access to vms for some applications (f.e. Active Directory)
+- outlook: application deployment; helm, kustomize, ...
+- how to automate DNS
+- stability of openstack? why so many problems at CaaS?
 
 ### Methodisches Vorgehen / Implementierung
 The goal: [`live-demo-vision.md`](./live-demo-vision.md)
@@ -81,6 +112,9 @@ subtopics:
 - Search for `%TODO`
 - Check for sidenodes
 - Check the date on the titlepage
+- Check for unified writing style:
+  - therefore
+  - color
 
 ### Häufige Fehler
 - Es fehlt der „rote Faden“: Die Arbeit lässt keine Logik in Bezug auf die Fragestellung erkennen. Der Zusammenhang zwischen den Kapiteln wird nicht deutlich.

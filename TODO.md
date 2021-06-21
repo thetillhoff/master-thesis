@@ -12,7 +12,7 @@
 
 ## weekly ST
 - [ ] formale Beschreibung von Infrastruktur
-- [ ] Literatur
+- [x] *ongoing* Literatur
 - notes:
   - less tooling more features
   - Hypervisors/VMs?
