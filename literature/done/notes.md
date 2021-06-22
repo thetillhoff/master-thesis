@@ -152,7 +152,7 @@ cites:
     - developed by OASIS (Organization for Advancement of Structured Information Standards) in 2013
     - template language for defining required topology of a software application in the cloud
     - focus on defining application topology for the cloud orchestrator, not how the desired topology is deployed in the cloud
-    - in "their" (OASIS') words: loanguage which uses the service topology for describing service components and their interrelations.
+    - in "their" (OASIS') words: language which uses the service topology for describing service components and their interrelations.
   - common capabilities:
     - unified infrastructure model for different cloud providers
     - description of physical and virutal resources in clouds
