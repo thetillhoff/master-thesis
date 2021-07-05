@@ -7,4 +7,168 @@
 
 ---
 
-%TODO start writing here!
+%%%%% start writing here!
+
+%TODO chapter introduction
+Searching online for \gls{iacacr} quickly leads to the terms such as \textquote{snowflake}, \textquote{pet} and \textquote{cattle}.
+In this context, the former two are synonyms and refer to directly/manually managed (configured and maintained) machines. The latter is used when referring to machines, which are never directly interacted with; All administrative interactions with them are automated.
+This culture of treating machines as cattle aims to solve the administration effort for large amounts of servers. When operating on such a scale, it is easier to maintain some kind of automation framework and unify the deployment of machines than to administrate each server manually.
+But even before those terms were introduced, some datacenters were already too large to maintain each server manually.
+This chapter will guide through a part of history of datacenter technologies, explain how they worked whenever necessary to understand the further chapters and point out where the pain-points of the then-state-of-the-art tooling were.
+%TODO "Golden images" for virtual machines, but physical machines as well. Those valuable images contained necessary drivers and configuraitons
+
+%TODO: "node" == "host"? == "machine" == server
+
+\section{Bare-metal}
+In the early times of datacenters, they required quite the administrative effort. Alone for reinstalling an operating system, a server would require one administrator physically located close to the server, some kind of physical installation media, a monitor and at least a keyboard. Since both monitor and keyboard were rarely used, \gls{kvmswitchesacr} quickly gained foothold. \Gls{kvmswitchesacr} had one set of IO-devices like monitor and keyboard attached on one side and several servers on the other side. Pressing a corresponding button, the complete set of IO-devices would be \textquote{automatically} detached from whatever server it was previously connected to and attached to the machine the button refers to.
+But these devices only scale so far, since they mostly could only connect to a handful of servers.
+Those devices still exist and evolved into network-attached versions, which means they don't require administrators to press buttons on the device and instead of dedicated set of IO-devices per handful of servers, they allow administrators to use the ones attached to their workstation. So these devices introduce some kind of remote control for servers, including visual feedback.
+Their prices are insane nowadays, considered they basically only need to switch some connections, but that is out of scope here.
+
+To automate machine installations, technologies like \gls{tftpacr} (1981), \gls{pxeacr} (1984), \gls{bootpacr} (1985) emerged and concluded in the development of \gls{dhcpacr}. Only when Intel released the \gls{wolacr} in 1997 and PXE 2.0 as part of its Wired-for-Management system in 1998 it was possible to network-boot a device.
+% source: wikipedia \url{https://en.wikipedia.org/wiki/Preboot\_Execution\_Environment} and links within
+\Gls{pxeacr} uses \gls{dhcpacr} to assign an ip-address to a \gls{nicacr}. When the \gls{nicacr} receives a so-called \textquote{magic packet}, it triggers the machine to power-on. Depending on the BIOS/UEFI settings, the machine might start \gls{nbpacr}, which is like a networking equivalent to what GRUB is for local disks: It loads a kernel into memory before chain-booting it [\url{https://docs.openstack.org/ironic/latest/user/architecture.html}].
+The combination of all those technologies allows to remotely power-on a machine, boot a kernel via network instead of a local disk and makes the \gls{nicacr} the interface for those abilities, outsourcing the bootstrapping and scaling to the network (ignoring the relative minimal amount of storage \gls{tftpacr} requires).
+
+But there are still some issues with those technologies:
+When a machine had an error which made it unresponsible for remote access (like SSH), but didn't power the machine down neither, again an administrator was required to phyiscally attend the server and manually press buttons.
+And additionally, while it is possible to network-boot the installation media, the installation itself (more specifically: going through the installation wizard) has yet to happen manually as well.
+
+The next generation of servers (since 1998) had such a remote control integrated into their mainboard, rendering \gls{kvmswitchesacr} obsolete, because this new method outsources the scaling issuescales vertical: For every new server, that embedded chip adds its corresponding necessary features as every new server comes with its own integrated remote control. Unifying those efforts into a single standard for the whole industry, Intel published a specification called \gls{ipmiacr} around that. Instead of \textquote{only} the ability of remote-controlling a server with keyboard, mouse and monitor, \GLS{ipmiacr} allows administrators to mount ISO images remotely (in a way like network-boot, but a different approach), change the boot order, read hardware sensor values during both power-on- and -off-times and even control the power-state of the machine. Especially the last part now allowed administrators to maintain serves completely remotely via network, making physical attendance only required for changing physical parts of the intrastructure. The aforementioned embedded chips are called \gls{bmcacr} and the surrounding technology is called \gls{oobacr} or \gls{lomacr}. Even though there are those globally respected terms for the chips and the technology, most hardware manufacturers have their own name for their specific toolset, like DRAC for DELL, ILO for HPE and IMM for IBM. Probably due to their origin an purpose, those chips are not embedded in every modern mainboard, but only available in server- and enterprise-pc-mainboards.
+
+There are two different sets of problems solved with all those technologies:
+The combination of \gls{ipmiacr} and \gls{lomacr} allows administrators to debug a machine even on the other side of the planet. %todo: even space? is there a source for that?
+Network-booting on the other side helps with automating a high number of servers in parallel, but doesn't really help with debugging errors.
+These standards were to state-of-the-art remote-server-administration-tools for several years, along with \gls{sshacr}.
+
+
+In the meantime, operating systems evolved as well. They added features like cloud-init (2008, https://github.com/canonical/cloud-init/releases?after=ubuntu-0.3.1)
+
+
+With the physical scaling problem now resolved, another pain-point emerged: When a larger set of hardware needs to be installed, one administrator per installation is required. This means either a lot of administrators are needed, or slower installation time since hardware gets processed in a sequential way.
+
+
+
+
+
+%  - IPMI
+%    - on
+%    - off
+%    - list-sensors
+%    - get-sensor (detailed)
+%    - attachISO
+%    - detachISO
+%    - bootOrder
+%    - (create, delete), virt-equivalent
+%  - BMC
+%  - \url{https://en.wikipedia.org/wiki/Out-of-band_management}
+%    - out-of-band management (OOB) == lights-out-management (LOM)
+%  - PXE (DHCP with DNS, Gateway) (wired-for-management by ms and intel)
+%    - TFTP used to download kernel
+%    - NBP (Network Bootstrap Program) is the networking equivalent to GRUB and LiLo (linuxloader) -> it loads the kernel into memory before booting it (\url{https://docs.openstack.org/ironic/latest/user/architecture.html})
+%  - datacenter architecture
+%    - Top-of-rack-switch
+%  - retrieving vendor from mac is possible (\url{https://macvendors.com/api}) - can this be used for ipmi/... distinction?
+
+\section{Virtualization}
+Even though IBM first shipped its first production computer system capable of full virtualization in 1966 [\url{https://en.wikipedia.org/wiki/Hypervisor}], it still took several decades until the "official" break-though of virtualization technologies. Only then were machines powerful enough for virtualization making sense in terms of performance, consolidation leading to lower management overhead, lesser unused system resources and therefore overall cost savings. [Loftus, Jack (December 19, 2005). "Xen virtualization quickly becoming open source 'killer app'". TechTarget. Retrieved October 26, 2015. -> \url{http://searchdatacenter.techtarget.com/news/1153127/Xen-virtualization-quickly-becoming-open-source-killer-app}]
+Starting 2005, Intel and AMD added hardware virtualization to their processors and the Xen hypervisor was published. Microsofts Hyper-V followed in 2008, as well as the Proxmox Virtual Environment. The initial release of VMwares ESX hypervisor dates back to 2001, but evolved to ESXi in 2004. The first version of the linux kernel containing the \gls{kvmacr} hypervisor (not to be mistaken with the equal abbreviation for keyboard, video, mouse described earlier - from this point onwards, KVM always refers to the hypervisor) was published in 2007.
+Apart from the previously stated advantages, virtualization allowed for live-migrations of machines to another host without downtime, where in contrast bare-metal nodes required a downtime for for every hardware change like RAM upgrades and hardware replacement due to failures. The same feature also drastically improves disaster recovery capabilities [\url{https://searchservervirtualization.techtarget.com/definition/server-virtualization}].
+
+But the use of hypervisor and clustering them for live-migration and other cross-node functionalities has downsides as well: Vendor lock-in, since the different \gls{vmacr} formats are not compatible (there are some migration/translation tools, but best practices for production environments advise against them), licence / support fees in addition to the hardware support fees and requiring expertise for the additional software.
+
+Yet, 100 percent of the fortune 500 and 92 percent of all business used virtualization technologies in 2019 [\url{https://www.statista.com/statistics/1139931/adoption-virtualization-technologies-north-america-europe/}, \url{https://www.vmware.com/files/pdf/VMware-Corporate-Brochure-BR-EN.pdf}]. On a sidenote, VMWare claims that 80 percent of all virtualized workloads run on VMWare technology [\url{https://www.vmware.com/files/pdf/VMware-Corporate-Brochure-BR-EN.pdf}], whereas Statista estimates their share to only 20 percent [\url{https://www.statista.com/statistics/915091/global-server-share-physical-virtual/}].
+
+Either way those numbers are impressive and highlight the importance of virtualization.
+
+
+%  - hypervisor and vm
+%  - \url{https://www.statista.com/statistics/915091/global-server-share-physical-virtual/}
+%    - 2018, 57,2 % of servers worldwide were pyhsical
+%      2019, 55,6 % of servers worldwide were physical
+%    - 2018, vmware accounted for 20.1 % of servers
+%    - 2019, vmware accounted for 20.8 % of servers
+%  - \url{https://www.statista.com/statistics/1139931/adoption-virtualization-technologies-north-america-europe/}
+%    - 2019 92% of all business use virtualization technologies
+%
+%  - \url{https://searchservervirtualization.techtarget.com/definition/server-virtualization}, \url{https://docs.oracle.com/cd/E26996\_01/E18549/html/BHCJAIHJ.html}
+%    benefits of virtualization
+%    - server consolidation
+%    - simplified physical infrastructure
+%    - reduced hardware and facilities costs
+%    - greater server versatility
+%    - improved management
+%    - easier disaster recovery
+%    - by being software defined: improved remoting capabilities
+%    downsides:
+%    - vendor-lock in
+%    - licence fees
+%    - another part requiring experience
+%    - multiple kernels running
+%    - minor performance decrease -> statistics
+
+
+- converged infrastructure: combine storage and "normal" network traffic into the same network -> no fiber channel switches any more
+  - simpler and easier to manage, easier and cheaper to purchase
+- hyper-converged infrastructure: merge storage nodes and compute nodes; or in other words: every node has storage and a powerful processor.
+  - hope for less over- and underuse of resources, easier to scale
+  - no additional appliances for data protection, data de-duplication (integrated in HCI software)
+  - performance guarantee, predictable at all times
+- disaggregated hyper-converged infrastructure / hybrid hyper-converged infrastructure
+- composable infrastructure
+- ...
+
+
+
+
+\section{Cloud}
+  Public clouds have quite the arsenal of pros and cons [Domain-specific language for infrastructure as code].
+  - vps
+  - \url{https://www.vpsbenchmarks.com/labs/provisioning_times}
+    vps provisioning times
+    - hetzner: 14s
+    - GCP: 20s
+    - Amazon EC2: 23s
+    - DigitalOcean: 24s
+    - Scaleway: 32s
+    - Alibaba: 41s
+    - Amazon Lightsail: 48s
+    - Oracle Cloud: 60s
+    - Vultr: 62s
+    - OVHcloud: 72s
+    - IBM Cloud: 86s
+    - MS Azure: 102s
+
+\section{Containers}
+- container
+- kubernetes
+
+- myths:
+  - virt has significantly lower perf than bare-metal
+  - bare-metal container is better than container in vm (f.e. lower overhead) -> no live-migration on bare-metal, chunks of bare-metal (sizing)
+
+\section{Infrastructure-as-Code}
+  There are two types of \gls{iacacr}; push, where a central software tells all other components about their desired state and pull, where all components query a central software about their desired state.
+
+\section{Domain-specific language}
+  %TODO unify DSL both abbreviated and full.
+  There are two types of domain-specific languages; declarative, where the final state is described and imperative, where operations are described [Domain-specific language for infrastructure as code].
+
+\section{Scope} %TODO define what is out of scope
+limits of IaC (like physical cable) -> software defined (datacenter/*)
+FPGA
+config-level
+- vms or not should be able to be answered on config-level and therefore by user not by architecture of iac
+- poc: on-demand/self-service k8s-clusters for users
+  - cli-wrapper around lib, no webgui (as simple as possible)
+  - api for everything <-> everything as a service, all levels (bare-metal, virt, ...)
+  - implies full automation
+  - optional: transparent costs
+mgmt/meta:
+- cost-limit per user/group/departments/...
+
+goals
+- no vendor-lock-in
+- scalable (startup, dc -> 1node to 1000 node)
+- declarative ?
+- open-source

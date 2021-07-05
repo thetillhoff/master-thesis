@@ -9,3 +9,539 @@
   - new method
   - new data
   - new application
+
+%%%%% start writing here
+
+%TODO chapter introduction
+
+
+\section{Current state of the art of Infrastructure-as-Code and related trends} %TODO could also be in 02-background
+google trends: %https://trends.google.com/trends/explore?q=%2Fg%2F11c3w4k9rx
+related topics, worldwide:
+- AWS
+- Terraform
+- DevOps
+- Jenkins
+- cloud computing
+- azure
+- automation
+- Ansible
+-> in usa:
+- cicd
+- yaml
+- plugin
+- compliance
+- pipeline
+-> 5y old worldwide:
+- git
+- agile software development
+- policy
+- hashicorp
+- serverless
+---
+similar queries:
+- terraform
+- aws
+
+
+- k8s
+- multi-tenancy
+
+
+\section{Provisioning tools}
+
+
+tools/frameworks
+- openstack ironic \url{(https://docs.openstack.org/ironic/latest/user/architecture.html})
+  - installs OS on a local disk
+    -> should the OS be installed on a local disk or every boot happen via network?
+      -> depends on boot-count and network speed and desired first-boot-time and second-boot-time
+  - verify-HW; verify a node is accessible with HPMI (could be combined with flashing nodes' firmware)
+- ...
+
+- Why DSL and not general purpose language?
+  - smaller & well-defined / less complex
+  - seperates infrastructure code from other code
+  - domain-specific, so easier to work with for experts and customers
+
+- default passwords for IPMI/BMC were vendor-specific (calvin...) but due to new US law they must be random:
+  senate bill no 327, chapter 886 - add title 1.87.26 to part 4 of division 3 of civil code, relating to information privacy
+
+\section{Comparison of existing Domain-Specific-Languages}
+DSL == modeling language [A Domain Specific Language to Generate Web Applications]
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+```yaml
+CloudFormation: # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/updating.stacks.walkthrough.html
+  approach:
+    - declarative
+    - JSON and YAML
+    - typed (AWS::ProductIdentifier::ResourceType, f.e. AWS::EC2::SecurityGroup) - how does the typing system work: field "type" for all components
+    - create "stack update" (execution path), save it in s3-buck or anywhere, then run it. no direct api access?
+  hidden-dependencies:
+    - AWS only
+  structure:
+    - mappings: # conditional mappings
+      - ... # f.e. different ami images per region and architecture; a lot like a switch statement
+    - metadata: ... # can exist on all levels, contains f.e. information about visual representation
+    - outputs: # viewable on the management console etc.
+      - ... # f.e. Access-URL for an application after installation
+    - parameters:
+      - <variablename>:
+        - Default: ...
+        - Description: ...
+        - Type: ...
+        - minlength, maxlength, regex pattern for strings, ...
+        - Constraintdescription
+    - resources: # only resources are required
+      - WebServer: # valid resource type
+        - type: AWS::EC2::Instance
+        - properties:
+          - UserData: ... # valid values for this resource type
+          - KeyName:
+            Ref: <variablename> # can reference to parameters
+  validation / error reporting:
+    - custom schema validation (?)
+    - only checks if parent language is well-formatted (json,yaml)
+    - additional tools
+      - python cfn-lint as plugin for IDEs or static analysis tool
+      - ruby cfn-nag for static analysis, aimed at security
+      - python taskcat for making a testrun with a template -> integration tests
+    - dry-run possible
+  aspecty-to-learn:
+    - "Fn::..." in JSON, "!..." in YAML -> custom functions like Join, GetAtt
+    - JSON or YAML is required, the graphical designer does only the rawest of work
+      alternatively: use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
+    - AWS products, their naming and how each components attributes are named
+  tooling/ecosystem:
+    - integrated in aws-cli
+    - "designer": https://eu-central-1.console.aws.amazon.com/cloudformation/designer/home?region=eu-central-1
+    - any text-editor for JSON/YAML, or use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
+    - git pre-commit validation with "cfn_nag" (https://github.com/stelligent/cfn_nag) and "taskcat" (https://github.com/aws-quickstart/taskcat)
+  optimizations:
+    - parallel resource creation/updating/deletion, can be controlled with "DependsOn" attribute
+  extensibility:
+    - https://aws.amazon.com/cloudformation/features/: There is a CloudFormation Registry, where third-party sources can provide a template for their app
+  guarantees:
+    - cost calculator: https://calculator.aws/
+    - no guarantee updates work (f.e. insufficient permissions, account quota limit); automatic roll-back on failure
+  reusability of components:
+    - there is the cloudformation registry where apps can be published
+    - "Ref" can reference to other components
+    - nesting of "stacks" is possible
+  Visibility:
+    - predefined structure, splitting into different files possible
+  Viscosity:
+    - updates of the DSL are made by aws
+    - updates to your apps have to be made manually
+    - updates have to be validated manually
+  Consistency:
+    - (probably) pretty high, as developed by one team and being an official product by amazon.
+  notes:
+    - fails if dependend component is neither defined nor already existing
+    - state-monitoring: events; but those are not saying much (only time, type of the event origin (alarm, stack,...), logical ID (custom name), physical ID (instance id), status (f.e. CREATE_COMPLETE, CREATE_IN_PROGRESS), Reason (User initiated))
+    - costs:
+      - AWS::*, Alexa::* and Custom::* are free
+      - 3rd party providers cost stuff
+    - "Naming resources restricts the reusability of templates and results in naming conflict when an update causes a resource to be replaces" [https://aws.amazon.com/cloudformation/faqs/] -> naming is not possible for all components
+---
+Heat:
+  approach:
+    - declarative
+    - compatible to AWS CloudFormation
+    - OpenStack-native REST API, CloudFormation-compatible Query-API
+    - either cli or api directly
+    - YAML
+    - python app
+    - heat cli accesses heat-api, which sends API-requests via RPC to heat-engine, which does the heavy lifting
+    - python-heatclient lib (== api)
+  hidden-dependencies:
+  structure:
+    - parameters # input parameters, typed
+        image_type:
+          type: string # every parameter is typed
+          label: Image Type
+          description: Type of instance (flavor) to be used
+          default: m1.small # optional default value
+          #hidden: true # optional attribute to hide secrets from users who request information about the deployed stack
+          constraints:
+            - allowed_values: [ m1.medium, m1.large, m1.xlarge ]
+              description: Value must be one of m1.medium, m1.large or m1.xlarge.
+            #- allowed_pattern: "[a-zA-Z0-9.]+"
+          #immutable: true # defines whether the param is updatable
+    - resources # typed, f.e. OS::NOVA::Server
+        my_instance:
+          type: OS::Nova::Server
+          properties:
+            key_name: ...
+            image: ...
+            flavor: { get_param: image_type }
+          #metadata
+          #depends_on
+          #update_policy
+          #deletion_policy
+          #external_id
+          #condition
+    - outputs
+        instance_ip:
+          description: The IP address of the deployed instance
+          value: { get_addr: [my_instance, first_address] } # alternative: get_file: URL/path and get_param or get_resource (like named port)
+          #condition # conditional output is supported
+    #- conditions # declaration of conditions
+    #- parameter_groups # a declaration of input parameter groups and order
+  validation/error-reporting:
+    - heat template-validate: used to validate a template, with inserting templated values and ignoring specific errors -> feels like dry-run
+  aspects to learn:
+    - YAML
+    - HOT structure, types, functions and how each components attributes are named
+  tooling/ecosystem:
+    - cli
+    - python-lib
+  optimizations: # none?
+  extensibility:
+    - there is NO app catalog (http://lists.openstack.org/pipermail/openstack-operators/2017-July/013965.html) for heat templates
+  guarantees: # none?
+  reusability of components:
+    - works with cloudformation stuff, and is closely related to it
+  visibility:
+    - see cloudformation
+  viscosity:
+    - see cloudformation (?)
+  consistency:
+    - similar to cloudformation, but with openstack types
+  notes:
+    - imitates AWS Cloudformation on several occasions (types, structures, wording (f.e. stack))
+    - there is a openstack REST-API AND a CFN-API
+    - cli-command names are confusing
+    - "heat" makes the clouds rise
+---
+Terraform:
+  approach:
+  hidden-dependencies:
+  structure:
+  validation/error-reporting:
+  aspects to learn:
+  tooling/ecosystem:
+  optimizations:
+  extensibility:
+  guarantees:
+  requsability of components:
+  visibility:
+  viscosity:
+  consistency:
+  notes:
+---
+Tosca/cloudify:
+  approach:
+  hidden-dependencies:
+  structure:
+  validation/error-reporting:
+  aspects to learn:
+  tooling/ecosystem:
+  optimizations:
+  extensibility:
+  guarantees:
+  requsability of components:
+  visibility:
+  viscosity:
+  consistency:
+  notes:
+---
+Tosca/simple-profile:
+  approach:
+  hidden-dependencies:
+  structure:
+  validation/error-reporting:
+  aspects to learn:
+  tooling/ecosystem:
+  optimizations:
+  extensibility:
+  guarantees:
+  requsability of components:
+  visibility:
+  viscosity:
+  consistency:
+  notes:
+```
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+%TODO how does deprovisioning work
+%TODO how are existing resources referenced
+%TODO how to handle secrets in outputs
+%TODO how to handle secrets in templates
+%TODO noecho in cloudformation still shows stuff in output, metadata etc -> how to provide a secure way not giving away credentials?
+
+Languages to compare:
+- CloudFormation
+- Heat
+- Terraform
+- TOSCA/cloudify
+- TOSCA/Simple-Profile
+
+model: formal representation of entities and relationships [Stachowiak, Allgemeine Modelltheorie]
+  - abstraction: don't desribe all attributes, only the relevant ones
+  - isomophism: statements for model entities hold for the real world
+  - pragmatism: model is build to fulfill a purpose for set of users, during certain time, for certain activities
+
+modeling language is defined by:
+- abstract syntax -> which elements exist in a model and how can they be combined
+- concrete syntax -> how are the model elements and their relations expressed
+- semantics -> what is the meaning of each model element
+
+approach:
+- model-based (original goal is documentation, communication and analysis, model is secondary artefact)
+- model-driven (model is used to generate code or being interpreted for extracting actions, model is primary artefact)
+  - increased development speed via automated transformations
+  - defined output, repeatable process
+  - seperation of concerns using views
+  - reuse of transformations
+
+aspects of mdsd workflow:
+- always:
+  - define modeling language (abstract and concrete syntax)
+  - tool support to define models
+  - persist models in files or dbs
+  - tranform models to text
+- often:
+  - transform model to model
+  - transform text to model
+  - analyze and interpret models
+  - automate workflows from single steps
+
+
+domain expert:
+- uses modeling language to create models
+technology experts:
+- creates modeling languages and transformations
+
+external dsl:
+- dedicated toolkit to create modeling language
+internal dsl:
+- customize existing programming or modeling language (usually textual)
+- idea: define an api in an ordinary programming language such that accessing this API looks like using specialized dsl
+
+metamodel: model of modeling language, defines
+- concepts that can be used to build model
+- their attributes
+- how they can be combined
+- their meaning (usually not though)
+
+why meta models: allows to reuse technology for
+- storing models in files
+- storing models in dbs
+- creating a form-based editor
+- creating a graphical editor
+- generating code from models
+- transforming models into other models
+metamodel is used to describe abstract syntax, not concrete syntax!
+
+MOF Meta Object Facility: domain specific modeling language to describe metamodels
+contains
+- classes (meta-class)
+- properties/attributes (meta-...)
+- associations (meta-...)
+- generalisation (meta-...)
+- packages (meta-package)
+There is a meta-metamodell: mof described with mof
+original - model - metamodel - meta-metamodel
+
+types of concrete syntax:
+- diagram
+- text (programming language)
+- tables
+- trees and forms
+- XML
+- custom
+- combinations
+
+why textual languages are popular for computer science:
+- easy to edit (cut, copy, paste)
+- easy to create parsers and reuse existing SE tools
+- accessible with console based tools
+- single input type; can be worked on with only using the keyboard
+- compare & merge
+- version control
+- no special tools needed (only simple text editor)
+- can be supported by IDEs
+bad:
+- complex dependencies hard to recognize
+
+approaches:
+- parsing:
+  - concrete syntax primary artifact
+  - concrete syntax (text) is directly edited and converted (parsed) to an AST (model)
+- projection
+  - abstract syntax primary artifact
+  - AST (model) is rendered to concrete syntax (text), edit actions directly on AST (model) (AST=Abstract Syntax Tree)
+
+what to compare:
+%http://www.cse.chalmers.se/~bergert/slides/guest_lecture_DSLs.pdf
+- abstract syntax: meta-model which defines parts/domain-concepts/model-elements and rules/validation of model
+- concrete syntax: representation of model (instances) f.e. in an editor
+- static semantics: evaluatable without executing/interpreting the model
+- dynamic semantics: what the model means or expresses
+
+what to compare them on:
+- kinds of DSLs: textual DSL, visual DSL, library in a programming language, configuration tool, wizard
+  - textual
+    - internal: library in an existing programming language
+    - exernal: seperate language
+  - visual
+    - configuration tool
+    - wizard
+- approach, f.e. templating, translation or term rewriting
+  - declarative, imperative
+- executability, hidden dependencies
+- optimizations; automatic hinting, execution optimization
+- extensibility -> quality
+- efficiency/lines-of-code -> quality
+- tooling (developing AND using) -> ecosystem
+- guarantees
+- reusability of components
+- error reporting -> error-proneness, progressive evaluation
+- aspects to learn / learning curve
+- viscosity; how hard is it to update stuff
+- visibility; how hard is it to find a certain part, is it clear where relations are
+- consistency
+
+
+[\url{https://www.opentosca.org/documents/Presentation_TOSCA.pdf}]
+
+Two non-vendor-specifc standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \hl{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \hl{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be abandoned since then (at least neglected).
+\\
+Second, the \gls{toscaacr} standard was first published in 2013 by the \gls{oasisacr}. The latter is also responsible for well-known standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument, PKCS\#11, \gls{samlacr} and VirtIO so its name is well-known in the world of software. Additionally, its members are not only an overwhelming number of academic or governmental institutions but een more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, SAP and VMware [\url{https://www.oasis-open.org/committees/membership.php?wg_abbrev=tosca, https://www.oasis-open.org/committees/tosca/obligation.php}]. The latest contribution was only one week before the time of writing, so its actively pursued and developed [\url{https://www.oasis-open.org/committees/documents.php?wg_abbrev=tosca}].
+\\
+\gls{toscaacr} has been used in some proof-of-concept projects [Domain-specific language for infrastructure as code] in 2019, but their results were disappointing: The interfaces between the core standard and the supported providers are said to be always out of date making even simple operations impossible. The tools of the ecosystem surrounding the standard are said to be non-user-friendly and their learning curves to flat \hl{/ all but steep} [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
+Still, \gls{toscaacr} has a lot of plug-ins for platforms like OpenStack, VMWare, \gls{awsacr}, \gls{gcpacr} and \gls{azureacr}, configuration management tools like ansible, chef, puppet and saltstack or container orchestrators like docker swarm and kubernetes [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}, \url{https://docs.vmware.com/en/VMware-Telco-Cloud-Automation/1.9/com.vmware.tca.userguide/GUID-43644485-9AAE-410E-89D2-3C4A56228794.html}].
+All those projects conclude that the standard is extremely promising, but the current state makes it impossible to use properly [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
+\\
+While \gls{awsacr} CloudFormation only works for a single provider, being developed by the same company that provides the infrastructure its determined to manage is a major advantage.
+cloudformation was the first?
+\\
+OpenStack Heat 
+\url{https://www.slideshare.net/openstackil/heat-tosca}
+HOT == Heat Orchestration Template, YAML only
+came to replace cloud formation syntax
+following the cloudformation limited model
+hot is only for infrastructure creation
+tosca is application centric by design
+-> tosca is more universal
+hot workflow hardcoded in heat engine
+toscas interfaces allow for any workflow -> no hardcoded workflow
+tosca to hot translator project developed by ibm, huawei and others -> goal is to describe stack in tosca and use heat
+cloudify uses tosca templates directly
+  soon to use heat to orchestrate infrastructure
+  adds monitoring, log collection, analytics, workflows
+
+tosca adopted hot input and output parameters, which took that from cloudformation
+hot added software\_config provider to describe application stack explicitely
+hot adopted tosca relationship syntax and semantics
+
+\url{https://www.oasis-open.org/committees/download.php/56826/OpenStack%202015%20Tokyo%20Summit%20-%20TOSCA-and-Heat-Translator-TechTalk.pdf}
+"TOSCA-Parser" by IBM, can parse TOSCA Simple Profile in YAML
+"Heat-Translator", maps and translates non-heat (f.e. tosca) templates to hot
+  supports tosca csar
+"Murano" == OpenStack's application catalog that provides application packaging, deployment and lifecycle management - plans to integrate tosca csar
+
+\url{https://wiki.openstack.org/wiki/Heat/DSL2}
+evolve first heat/dsl and incorporate tosca and CAMP
+
+Terraform
+- AWS CloudFormation
+  - \url{https://en.wikipedia.org/wiki/RAML\_(software)} -> supported by aws api
+OpenStack Heat -> can use TOSCA
+Cloudify -> uses TOSCA
+... (see notes)
+
+Originally, \gls{toscaacr} was meant to work only with XML, but since \hl{some year or version} it also supports YAML.
+
+terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
+
+%TODO application-distribution -> TOSCA CSAR, helm charts, openstack hot packages in murano...
+- CAMP \url{http://docs.oasis-open.org/camp/camp-spec/v1.1/cs01/camp-spec-v1.1-cs01.pdf} , \url{https://en.wikipedia.org/wiki/Cloud\_Application\_Management\_for\_Platforms}
+- terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
+- cloudformation \url{https://www.terraform.io/intro/vs/cloudformation.html}
+
+%TODO -> how can those standards be improved? And what can be added?
+
+\section{Everything-as-a-Service}
+- can openstack do all of this?
+  - stability
+  - legacy code
+  - complexity
+- Rackspace-as-a-Service; will-on-prem die? ("Why on-prem won't die") no, security of data, costs, privacy, pressure/trust, (with or without pdu, usc, ups)
+- Metal-as-a-Service; vs VM-as-a-Service (vps), noisy neighbour, vSphere AutoDeploy, Ironic, tinkerbell, ipv6, which os, ipmi, kernel/firmware integrity, zones, pdu, psu, rack, sdn
+- Network-as-a-Service; topology, vlan, sdn, both on hw and sw layer
+- DNS-as-a-Service; global or not? via k8s?
+- Hypervisor-as-a-Service; esxi, kvm (used by aws, gcp (no qemu)), node-size, vm-size, compare to metal-as-a-serice (differentiate)
+- Compute-as-a-Service; vm-as-a-service, vps
+- Encryption-as-a-Service: ram, disk, network on host/node-level (TPM?)
+- Storage-as-a-Service; alternative to rook, hyper-converged vs dedicated (SVC by IBM), sds, both on hw and sw layer
+- IAM-as-a-Service; webauthn with yubikey, cloud-iam, 3rd-party iam like github oauth (openstack iam? ad necessary? why no ad join for nodes? -> linux, ephemereal, cattle)
+- k8s-as-a-Service; which os, in-memory-os, cluster-api (gardener, how to configure nodes? terraform, ansible, cloud-init, ignite), why multi-tenacy via multi-cluster?
+- IaC-as-a-Service; generation/compliance with OPA, CRD-like formal description, check GCP, AWS, Azure and Openstack for common ground
+- secrets-as-a-Service; turtles all the way down presentation, SCM, orchestration, Secrets-as-a-service (hashicorp vault?)
+meta/mgmt
+- bare-metal-marketplace
+
+\section{Example reference infrastructure} %TODO multiple?
+- Are VMs dead? / will containers replace them completely? (/ the case for bare-metal)
+  - isolation level
+  - comparison of bare-metal approach vs vSphere and/or OpenStack approach
+  - constraints like
+    - Workload comparison; are there workloads which cannot run in containers and require VMs?
+    - minimum machine size defines minimum cluster size and therefore introduces unused resources (when going for temporary k8s-clusters for devs)
+  - -> VMs make sense! What about their overhead? They need "zone/node affinity" as well
+  - kubevirt?
+- common components:
+  - public or not (dns / routing)
+  - load-balancer / ha
+  - persistent or not / storage
+  - web-service / api -> should mirror most applications and uses other components
+    - db-api
+    - web-api
+    - REST(ful)-API / CRUD (create, read, update, delete or in HTML: put, get, put, delete, or combine with post)
+    - ACID
+  - identity / email ?
+  - function-as-a-service / serverless -> special case
+  - trend:
+    - \url{https://en.wikipedia.org/wiki/Resource-oriented_architecture}, \url{https://en.wikipedia.org/wiki/Resource-oriented_computing}, \url{https://en.wikipedia.org/wiki/Service-oriented_architecture}, \url{https://en.wikipedia.org/wiki/Web-oriented_architecture}
+    - include example in reference architecture?
+    - open data protocol \url{https://en.wikipedia.org/wiki/Open_Data_Protocol}
+    - \url{https://en.wikipedia.org/wiki/RSDL}
+    - \url{https://en.wikipedia.org/wiki/OpenAPI_Specification} (formerly swagger)
+- %TODO where does kubernetes fit in?
+- hw-security
+  - limit available OS images; optimize those for own hw -> less generic drivers, no overall driver-issues, less to support
+  - three installation flavors:
+    - install with pxe
+    - install with attached iso (via ipmi or hypervisor)
+    - preinstalled virtualdisk (only for vms) -> azure
+    - ibm supports only attached iso: \url{https://cloud.ibm.com/docs/bare-metal?topic=bare-metal-bm-mount-iso}
+  - firmware
+    - some hw supports firmware flashing from os level which can result is hardware damage (increasing voltage etc)
+    - either on provision or deprovision task update all firmwares to latest official firmware versions (no matter what was installed before - even if it seems to be that already)
+      - on deprovisioning makes more sense, it saves time when provisioning new nodes.
+    - upgrades can then happen globally (for all "unused" nodes) and used nodes can be migrated by users (or not...)
+    - allow to select which firmware version to have flashed
+      - latest is default
+      - fix them to current latest version after latest was used
+  - \url{https://docs.microsoft.com/en-us/azure/baremetal-infrastructure/concepts-baremetal-infrastructure-overview}
+    - ? bare metal is ISO 27001, ISO 27017, SOC1 SOC2 compliant
+    - RHEL and SLES only
+    - ECC vs EDAC (Error Detection And Correction) module; ECC is in hardware, EDAC in software, when both enabled, they can conflicts, with unplanned shutdowns of a server.
+    - managed bare metal; up to OS is managed, then the customer is responsible
+
+\section{Issues with existing standards and frameworks}
+- no comparison of iac dsls
+- not enough effort to integrate with other tools / dsls / clouds
+- either no proper standard (vendor-specific) or not enough support for multiple vendors -> everyone reinvents the wheel and wants to establish the own work as industry-standard
+- %TODO: propose solution / new approach -> integrate all, search common ground
+
+
+%%%%% notes
+
+%TODO market at bottom of iac
+
+
+

@@ -570,6 +570,67 @@ conclusion:
 - interfaces should be expressed in a proper REST-style based on HTTP and specified via WSDL 1.1 & allows for the use of scripts
 
 
+# https://ahmet.im/blog/cloud-instance-provisioning/
+- aws uses cloud-init
+- digitalocean uses cloud-init
+- gcp uses selfimplemented guest agents written in python (running as systemd services)
+- azure uses cloud-init (and waagent (azure linux guest agent, https://github.com/Azure/WALinuxAgent))
+
+
+# Comparative Study of DSL Tools
+dimensions [DSL Implementation in MetaOCaml, Template Haskell, and C++ by Czarnecki]:
+- approach: what is the primary approach supported by the DSL tool (f.e. translation/templating, term rewriting)
+- guarantees: what guarantees are provided by the DSL tool in terms of syntactic and semantic well-formedness of the transformed-to constructs (f.e. well-typed, syntax valid at run-time, none)
+- reuse: can the 'user-defined' aspects of the DSL implementation be reused
+- context-sensitive transofmration: can the DSL tool perform context-sensitive transformation
+- error reporting: can the DSL tool report errors in terms of the DSL source (line number and column offset) (run-time/compile-time)
+metric:
+- lines of code: given a case study, how many lines of code are required to represent the domain-specific information
+- aspects to learn: given a case study, how many aspects need to be learned to implement a DSL
+potential sources:
+- Domain-Specific Languages: An Annotated Bibliography by Deursen
+- Modular Domain Specific Languages and Tools by Hudak
+
+
+# Comparing General-Purpose and Domain-Specific Languages: An Empirical Study
+dimensions [Usability analysis of visual programming environments: a "cognitive dimensions" framework by Green and Petre, Ten years of cognitive dimensions in visual languages and computing: Guest editor’s introduction to special issue by Blackwell]:
+- closeness of mapping: languages should be task-specific
+- viscosity: revisions should be painless
+- hidden dependencies: the consequences of changes should be clear
+- hard mental operations: no enigmatic is allowed
+- imposed guess-ahead: no premature commitment
+- secondary notation: allow to encompass additional infomration
+- visibility: search trails should be short
+- consistency: user expectations should not be broken
+- diffuseness: language should not be too verbose
+- error-proneness: notation should catch mistakes avoiding erros
+- progressive evaluation: get immediate feedback
+- role expressiveness: see the relations among components clearly
+- abstraction gradient: languages should allow different abstaction levels
+
+
+# Usability Evaluation of Domain-Specific Languages
+- instances of DSL == instance model == sentences of DSL
+
+
+# Comparison between internal and external DSLs via RubyTL and Gra2MoL
+comparison measures:
+- three elements of DSL: abstract syntax, concrete syntax and semantics (executability and optimizations)
+- quality criteria: extensibility and efficiency
+- DSL tooling: tools for developing DSL and tools for using DSL
+->
+- concrete syntax: does the DSL require a specialized syntax? Is the host language syntax suitable for the DSL? How much effort is needed to embed the DSL in comparison to building the DSL from scratch?
+- abstract syntax: In which cases mgiht an abstract syntax be necessary, and in which is it possible to manage without it? How different is it to support an abstract syntax in each case? This last issue is related to the following aspect
+- executability: How much does the host language assist inthe executability of the DSL? Do we need to adapt the (internal) DSL to facilitate its executability? In which cases is it most recommended to create an interpreted/compiled language?
+- optimizations: Can the execution process be optimized to improve the efficiency?
+- language extension: How difficult is it to incorporate new constructs into the language?
+- integration and library availability: How can an internal/external language facilitate integration with other tools such as editors? Are there libraries required available in the choses host language?
+- DSL development tools: Are there tools that facilitate the creation of internal/external DSLs? How much freedom do they offer in the creation of the language? Do these tools upport the aspects identified in this comparison?
+- target audience and usability: Does the target audience expect a language with a special syntax? Are they already used to the host language syntax?
+
+# The Mythical Man-Month, 1985, Frederic Brooks
+"There is no Silver Bullet in Software Engineering"
+
 - note to self: security by default, and not optional! -> better automation
 
 

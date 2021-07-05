@@ -9,6 +9,7 @@ Leveraging (immutable) (open-source) infrastructure-as-code for enterprise envir
 infrastructure lifecycle management
 infrastructure configuration management
 infrastructure management system
+comparison of infrastructure-as-code dsls and tools (and finding/creating a compromise)
 
 ### Relevanz des Themas (aus praxisorientierter und wissenschaftlicher Perspektive)
 Praxis: Was ist das Ziel, was gibt es dafür und was ist am Ansatz in dieser Thesis so besonders?
@@ -112,18 +113,19 @@ subtopics:
 - Search for `%TODO`
 - Check for sidenodes
 - Check the date on the titlepage
+- Search for '[' and ']'
 - Check for unified writing style:
   - therefore
   - color
 
 ### Häufige Fehler
 - Es fehlt der „rote Faden“: Die Arbeit lässt keine Logik in Bezug auf die Fragestellung erkennen. Der Zusammenhang zwischen den Kapiteln wird nicht deutlich.
-- Der Leser sollte zu jedem Zeitpunkt verstehen „warum“ Sie etwas tun. Versuchen Sie Ihre Überlegungen klar darzulegen. Wenn Sie z.B. eine bestimmte Methodik verwenden, erklären Sie, warum Sie sich für diese Methodik und nicht für eine andere entschieden haben. Wenn Sie z.B. ein Bewertungsschema verwenden und für die Erfüllung von Kriterien Punkte vergeben, erklären Sie, wie Sie diese Punkte ermittelt haben und warum Sie diese auf genau diese Art ermittelt haben. Sobald sichim Kopf des Lesers ein „Häh? -Warum jetzt das?“ bildet, haben Sie versäumt, wichtige Informationen zu vermitteln.
+- Der Leser sollte zu jedem Zeitpunkt verstehen „warum“ Sie etwas tun. Versuchen Sie Ihre Überlegungen klar darzulegen. Wenn Sie z.B. eine bestimmte Methodik verwenden, erklären Sie, warum Sie sich für diese Methodik und nicht für eine andere entschieden haben. Wenn Sie z.B. ein Bewertungsschema verwenden und für die Erfüllung von Kriterien Punkte vergeben, erklären Sie, wie Sie diese Punkte ermittelt haben und warum Sie diese auf genau diese Art ermittelt haben. Sobald sich im Kopf des Lesers ein „Häh? -Warum jetzt das?“ bildet, haben Sie versäumt, wichtige Informationen zu vermitteln.
 - Mangelnde Reflexion des Stoffes. Sie sollen eine Fragestellung / ein Problem lösen! Ordnen Sie Ihren Stoff ein und beurteilen Sie ihn wissenschaftlich. Also nicht nur Literaturquellen zusammensuchen und wiedergeben sondern eigenen Erkenntnisgewinn erzeugen.
-- Bitte achten Sie auf Lesefreundlichkeit!Lange, verschachtelte Sätze mit einer Vielzahl an Fremdwörtern sind kein Kriterium für wissenschaftliche Kompetenz. Kurze, klare Sätze sind für Sie einfacher zu schreiben und für den Leser erheblich leichter zu verstehen....und was auch immer wieder passiert:
+- Bitte achten Sie auf Lesefreundlichkeit! Lange, verschachtelte Sätze mit einer Vielzahl an Fremdwörtern sind kein Kriterium für wissenschaftliche Kompetenz. Kurze, klare Sätze sind für Sie einfacher zu schreiben und für den Leser erheblich leichter zu verstehen....und was auch immer wieder passiert:
 - Eine Untergliederung mit nur einem Gliederungspunkt. Dies mag zwar manchmal praktisch erscheinen, ist aber falsch!
-- Falsche Zeilenumbrüche –unbedingt kontrollieren...undganz wichtig...
-- Achten Sie bitte auf Rechtschreibung und Grammatik–auch das fließt in die Note ein. Immer wieder werden Arbeiten vorgelegt, bei denen ich 10 Fehler pro Seite anstreiche. Dies vermittelt den Eindruck einer schlampig angefertigten Arbeit. Wenn Sie Probleme mit deutscher Rechtschreibung und Grammatik haben, suchen Sie sich einen Freund/Freundin/Familienmitglied für die Korrektur.
+- Falsche Zeilenumbrüche – unbedingt kontrollieren... und ganz wichtig...
+- Achten Sie bitte auf Rechtschreibung und Grammatik – auch das fließt in die Note ein. Immer wieder werden Arbeiten vorgelegt, bei denen ich 10 Fehler pro Seite anstreiche. Dies vermittelt den Eindruck einer schlampig angefertigten Arbeit. Wenn Sie Probleme mit deutscher Rechtschreibung und Grammatik haben, suchen Sie sich einen Freund/Freundin/Familienmitglied für die Korrektur.
 
 ### ...und noch ein paar Tipps für den Start
 Es ist hilfreich, sich zunächst intensiv mit der Einleitung auseinanderzusetzen. Manchmal liest man in Ratgebern „schreib die Einleitung zuletzt“. Das mag für die finale Fassung Ihrer Arbeit sinnvoll sein, inhaltlich müssen Sie sich aber unbedingt zu Beginn damit auseinandersetzen. Was genau ist denn das Ziel der Arbeit? Was soll das Ergebnis der Arbeit sein? Was soll Ihre Arbeit bewirken? Welches Problem möchten Sie lösen? Und wie können Siedieses Ergebnis am sinnvollsten erreichen? Und warum ist die ganze Arbeit überhaupt wichtig? Welche Relevanz hat das Thema? Zu Beginn ist es oft schwierig einen Einstieg in die Literaturrecherche zu finden. Es bietet sich an, mit Lehrbüchern zu den für Sie relevanten Themengebieten zu beginnen und über die Literaturverzeichnisse weiter zu suchen. Und bevor Sie mal nicht weiter wissen oder unsicher über das weitere Vorgehen sind, kontaktieren Sie Ihren betreuenden Professor / Ihre betreuende Professorin –dafür sind wir da.
