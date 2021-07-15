@@ -56,6 +56,26 @@ Konkretisierung anhand von:
 - how to automate DNS
 - stability of openstack? why so many problems at CaaS?
 
+
+// - there was an example where cloud platform migration was necessary for an application, and the lead developed "magic" - something similar
+  - https://dzone.com/articles/reducing-your-cloud-costs-by-90
+  - https://dzone.com/articles/nomadic-cloud-systems
+  - https://polterguy.github.io/
+- multi-cloud where everything-is-a-service and is based on a below layer -> lower layers can be translated between different cloud-providers -> making the whole thing cloud-agnostic
+- when a cloud has a super cool feature and the others don't, but you want to use it, migrate. If others introduce it later, and are cheaper, migrate.
+- the whole cloud-, container-, k8s-, iac-collection of things is about migration between environments -> the goal should be to make migration as easy as possible. As a cloud provider, I want to lock the user in, and catch foreigners as well, but make it subtle enough they are not feared away or give them advantages like superb prices.
+  - migration between dev, staging and prod, migration between dev-machine and dev-machine as well as dev-machine and server, migration to a larger scale system (by scaling lol).
+  - I adopt some new tech, f.e. docker (-> by writing docker files), now I want to migrate that somewhere else, so please make that easy goddamnit!
+- migration-path ==> execution path
+// - with an everything-as-a-service-architecture, this should be easy!
+  - have one language-fits-them-all, f.e. TOSCA/whatever
+  - create an everything-as-a-service layered architecture
+    - have a translation service between different providers, or be able to translate top level language into all different provider-dsls
+  - ? use terraform as underlying base
+- "micrate" (migrate, cloud, crate?)
+- all "cloud-agnostic"-tools are just capable of running a scenario for different providers, but migration is still not possible, because of the provider-specific stuff. So providers seem to implement the same stuff differently making migrations unnecessary difficult.
+- "truly cloud-agnostic iac-tooling" by implementing everything-as-a-service
+
 ### Methodisches Vorgehen / Implementierung
 The goal: [`live-demo-vision.md`](./live-demo-vision.md)
 

@@ -631,8 +631,112 @@ comparison measures:
 # The Mythical Man-Month, 1985, Frederic Brooks
 "There is no Silver Bullet in Software Engineering"
 
-- note to self: security by default, and not optional! -> better automation
+# Understanding OASIS Tosca [https://www.youtube.com/watch?v=C75LBxsQNsc]
+design tools:
+- vnomic service designer
+- ibm owrkload deployer
+- zenoss cloud monitoring
+service marketplaces:
+- ibm cloud marketplace
+- sap marketplace
+cloud managers:
+- fujitu flexframe orchestrator
+- hp cloud management and automation
+- huawei telco cloud solution
+- ibm cloud orchestrator
+- vnomic supported clouds
 
+architects: model services, policies, requirements
+developers: develop, unit test scripts, plans, artifacts
+qa-teams: build and test releases, updates and configurations
+operations: deploy, manage and monitor application lifecycle
+
+application requirements are modelled independently form cloud infrastructure capabilities
+
+tosca orchestrator automatically matches tosca to cloud-provider-specific stuff and optimizes
+
+forrester names tosca as top four cloud open standard (mar 2014)
+
+multi-cloud interoperability demonstrated at:
+- eurocloud 2013 with ibm, sap, fujitsu, huawei, hp, vnomic, zenoss, ...
+- open data center alliance (jan 2014)
+
+open source projects:
+- openstack
+- eclipse
+- cloudify
+- apache
+- celar
+- canonical Juju is an tosca orchestrator which supports aws, openstack, azure, hp cloud, joyent and bare metal - NOT TRUE (any more)
+
+# Introduction to TOSCA - Yaron Parasol [https://www.youtube.com/watch?v=EgzwaQi03l8]
+## impact of human error
+- 80% of outages impacting mission-critical services willb e caused by people and process issues
+- 50% of those issues will be caused by change/configuraiton/release integration and hand-off issues
+## the path to orchestration
+- standardize
+  - lower cost
+  - increase performance
+  - reduce complexity
+- consolidate
+  - release assetes
+  - improve efficiencies
+  - improve management and control
+- virtualize
+  - lower cost
+  - increate utilization
+  - higher flexiblity
+- automate
+  - lower cost
+  - improve user experience
+  - speed to market
+- orchestrate
+
+rackspace is also a suppporter
+v1 of tosca was xml
+v2 yaml
+tosca:
+- can describe any topology
+- any automation process
+tosca building blocks:
+- application topologies
+- workflows
+- policies
+bpmn for workflow descriptions
+
+Every components is a node
+
+An interface is a set of hooks ("operations")
+
+tosca.interfaces.node.lifecycle: create, configure, start, stop delete operations
+capabilities == what it can provider to other nodes
+requirements == what capability is required
+
+basic relationship types are:
+- dependsOn with subtypes:
+  - hostedOn (can be displayed as containment)
+  - connectsTo (linked connection)
+
+node template:
+- is an instance of type (like object to class)
+- has specific properties
+- has artifacts (what to install, how to install (mapped to interface hooks))
+- has requirements and capabilities (for relationships)
+example from node template:
+  requirements:
+    - database: some_db
+      interfaces:
+        tosca.interfaces.relationships.Configure:
+          pre_configure_source: scripts/some_db_configure.sh
+
+workflows: requires workflow engine
+policies:
+- brings monitoring as input -> ongoing evaluation of rules
+- can invoke more processes
+
+Cloudify contains gui, workflow engine, blueprint and runtime data, task manager and an agent.
+Spawned vms have an agent that gives feedback to task manager and manages the software on that vm. Task manager outputs logs & events
+An optional additional monitoring agent is on each vm, which reports to policy engine, which reports to metrics-vm with monitoring data.
 
 
 

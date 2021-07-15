@@ -60,7 +60,7 @@ tools/frameworks
 - ...
 
 - Why DSL and not general purpose language?
-  - smaller & well-defined / less complex
+  - smaller and well-defined / less complex
   - seperates infrastructure code from other code
   - domain-specific, so easier to work with for experts and customers
 
@@ -70,22 +70,25 @@ tools/frameworks
 \section{Comparison of existing Domain-Specific-Languages}
 DSL == modeling language [A Domain Specific Language to Generate Web Applications]
 
+IaC == by definition 'as code' and therefore text-based DSL
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 ```yaml
-CloudFormation: # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/updating.stacks.walkthrough.html
+CloudFormation: % https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/updating.stacks.walkthrough.html
   approach:
     - declarative
     - JSON and YAML
     - typed (AWS::ProductIdentifier::ResourceType, f.e. AWS::EC2::SecurityGroup) - how does the typing system work: field "type" for all components
     - create "stack update" (execution path), save it in s3-buck or anywhere, then run it. no direct api access?
+    - state is retrieved "live"
   hidden-dependencies:
     - AWS only
   structure:
-    - mappings: # conditional mappings
-      - ... # f.e. different ami images per region and architecture; a lot like a switch statement
-    - metadata: ... # can exist on all levels, contains f.e. information about visual representation
-    - outputs: # viewable on the management console etc.
-      - ... # f.e. Access-URL for an application after installation
+    - mappings: % conditional mappings
+      - ... % f.e. different ami images per region and architecture; a lot like a switch statement
+    - metadata: ... % can exist on all levels, contains f.e. information about visual representation
+    - outputs: % viewable on the management console etc.
+      - ... % f.e. Access-URL for an application after installation
     - parameters:
       - <variablename>:
         - Default: ...
@@ -93,13 +96,13 @@ CloudFormation: # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide
         - Type: ...
         - minlength, maxlength, regex pattern for strings, ...
         - Constraintdescription
-    - resources: # only resources are required
-      - WebServer: # valid resource type
+    - resources: % only resources are required
+      - WebServer: % valid resource type
         - type: AWS::EC2::Instance
         - properties:
-          - UserData: ... # valid values for this resource type
+          - UserData: ... % valid values for this resource type
           - KeyName:
-            Ref: <variablename> # can reference to parameters
+            Ref: <variablename> % can reference to parameters
   validation / error reporting:
     - custom schema validation (?)
     - only checks if parent language is well-formatted (json,yaml)
@@ -117,7 +120,7 @@ CloudFormation: # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide
     - integrated in aws-cli
     - "designer": https://eu-central-1.console.aws.amazon.com/cloudformation/designer/home?region=eu-central-1
     - any text-editor for JSON/YAML, or use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
-    - git pre-commit validation with "cfn_nag" (https://github.com/stelligent/cfn_nag) and "taskcat" (https://github.com/aws-quickstart/taskcat)
+    - git pre-commit validation with "cfn\_nag" (https://github.com/stelligent/cfn\_nag) and "taskcat" (https://github.com/aws-quickstart/taskcat)
   optimizations:
     - parallel resource creation/updating/deletion, can be controlled with "DependsOn" attribute
   extensibility:
@@ -139,7 +142,7 @@ CloudFormation: # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide
     - (probably) pretty high, as developed by one team and being an official product by amazon.
   notes:
     - fails if dependend component is neither defined nor already existing
-    - state-monitoring: events; but those are not saying much (only time, type of the event origin (alarm, stack,...), logical ID (custom name), physical ID (instance id), status (f.e. CREATE_COMPLETE, CREATE_IN_PROGRESS), Reason (User initiated))
+    - state-monitoring: events; but those are not saying much (only time, type of the event origin (alarm, stack,...), logical ID (custom name), physical ID (instance id), status (f.e. CREATE\_COMPLETE, CREATE\_IN\_PROGRESS), Reason (User initiated))
     - costs:
       - AWS::*, Alexa::* and Custom::* are free
       - 3rd party providers cost stuff
@@ -157,38 +160,38 @@ Heat:
     - python-heatclient lib (== api)
   hidden-dependencies:
   structure:
-    - parameters # input parameters, typed
-        image_type:
-          type: string # every parameter is typed
+    - parameters % input parameters, typed
+        image\_type:
+          type: string % every parameter is typed
           label: Image Type
           description: Type of instance (flavor) to be used
-          default: m1.small # optional default value
-          #hidden: true # optional attribute to hide secrets from users who request information about the deployed stack
+          default: m1.small % optional default value
+          %hidden: true % optional attribute to hide secrets from users who request information about the deployed stack
           constraints:
-            - allowed_values: [ m1.medium, m1.large, m1.xlarge ]
+            - allowed\_values: [ m1.medium, m1.large, m1.xlarge ]
               description: Value must be one of m1.medium, m1.large or m1.xlarge.
-            #- allowed_pattern: "[a-zA-Z0-9.]+"
-          #immutable: true # defines whether the param is updatable
-    - resources # typed, f.e. OS::NOVA::Server
-        my_instance:
+            %- allowed\_pattern: "[a-zA-Z0-9.]+"
+          %immutable: true % defines whether the param is updatable
+    - resources % typed, f.e. OS::NOVA::Server
+        my\_instance:
           type: OS::Nova::Server
           properties:
-            key_name: ...
+            key\_name: ...
             image: ...
-            flavor: { get_param: image_type }
-          #metadata
-          #depends_on
-          #update_policy
-          #deletion_policy
-          #external_id
-          #condition
+            flavor: { get\_param: image\_type }
+          %metadata
+          %depends\_on
+          %update\_policy
+          %deletion\_policy
+          %external\_id
+          %condition
     - outputs
-        instance_ip:
+        instance\_ip:
           description: The IP address of the deployed instance
-          value: { get_addr: [my_instance, first_address] } # alternative: get_file: URL/path and get_param or get_resource (like named port)
-          #condition # conditional output is supported
-    #- conditions # declaration of conditions
-    #- parameter_groups # a declaration of input parameter groups and order
+          value: { get\_addr: [my\_instance, first\_address] } % alternative: get\_file: URL/path and get\_param or get\_resource (like named port)
+          %condition % conditional output is supported
+    %- conditions % declaration of conditions
+    %- parameter\_groups % a declaration of input parameter groups and order
   validation/error-reporting:
     - heat template-validate: used to validate a template, with inserting templated values and ignoring specific errors -> feels like dry-run
   aspects to learn:
