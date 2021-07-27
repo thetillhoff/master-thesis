@@ -76,6 +76,14 @@ Konkretisierung anhand von:
 - all "cloud-agnostic"-tools are just capable of running a scenario for different providers, but migration is still not possible, because of the provider-specific stuff. So providers seem to implement the same stuff differently making migrations unnecessary difficult.
 - "truly cloud-agnostic iac-tooling" by implementing everything-as-a-service
 
+scaling smaller is better: https://dzone.com/articles/cost-optimization-strategies-for-compute-instances
+cost optimization tools: https://dzone.com/articles/zoom-spotify-and-others-slashed-their-cloud-costs
+cloud vs serverless: https://dzone.com/articles/serverless-computing-vs-cloud-computing
+
+// - read chapter 10ff of simple-profile
+- read chapter 13ff of simple-profile
+- don't reinvent the wheel, allow other standards as artifacts, like openapi as api-spec
+
 ### Methodisches Vorgehen / Implementierung
 The goal: [`live-demo-vision.md`](./live-demo-vision.md)
 

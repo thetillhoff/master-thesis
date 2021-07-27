@@ -738,5 +738,9 @@ Cloudify contains gui, workflow engine, blueprint and runtime data, task manager
 Spawned vms have an agent that gives feedback to task manager and manages the software on that vm. Task manager outputs logs & events
 An optional additional monitoring agent is on each vm, which reports to policy engine, which reports to metrics-vm with monitoring data.
 
+# https://smartbear.com (creator of openapi/swagger)
+"Quality isn't just a goal. It's the whole point."
+With rapid transformation comes risk.
+Make sure your software works when it's needed most.
 
 
