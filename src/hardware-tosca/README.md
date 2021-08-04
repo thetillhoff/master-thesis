@@ -14,6 +14,7 @@
 - zones could be recommended based on detected topology and some best-practices - opa to the rescue:
   - no zone larger than X servers
   - when a group of servers is only connected via <3 cables, recommend new zone for them
+- when every power-socket, room etc is documented properly, it is easy/easier to setup building-automation (energy-supply on/off at workplace/table/room/...), building-security (door-control). Especially in times of home-office and corresponding rare, somewhat "random" days at the workplace.
   
 
 ## types

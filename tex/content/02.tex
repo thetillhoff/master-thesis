@@ -45,7 +45,7 @@ These standards were to state-of-the-art remote-server-administration-tools for 
 In the meantime, operating systems evolved as well. They added features like cloud-init (2008, https://github.com/canonical/cloud-init/releases?after=ubuntu-0.3.1)
 
 
-With the physical scaling problem now resolved, another pain-point emerged: When a larger set of hardware needs to be installed, one administrator per installation is required. This means either a lot of administrators are needed, or slower installation time since hardware gets processed in a sequential way.
+With the physical scaling problem now resolved, another pain-point emerged: When a larger set of hardware needs to be installed, either one administrator per installation is required or sequential installation is imminent. This means either a lot of administrators are needed, or significant longer installation time.
 
 
 
@@ -122,6 +122,34 @@ Either way those numbers are impressive and highlight the importance of virtuali
 
 
 \section{Cloud}
+story:
+early clouds
+aws-hype
+public cloud
+datacenter => private cloud
+private, public cloud - why/advantages/risks
+
+
+- "local datacenter" is basically a private, on-premise cloud. (? ... at least nowadays)
+- A distributed system, the ressources are accessible using internet protocols. It allows for
+    On-demand allocation
+    Migration
+    Replication
+    Scaling
+  [lecture notes, VSYS, during bachelor]
+- benefits of cloud:
+  self-service, scalability, and elasticity
+  [https://azure.microsoft.com/en-us/overview/what-is-a-private-cloud/]
+- without direct active management by the user
+  cloud computing relies on sharing of resources to achieve coherence and economies of scale. 
+  economy of scale
+  [https://en.wikipedia.org/wiki/Cloud_computing]
+- A private cloud is a cloud service that is exclusively offered to one organization. By using a private cloud, an organization can
+  experience the benefits of cloud computing* without sharing resources with other organizations.
+  A private cloud can either be inside an organization or remotely managed by a third party and accessed over the Internet (but unlike a public cloud, it is not shared with anyone).
+  *Cloud computing is the practice of hosting computational services in remote servers that can be accessed over the Internet.
+  https://www.cloudflare.com/learning/cloud/what-is-a-private-cloud/
+
   Public clouds have quite the arsenal of pros and cons [Domain-specific language for infrastructure as code].
   - vps
   - \url{https://www.vpsbenchmarks.com/labs/provisioning_times}
@@ -140,21 +168,44 @@ Either way those numbers are impressive and highlight the importance of virtuali
     - MS Azure: 102s
 
 \section{Containers}
-- container
-- kubernetes
+story:
+exist quite some time already
+basic principle
+docker (there was this cite somewhere, probably in BA notes which goes like "docker p..." == docker made it cool)
+docker swarm
+kubernetes
 
 - myths:
   - virt has significantly lower perf than bare-metal
   - bare-metal container is better than container in vm (f.e. lower overhead) -> no live-migration on bare-metal, chunks of bare-metal (sizing)
 
 \section{Infrastructure-as-Code}
-  There are two types of \gls{iacacr}; push, where a central software tells all other components about their desired state and pull, where all components query a central software about their desired state.
+story:
+scale requires documentation at scale, documentation at scale leads to standardized objects
+asset-management-systems are made for hardware-assets / physical assets, software is only managed so far, that f.e. a licencekey can be stored.
+Apart from documentation; automation is required, since scaling containers by hand doesn't make sense.
+Version-controlled infrastructure, with rollback, canary or ab-deployments, reviews etc...
+The thing is, what works for developing code in a distributed, documented & reviewed way is applied to infrastructure.
+Issue (TODO add this to later chapter issues): it is applied to the software side of infrastructure, i.e. app deployments, but not to the hardware side. This is probably done in asset-management domain, but all this is not only infrastructure, but it-infrastructure and since one heavily depends on the other, they are tightly coupled as well. Current solution out of experience: VM-Layer in between. Can be automated (==self-service)
+Sidenote: Automated scaling leads to other conditionals like health-monitoring.
+Sidenote: Additionally, the "licked blood" of automation led to a lot of other automations, which are all included in infrastructure-as-code.
+
+
+  There are two types of \gls{iacacr}; push, where a central software tells all other components about their desired state and pull, where all components query a central software about their desired state. [todo: source]
 
 \section{Domain-specific language}
   %TODO unify DSL both abbreviated and full.
+story:
+to describe infrastructure as code, several languages have emerged.
+Why are these ones selected (shares?), how do they compare to each other.
+
   There are two types of domain-specific languages; declarative, where the final state is described and imperative, where operations are described [Domain-specific language for infrastructure as code].
 
 \section{Scope} %TODO define what is out of scope
+current scope of iac
+potential of iac
+scope within this thesis, why (examples), and what must/could be done in the future to extend the scope.
+
 limits of IaC (like physical cable) -> software defined (datacenter/*)
 FPGA
 config-level
