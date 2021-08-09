@@ -2,6 +2,8 @@
 
 **University/Dep.**: Ulm University of Applied Sciences, faculty of computer science
 
+> ultimate goal: Publish as conference paper
+
 ## Exposé ("Arbeitsplan")
 
 ### Vorläufiger Titel
@@ -10,6 +12,7 @@ infrastructure lifecycle management
 infrastructure configuration management
 infrastructure management system
 comparison of infrastructure-as-code dsls and tools (and finding/creating a compromise)
+designing a pluggable tosca orchestrator & simplify user-onboarding
 
 ### Relevanz des Themas (aus praxisorientierter und wissenschaftlicher Perspektive)
 Praxis: Was ist das Ziel, was gibt es dafür und was ist am Ansatz in dieser Thesis so besonders?
@@ -67,6 +70,7 @@ Konkretisierung anhand von:
   - migration between dev, staging and prod, migration between dev-machine and dev-machine as well as dev-machine and server, migration to a larger scale system (by scaling lol).
   - I adopt some new tech, f.e. docker (-> by writing docker files), now I want to migrate that somewhere else, so please make that easy goddamnit!
 - migration-path ==> execution path
+
 // - with an everything-as-a-service-architecture, this should be easy!
   - have one language-fits-them-all, f.e. TOSCA/whatever
   - create an everything-as-a-service layered architecture

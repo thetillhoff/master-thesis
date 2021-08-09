@@ -552,7 +552,7 @@ cloudify:
 - blueprint-composer: drag-and-drop service editor
 - again python
 openTOSCA: alternative to cloudify:
-- german software (stuttgart)
+- german software (uni stuttgart)
 - OpenTOSCA Container, a tosca runtime
 - Winery, a graphical modelling tool
 - vinothek, a portal for apps

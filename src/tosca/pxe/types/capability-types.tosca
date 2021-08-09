@@ -1,6 +1,0 @@
-capability_types:
-  pxe_enabler:
-    derived_from: tosca.capabilities.Root
-    properties:
-      cidr:
-        type: string
