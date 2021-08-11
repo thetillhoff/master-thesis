@@ -28,7 +28,7 @@ type RequirementDefinition struct {
 	RelationshipType RelationshipType `yaml:"type,omitempty" json:"type,omitempty"`
 
 	// The optional keyname used to reference declared interface definitions on the corresponding Relationship Type for refinement.
-	Interfaces map[string]InterfaceRefinements `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`
+	Interfaces map[string]InterfaceDefinition `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`
 }
 
 type RequirementAssignment struct {

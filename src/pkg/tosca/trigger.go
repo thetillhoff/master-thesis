@@ -42,13 +42,13 @@ type TriggerDefinition struct {
 	Event string `yaml:"event,omitempty" json:"event,omitempty"`
 
 	// The optional filter used to locate the attribute to monitor for the trigger’s defined condition. This filter helps locate the TOSCA entity (i.e., node or relationship) or further a specific capability of that entity that contains the attribute to monitor.
-	TargetFilter EventFilter `yaml:"target_filter,omitempty" json:"target_filter,omitempty"`
+	TargetFilter EventFilterDefinition `yaml:"target_filter,omitempty" json:"target_filter,omitempty"`
 
 	// The optional condition which contains a list of condition clause definitions containing one or multiple attribute constraints that can be evaluated. For the condition to be fulfilled all the condition clause definitions must evaluate to true (i.e. a logical and). Note: this is optional since sometimes the event occurrence itself is enough to trigger the action.
 	Condition []ConstraintClauseDefinition `yaml:"condition,omitempty" json:"condition,omitempty"`
 
 	// The list of sequential activities to be performed when the event is triggered, and the condition is met (i.e. evaluates to true).
-	Action []ActivityDefinition `yaml:"action,omitempty" json:"action,omitempty"`
+	Action []activityDefinition `yaml:"action,omitempty" json:"action,omitempty"`
 
 	// Additional keynames for the extended condition notation
 

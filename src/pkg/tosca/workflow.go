@@ -1,7 +1,7 @@
 package tosca
 
 // A workflow definition defines an imperative workflow that is associated with a TOSCA topology. A workflow definition can either include the steps that make up the workflow, or it can refer to an artifact that expresses the workflow using an external workflow language.
-type ImperativeWorkflowDefinition struct { // grammar is incomplete in docs [4.7.1.2]
+type WorkflowDefinition struct { // grammar is incomplete in docs [4.7.1.2]
 
 	// grammar
 	// <workflow_name>:
@@ -43,14 +43,14 @@ type ImperativeWorkflowDefinition struct { // grammar is incomplete in docs [4.7
 	Steps map[string]StepDefinition `yaml:"steps,omitempty" json:"steps,omitempty"`
 
 	// The optional definition of an external workflow definition. This keyname is mutually exclusive with the steps keyname above.
-	Implementation OperationImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
+	Implementation ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
 
 	// The optional map of attribute mappings that specify workflow  output values and their mappings onto attributes of a node or relationship defined in the topology.
 	Outputs map[string]AttributeMapping `yaml:"outputs,omitempty" json:"outputs,omitempty"`
 }
 
 // A workflow condition can be used as a filter or precondition to check if a workflow can be processed or not based on the state of the instances of a TOSCA topology deployment. When not met, the workflow will not be triggered.
-type WorkflowPreconditionDefinition struct {
+type PreconditionDefinition struct {
 
 	// grammar
 	// - target: <target_name>
@@ -73,7 +73,7 @@ type WorkflowPreconditionDefinition struct {
 }
 
 // A workflow step allows to define one or multiple sequenced activities in a workflow and how they are connected to other steps in the workflow. They are the building blocks of a declarative workflow.
-type WorkflowStepDefinition struct {
+type StepDefinition struct {
 
 	// grammar
 	// steps:
@@ -116,7 +116,7 @@ type WorkflowStepDefinition struct {
 	Filter []ConstraintClauseDefinition `yaml:"filter,omitempty" json:"filter,omitempty"`
 
 	// [mandatory] The list of sequential activities to be performed in this step.
-	Activities []ActivityDefinition `yaml:"activities,omitempty" json:"activities,omitempty"`
+	Activities []activityDefinition `yaml:"activities,omitempty" json:"activities,omitempty"`
 
 	// The optional list of step names to be performed after this one has been completed with success (all activities has been correctly processed).
 	OnSuccess []string `yaml:"on_success,omitempty" json:"on_success,omitempty"`

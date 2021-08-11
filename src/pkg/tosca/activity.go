@@ -1,5 +1,9 @@
 package tosca
 
+// Empty struct for embedding
+type activityDefinition struct {
+}
+
 // An activity defines an operation to be performed in a TOSCA workflow step or in an action body of a policy trigger. Activity definitions can be of the following types:
 // - Delegate workflow activity definition:
 //   Defines the name of the delegate workflow and optional input assignments. This activity requires the target to be provided by the orchestrator (no-op node or relationship).
@@ -10,6 +14,7 @@ package tosca
 // - Inline workflow activity definition:
 //   Inlines another workflow defined in the topology (allowing reusability). The definition includes the name of a workflow to be inlined and optional workflow input assignments.
 type DelegateWorkflowActivityDefinition struct {
+	activityDefinition
 
 	// short-notation grammar
 	// - delegate: <delegate_workflow_name>
@@ -36,7 +41,8 @@ type DelegateWorkflowActivityDefinition struct {
 }
 
 // Sets the state of the target node.
-type setStateActivityDefinition struct {
+type SetStateActivityDefinition struct {
+	activityDefinition
 
 	// grammar
 	// - set_state: <new_node_state>
@@ -49,6 +55,7 @@ type setStateActivityDefinition struct {
 
 // This activity is used to call an operation on the target node. Operation input assignments can be optionally provided.
 type CallOperationActivityDefinition struct {
+	activityDefinition
 
 	// short-notation grammar
 	// - call_operation: <operation_name>
@@ -78,6 +85,7 @@ type CallOperationActivityDefinition struct {
 
 // This activity is used to inline a workflow in the activities sequence. The definition includes the name of the inlined workflow and optional input assignments.
 type InlineWorkflowActivityDefinition struct {
+	activityDefinition
 
 	// short-notation grammar
 	// - inline: <inlined_workflow_name>

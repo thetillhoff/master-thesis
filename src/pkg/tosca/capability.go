@@ -43,7 +43,7 @@ type CapabilityDefinition struct {
 }
 
 type CapabilityAssignment struct {
-	Properties map[string]PropertyAssignments  `yaml:"properties,omitempty" json:"properties,omitempty"` // An optional map of property assignments for the Capability definition.
-	Attributes map[string]AttributeAssignments `yaml:"attributes,omitempty" json:"attributes,omitempty"` // An optional map of attribute assignments for the Capability definition.
-	Occurences int                             `yaml:"occurences,omitempty" json:"occurences,omitempty"` // An optional integer that sets the number of occurrences. It defines the maximum number of allowed relationships to this capability. Must be within the range specified in the corresponding capability definition. If not defined, the orchestrator uses a suitable value from the range defined in the corresponding capability definition (e.g. the maximum in the range).
+	Properties map[string]PropertyAssignment  `yaml:"properties,omitempty" json:"properties,omitempty"` // An optional map of property assignments for the Capability definition.
+	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"` // An optional map of attribute assignments for the Capability definition.
+	Occurences int                            `yaml:"occurences,omitempty" json:"occurences,omitempty"` // An optional integer that sets the number of occurrences. It defines the maximum number of allowed relationships to this capability. Must be within the range specified in the corresponding capability definition. If not defined, the orchestrator uses a suitable value from the range defined in the corresponding capability definition (e.g. the maximum in the range).
 }

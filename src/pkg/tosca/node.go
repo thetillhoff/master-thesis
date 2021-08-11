@@ -86,13 +86,13 @@ type NodeTemplate struct {
 
 type NodeFilter struct {
 	// An optional list of property filters that will be used to select (filter) matching TOSCA entities (e.g., Node Template, Node Type, Capability Types, etc.) based upon their property definitions’ values.
-	properties []PropertyFilterDefinition `yaml:"properties,omitempty" json:"properties,omitempty"`
+	Properties []PropertyFilterDefinition `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// An optional list of capability names or types that will be used to select (filter) matching TOSCA entities based upon their existence.
-	capabilities []CapabilityType `yaml:"capabilities,omitempty" json:"capabilities,omitempty"` // TODO list of capabilityTypes OR capabilityTypeNames
+	Capabilities []CapabilityType `yaml:"capabilities,omitempty" json:"capabilities,omitempty"` // TODO list of capabilityTypes OR capabilityTypeNames
 
 	// Capabilities used as filters often have their own sets of properties which also can be used to construct a filter.
 
 	// An optional list of property filters that will be used to select (filter) matching TOSCA entities (e.g., Node Template, Node Type, Capability Types, etc.) based upon their capabilities’ property definitions’ values.
-	capabilityProperties []PropertyFilterDefinition `yaml:"capability_properties,omitempty" json:"capability_properties,omitempty"` // TODO [4.3.5.7.2] "within a capability name or type name"
+	CapabilityProperties []PropertyFilterDefinition `yaml:"capability_properties,omitempty" json:"capability_properties,omitempty"` // TODO [4.3.5.7.2] "within a capability name or type name"
 }

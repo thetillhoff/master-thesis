@@ -27,15 +27,15 @@ type InterfaceDefinition struct {
 	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"` // TODO OR parameter refinements
 
 	// The optional map of operations refinements for this interface. The referred operations must have been defined in the Interface Type definition.
-	Operations map[string]OperationRefinement `yaml:"operations,omitempty" json:"operations,omitempty"`
+	Operations map[string]OperationDefinition `yaml:"operations,omitempty" json:"operations,omitempty"`
 
 	// The optional map of notifications refinements for this interface. The referred operations must have been defined in the Interface Type definition.
-	Notifications map[string]NotificationRefinement `yaml:"notifications,omitempty" json:"notifications,omitempty"`
+	Notifications map[string]NotificationDefinition `yaml:"notifications,omitempty" json:"notifications,omitempty"`
 }
 
 type InterfaceAssignment struct {
 	// The optional map of input parameter assignments. Template authors MAY provide parameter assignments for interface inputs that are not defined in their corresponding Interface Type.
-	Inputs map[string]ParameterValueAssignment `yaml:"inputs,omitempty" json:"inputs,omitempty"`
+	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"`
 
 	// The optional map of operations assignments specified for this interface.
 	Operations map[string]OperationAssignment `yaml:"operations,omitempty" json:"operations,omitempty"`

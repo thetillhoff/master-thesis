@@ -6,7 +6,7 @@ type OperationDefinition struct {
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// The optional definition of the operation implementation. May not be used in an interface type definition (i.e. where an operation is initially defined), but only during refinements.
-	Implementation OperationImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
+	Implementation ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
 
 	// The optional map of parameter definitions for operation input values.
 	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"`
@@ -31,10 +31,10 @@ type OperationAssignment struct {
 	//   <parameter_mapping_assignments>
 
 	// The optional definition of the operation implementation. Overrides implementation provided at operation definition.
-	Implementation OperationImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
+	Implementation ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
 
 	// The optional map of parameter value assignments for assigning values to operation inputs.
-	Inputs map[string]ParameterValueAssignment `yaml:"inputs,omitempty" json:"inputs,omitempty"`
+	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"`
 
 	// The optional map of parameter mapping assignments that specify how operation outputs are mapped onto attributes of the node or relationship that contains the operation definition.
 	Outputs map[string]ParameterMappingAssignment `yaml:"outputs,omitempty" json:"outputs,omitempty"`
