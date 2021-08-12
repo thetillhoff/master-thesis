@@ -67,5 +67,50 @@ type ArtifactDefinition struct {
 	ChecksumAlgorithm string `yaml:"checksum_algorithm,omitempty" json:"checksum_algorithm,omitempty"`
 
 	// The optional map of property assignments associated with the artifact.
-	Properties map[string]PropertyAssignment `yaml:"properties,omitempty" json:"properties,omitempty"`
+	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
+}
+
+// Custom unmarshaller, since both single-line and multi-line grammar have to be supported
+func (artifactDefinition *ArtifactDefinition) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var (
+		file string
+		err  error
+
+		multilineArtifactDefinition struct { // Basically the same as ArtifactDefinition, but without a custom unmarshaller.
+			ArtifactType      string                 `yaml:"artifact_type,omitempty" json:"artifact_type,omitempty"`
+			File              string                 `yaml:"file,omitempty" json:"file,omitempty"`
+			Repository        string                 `yaml:"repository,omitempty" json:"repository,omitempty"`
+			Description       string                 `yaml:"description,omitempty" json:"description,omitempty"`
+			DeployPath        string                 `yaml:"deploy_path,omitempty" json:"deploy_path,omitempty"`
+			ArtifactVersion   string                 `yaml:"artifact_version,omitempty" json:"artifact_version,omitempty"`
+			Checksum          string                 `yaml:"checksum,omitempty" json:"checksum,omitempty"`
+			ChecksumAlgorithm string                 `yaml:"checksum_algorithm,omitempty" json:"checksum_algorithm,omitempty"`
+			Properties        map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
+		}
+	)
+
+	// Try single-line grammar
+	err = unmarshal(&file)
+	if err == nil {
+		artifactDefinition.File = file
+		return nil
+	}
+
+	// Try multi-line grammar
+	err = unmarshal(&multilineArtifactDefinition)
+	if err == nil {
+		artifactDefinition.ArtifactType = multilineArtifactDefinition.ArtifactType
+		artifactDefinition.File = multilineArtifactDefinition.File
+		artifactDefinition.Repository = multilineArtifactDefinition.Repository
+		artifactDefinition.Description = multilineArtifactDefinition.Description
+		artifactDefinition.DeployPath = multilineArtifactDefinition.DeployPath
+		artifactDefinition.ArtifactVersion = multilineArtifactDefinition.ArtifactVersion
+		artifactDefinition.Checksum = multilineArtifactDefinition.Checksum
+		artifactDefinition.ChecksumAlgorithm = multilineArtifactDefinition.ChecksumAlgorithm
+		artifactDefinition.Properties = multilineArtifactDefinition.Properties
+		return nil
+	}
+
+	return err
 }

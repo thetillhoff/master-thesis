@@ -39,3 +39,36 @@ type OperationAssignment struct {
 	// The optional map of parameter mapping assignments that specify how operation outputs are mapped onto attributes of the node or relationship that contains the operation definition.
 	Outputs map[string]ParameterMappingAssignment `yaml:"outputs,omitempty" json:"outputs,omitempty"`
 }
+
+// Custom unmarshaller, since both single-line and multi-line grammar have to be supported
+func (operationAssignment *OperationAssignment) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var (
+		implementation ImplementationDefinition
+		err            error
+
+		multilineOperationAssignment struct { // Basically the same as OperationAssignment, but without a custom unmarshaller.
+			Implementation ImplementationDefinition              `yaml:"implementation,omitempty" json:"implementation,omitempty"`
+			Inputs         map[string]ParameterDefinition        `yaml:"inputs,omitempty" json:"inputs,omitempty"`
+			Outputs        map[string]ParameterMappingAssignment `yaml:"outputs,omitempty" json:"outputs,omitempty"`
+		}
+	)
+
+	// Try single-line grammar
+	err = unmarshal(&implementation)
+	if err == nil {
+		operationAssignment.Implementation = implementation
+		return nil
+	}
+
+	// Try multi-line grammar
+	err = unmarshal(&multilineOperationAssignment)
+	if err == nil {
+		operationAssignment.Implementation = multilineOperationAssignment.Implementation
+		operationAssignment.Inputs = multilineOperationAssignment.Inputs
+		operationAssignment.Outputs = multilineOperationAssignment.Outputs
+		return nil
+	}
+
+	return err
+}

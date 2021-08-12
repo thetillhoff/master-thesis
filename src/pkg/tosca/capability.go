@@ -42,8 +42,47 @@ type CapabilityDefinition struct {
 	Occurences       ToscaIntRange                  `yaml:"occurences,omitempty" json:"occurences,omitempty"`                 // The optional minimum and maximum of occurrences for the capability. The occurrence represents the maximum number of relationships that are allowed by the Capability. If not defined the implied default is [1,UNBOUNDED] (which means that an exported Capability should allow at least one relationship to be formed with it and maximum a UNBOUNDED number of relationships). MUST be within range of parent node type definition.
 }
 
+// Custom unmarshaller, since both single-line and multi-line grammar have to be supported
+func (capabilityDefinition *CapabilityDefinition) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var (
+		capabilityType string
+		err            error
+
+		multilineCapabilityDefinition struct { // Basically the same as CapabilityDefinition, but without a custom unmarshaller.
+			CapabilityType   string                         `yaml:"type,omitempty" json:"type,omitempty"`
+			Description      string                         `yaml:"description,omitempty" json:"description,omitempty"`
+			Properties       map[string]PropertyDefinition  `yaml:"properties,omitempty" json:"properties,omitempty"`
+			Attributes       map[string]AttributeDefinition `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+			ValidSourceTypes []string                       `yaml:"valid_source_types,omitempty" json:"valid_source_types,omitempty"`
+			Occurences       ToscaIntRange                  `yaml:"occurences,omitempty" json:"occurences,omitempty"`
+		}
+	)
+
+	// Try single-line grammar
+	err = unmarshal(&capabilityType)
+	if err == nil {
+		capabilityDefinition.CapabilityType = capabilityType
+		return nil
+	}
+
+	// Try multi-line grammar
+	err = unmarshal(&multilineCapabilityDefinition)
+	if err == nil {
+		capabilityDefinition.CapabilityType = multilineCapabilityDefinition.CapabilityType
+		capabilityDefinition.Description = multilineCapabilityDefinition.Description
+		capabilityDefinition.Properties = multilineCapabilityDefinition.Properties
+		capabilityDefinition.Attributes = multilineCapabilityDefinition.Attributes
+		capabilityDefinition.ValidSourceTypes = multilineCapabilityDefinition.ValidSourceTypes
+		capabilityDefinition.Occurences = multilineCapabilityDefinition.Occurences
+		return nil
+	}
+
+	return err
+}
+
 type CapabilityAssignment struct {
-	Properties map[string]PropertyAssignment  `yaml:"properties,omitempty" json:"properties,omitempty"` // An optional map of property assignments for the Capability definition.
+	Properties map[string]interface{}         `yaml:"properties,omitempty" json:"properties,omitempty"` // An optional map of property assignments for the Capability definition.
 	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"` // An optional map of attribute assignments for the Capability definition.
 	Occurences int                            `yaml:"occurences,omitempty" json:"occurences,omitempty"` // An optional integer that sets the number of occurrences. It defines the maximum number of allowed relationships to this capability. Must be within the range specified in the corresponding capability definition. If not defined, the orchestrator uses a suitable value from the range defined in the corresponding capability definition (e.g. the maximum in the range).
 }

@@ -85,7 +85,7 @@ type RequirementAssignment struct {
 	RelationshipType string `yaml:"type,omitempty" json:"type,omitempty"`
 
 	// An optional keyname providing property assignments for the relationship.
-	Properties map[string]PropertyAssignment `yaml:"properties,omitempty" json:"properties,omitempty"`
+	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// The optional keyname providing Interface assignments for the corresponding Interface definitions in the Relationship Type.
 	Interfaces map[string]InterfaceAssignment `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`

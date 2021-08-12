@@ -60,10 +60,10 @@ type NodeTemplate struct {
 	Directives []string `yaml:"directives,omitempty" json:"directives,omitempty"`
 
 	// An optional map of property value assignments for the Node Template.
-	Properties map[string]PropertyAssignment `yaml:"properties,omitempty" json:"properties,omitempty"`
+	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// An optional map of attribute value assignments for the Node Template.
-	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+	Attributes map[string]interface{} `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 
 	// An optional list of requirement assignments for the Node Template.
 	Requirements []RequirementAssignment `yaml:"requirements,omitempty" json:"requirements,omitempty"`

@@ -74,7 +74,7 @@ type GroupDefinition struct {
 	Metadata map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`
 
 	// An optional map of property value assignments for the group definition.
-	Properties map[string]PropertyAssignment `yaml:"properties,omitempty" json:"properties,omitempty"`
+	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// An optional map of attribute value assignments for the group definition.
 	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`

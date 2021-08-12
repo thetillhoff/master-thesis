@@ -33,8 +33,8 @@ type RelationshipTemplate struct {
 	RelationshipType string                         `yaml:"type,omitempty" json:"type,omitempty"`               // [mandatory] The name of the Relationship Type the Relationship Template is based upon.
 	Description      string                         `yaml:"description,omitempty" json:"description,omitempty"` // An optional description for the Relationship Template.
 	Metadata         map[string]string              `yaml:"metadata,omitempty" json:"metadata,omitempty"`       // Defines a section used to declare additional metadata information.
-	Properties       map[string]PropertyAssignment  `yaml:"properties,omitempty" json:"properties,omitempty"`   // An optional map of property assignments for the Relationship Template.
+	Properties       map[string]interface{}         `yaml:"properties,omitempty" json:"properties,omitempty"`   // An optional map of property assignments for the Relationship Template.
 	Attributes       map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`   // An optional map of attribute assignments for the Relationship Template.
-	Interfaces       map[string]string              `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`   // An optional map of interface assignments for the relationship template.
+	Interfaces       map[string]InterfaceAssignment `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`   // An optional map of interface assignments for the relationship template.
 	Copy             string                         `yaml:"copy,omitempty" json:"copy,omitempty"`               // The optional (symbolic) name of another relationship template to copy from (all keynames and values) and use as a basis for this relationship template. The source relationship template provided MUST NOT itself use the copy keyname.
 }

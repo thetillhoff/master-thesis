@@ -163,7 +163,7 @@ node_types:
   my_database_node_type:
     derived_from: Database
     capabilities:
-      mytypes.myfeatures.transactSQL
+      some_capability: mytypes.myfeatures.transactSQL
   my_company.my_types.my_app_node_type:
     derived_from: tosca.nodes.SoftwareComponent
     description: My company’s custom applicaton
@@ -247,12 +247,6 @@ topology_template:
       type: MyService
       properties:
         rate: 100
-      capabilities:
-        bar:
-          ...
-      requirements:
-        - foo: 
-            ...
       interfaces:
         Standard:
           start: scripts/start_server.sh
@@ -282,6 +276,23 @@ topology_template:
         port: { get_input: my_mysql_port }
       requirements:
         - host: db_server
+        - host:
+            node: tosca.nodes.Compute
+            node_filter:
+              capabilities:
+                - host:
+                    properties:
+                      - num_cpus: { in_range: [ 1, 4 ] }
+                      - mem_size: { greater_or_equal: 512 MB }
+                - os:
+                    properties:
+                      - architecture: { equal: x86_64 }
+                      - type: { equal: linux }
+                      - distribution: { equal: ubuntu }
+                - mytypes.capabilities.compute.encryption:
+                    properties:
+                      - algorithm: { equal: aes }
+                      - keylength: { valid_values: [ 128, 256 ] }
       interfaces:
         Standard:
           operations:
@@ -293,38 +304,16 @@ topology_template:
           limit: 100
     my_application_node_template: # Example of a requirement fulfilled by a specific web server node template
       type: tosca.nodes.WebApplication
-      ...
+      #...
       requirements:
         - host:
             node: tosca.nodes.WebServer
-    my_application_node_template: # Example of a (database) requirement that is fulfilled by a node template named “my_database”, but also requires a custom database connection relationship
+    my_application_node_template2: # Example of a (database) requirement that is fulfilled by a node template named “my_database”, but also requires a custom database connection relationship
       requirements:
         - database:
             node: my_database
             capability: Endpoint.Database
             relationship: my.types.CustomDbConnection
-    mysql: # Example of how to extend an abstract ‘host’ requirement for a Compute node with a filter definition that further constrains TOSCA orchestrators to include additional properties and capabilities on the target node when fulfilling the requirement
-      type: tosca.nodes.DBMS.MySQL
-        properties:
-          # omitted here for brevity
-        requirements:
-          - host:
-              node: tosca.nodes.Compute
-              node_filter:
-                capabilities:
-                  - host:
-                      properties:
-                        - num_cpus: { in_range: [ 1, 4 ] }
-                        - mem_size: { greater_or_equal: 512 MB }
-                  - os:
-                      properties:
-                        - architecture: { equal: x86_64 }
-                        - type: { equal: linux }
-                        - distribution: { equal: ubuntu }
-                  - mytypes.capabilities.compute.encryption:
-                      properties:
-                        - algorithm: { equal: aes }
-                        - keylength: { valid_values: [ 128, 256 ] }
     my_critical_application_node_template: # Example of a (redundant_database) requirement that is fulfilled by two node templates named “database1” and “database1
       requirements:
         - redundant_database: database1
@@ -373,12 +362,12 @@ topology_template:
       requirements:
         - member:
             relationship: some.vendor.LoadBalancerToMember
-              interfaces:
-                Configure:
-                  add_target:
-                    inputs:
-                      member_ip: { get_attribute: [ TARGET, ip_address ] }
-                    implementation: scripts/configure_members.py
+            interfaces:
+              Configure:
+                add_target:
+                  inputs:
+                    member_ip: { get_attribute: [ TARGET, ip_address ] }
+                  implementation: scripts/configure_members.py
   relationship_templates:
     my_connectsto_relationship:
       type: tosca.relationships.ConnectsTo
@@ -397,6 +386,7 @@ topology_template:
     server_ip:
       description: The private IP address of the provisioned server.
       value: { get_attribute: [ my_server, private_address ] }
+    some_output:
       description: Concatenate the URL for a server from other template values
       server_url:
       value: { concat: [ 'http://',
@@ -432,32 +422,34 @@ topology_template:
       targets: [ my_server_1, my_server_2 ]
       # remainder of policy definition left off for brevity
   substitution_mappings:  # docs are incomplete
-    node_type: MyService
-    properties:  # Do not care if running or matching (e.g., Compute node)
-      # get from outside? Get from constraint?
-      num_cpus: cpus # Implied “PUSH”
-      # get from some node in the topology…
-      num_cpus: [ <node>, <cap>, <property> ]
-      # 1) Running
-      architecture:
-        # a) Explicit
-        value: { get_property: [some_service, architecture] }
-        # b) implicit
-        value: [ some_service, <req | cap name>, <property name> architecture ]
-        default: “amd”
-        # c) INPUT mapping?
-        ???
-      # 2) Catalog (Matching)
-      architecture:
-         contraints: equals: “x86”
-    capabilities:
-      bar: [ some_service, bar ]
-      some_capability: mytypes.mycapabilities.MyCapabilityTypeName # Simple notation, no properties need to be refined
-      some_capability2: # Full notation, refining properties
-        type: mytypes.mycapabilities.MyCapabilityTypeName
-        properties:
-          limit:
-            default: 100
-    requirements:
-      foo: [ some_service, foo ]
+    first_mapping:
+      node_type: MyService
+      properties:  # Do not care if running or matching (e.g., Compute node)
+        # get from outside? Get from constraint?
+        num_cpus: cpus # Implied “PUSH”
+        # get from some node in the topology…
+        num_cpus: [ <node>, <cap>, <property> ]
+        # 1) Running
+        architecture:
+          # a) Explicit
+          value: { get_property: [some_service, architecture] }
+          # b) implicit
+          value: [ some_service, <req | cap name>, <property name> architecture ]
+          default: “amd”
+          # c) INPUT mapping?
+          #???
+        # 2) Catalog (Matching)
+        architecture:
+          contraints:
+            equals: “x86”
+      capabilities:
+        bar: [ some_service, bar ]
+        some_capability: mytypes.mycapabilities.MyCapabilityTypeName # Simple notation, no properties need to be refined
+        some_capability2: # Full notation, refining properties
+          type: mytypes.mycapabilities.MyCapabilityTypeName
+          properties:
+            limit:
+              default: 100
+      requirements:
+        foo: [ some_service, foo ]
 

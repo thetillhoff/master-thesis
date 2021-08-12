@@ -74,14 +74,3 @@ type PropertyFilterDefinition struct { // docs are incomplete [4.3.5.8]
 	// peroperty_constraint_clause: represents constraint clause(s) that will be used to filter entities based upon the named property’s value(s).
 
 }
-
-type PropertyAssignment struct { // Properties that have a (fixed) value defined during their definition or during a subsequent refinement may not be assigned (as their value is already set).
-
-	// no keynames
-
-	// grammar
-	// <property_name>: <property_value> | { <property_value_expression> }
-
-	// property_name: represents the name of a property that will be used to select a property definition with the same name within on a TOSCA entity (e.g., Node Template, Relationship Template, etc.) which is declared in its declared type (e.g., a Node Type, Node Template, Capability Type, etc.).
-	// property_value, property_value_expression: represent the type-compatible value to assign to the property. Property values may be provided as the result from the evaluation of an expression or a function.
-}

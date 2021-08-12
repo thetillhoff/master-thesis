@@ -61,6 +61,35 @@ type PropertyMapping struct {
 	Mapping []string `yaml:"mapping,omitempty" json:"mapping,omitempty"`
 }
 
+// Custom unmarshaller, since both single-line and multi-line grammar have to be supported
+func (propertyMapping *PropertyMapping) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var (
+		mapping []string
+		err     error
+
+		multilinePropertyMapping struct { // Basically the same as PropertyMapping, but without a custom unmarshaller.
+			Mapping []string `yaml:"mapping,omitempty" json:"mapping,omitempty"`
+		}
+	)
+
+	// Try single-line grammar
+	err = unmarshal(&mapping)
+	if err == nil {
+		propertyMapping.Mapping = mapping
+		return nil
+	}
+
+	// Try multi-line grammar
+	err = unmarshal(&multilinePropertyMapping)
+	if err == nil {
+		propertyMapping.Mapping = multilinePropertyMapping.Mapping
+		return nil
+	}
+
+	return err
+}
+
 // An attribute mapping allows to map the attribute of a substituted node type an output of the topology template.
 type AttributeMapping struct {
 
@@ -97,10 +126,43 @@ type CapabilityMapping struct {
 	Mapping []string `yaml:"mapping,omitempty" json:"mapping,omitempty"`
 
 	// [conditional] This field is mutually exclusive with the mapping keyname and allows to provide a capability assignment for the template and specify it’s related properties.
-	Properties map[string]PropertyAssignment `yaml:"properties,omitempty" json:"properties,omitempty"`
+	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// [conditional] This field is mutually exclusive with the mapping keyname and allows to provide a capability assignment for the template and specify it’s related attributes.
 	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+}
+
+// Custom unmarshaller, since both single-line and multi-line grammar have to be supported
+func (capabilityMapping *CapabilityMapping) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var (
+		mapping []string
+		err     error
+
+		multilineCapabilityMapping struct { // Basically the same as CapabilityMapping, but without a custom unmarshaller.
+			Mapping    []string                       `yaml:"mapping,omitempty" json:"mapping,omitempty"`
+			Properties map[string]interface{}         `yaml:"properties,omitempty" json:"properties,omitempty"`
+			Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+		}
+	)
+
+	// Try single-line grammar
+	err = unmarshal(&mapping)
+	if err == nil {
+		capabilityMapping.Mapping = mapping
+		return nil
+	}
+
+	// Try multi-line grammar
+	err = unmarshal(&multilineCapabilityMapping)
+	if err == nil {
+		capabilityMapping.Mapping = multilineCapabilityMapping.Mapping
+		capabilityMapping.Properties = multilineCapabilityMapping.Properties
+		capabilityMapping.Attributes = multilineCapabilityMapping.Attributes
+		return nil
+	}
+
+	return err
 }
 
 // A requirement mapping allows to map the requirement of one of the node of the topology template to the requirement of the node type the service template offers an implementation for.
@@ -118,10 +180,43 @@ type RequirementMapping struct {
 	Mapping []string `yaml:"mapping,omitempty" json:"mapping,omitempty"`
 
 	// [conditional] This field is mutually exclusive with the mapping keyname and allow to provide a requirement for the template and specify it’s related properties.
-	Properties []PropertyAssignment `yaml:"properties,omitempty" json:"properties,omitempty"`
+	Properties []interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// [conditional] This field is mutually exclusive with the mapping keyname and allow to provide a requirement for the template and specify it’s related attributes.
 	Attributes []AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+}
+
+// Custom unmarshaller, since both single-line and multi-line grammar have to be supported
+func (requirementMapping *RequirementMapping) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var (
+		mapping []string
+		err     error
+
+		multilineRequirementMapping struct { // Basically the same as RequirementMapping, but without a custom unmarshaller.
+			Mapping    []string              `yaml:"mapping,omitempty" json:"mapping,omitempty"`
+			Properties []interface{}         `yaml:"properties,omitempty" json:"properties,omitempty"`
+			Attributes []AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+		}
+	)
+
+	// Try single-line grammar
+	err = unmarshal(&mapping)
+	if err == nil {
+		requirementMapping.Mapping = mapping
+		return nil
+	}
+
+	// Try multi-line grammar
+	err = unmarshal(&multilineRequirementMapping)
+	if err == nil {
+		requirementMapping.Mapping = multilineRequirementMapping.Mapping
+		requirementMapping.Properties = multilineRequirementMapping.Properties
+		requirementMapping.Attributes = multilineRequirementMapping.Attributes
+		return nil
+	}
+
+	return err
 }
 
 // An interface mapping allows to map a workflow of the topology template to an operation of the node type the service template offers an implementation for.

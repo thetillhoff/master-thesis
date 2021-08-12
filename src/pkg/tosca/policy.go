@@ -68,7 +68,7 @@ type PolicyDefinition struct {
 	Metadata map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`
 
 	// An optional map of property value assignments for the policy definition.
-	Properties map[string]PropertyAssignment `yaml:"properties,omitempty" json:"properties,omitempty"`
+	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// An optional list of valid Node Templates or Groups the Policy can be applied to.
 	Targets []string `yaml:"targets,omitempty" json:"targets,omitempty"`
