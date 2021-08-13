@@ -2,7 +2,7 @@ package tosca
 
 // interfaceTypes MUST NOT include any implementations for defined operations or notifications.
 type InterfaceType struct {
-	abstractType
+	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// The optional map of input parameter definitions available to all operations defined for this interface.
 	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"`

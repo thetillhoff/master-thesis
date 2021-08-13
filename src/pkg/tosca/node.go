@@ -2,7 +2,7 @@ package tosca
 
 // A Node Type is a reusable entity that defines the type of one or more Node Templates. As such, a Node Type defines the structure of observable properties and attributes, the capabilities and requirements of the node as well as its supported interfaces and the artifacts it uses.
 type NodeType struct {
-	abstractType
+	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	Properties   map[string]PropertyDefinition   `yaml:"properties,omitempty" json:"properties,omitempty"`
 	Attributes   map[string]AttributeDefinition  `yaml:"attributes,omitempty" json:"attributes,omitempty"`

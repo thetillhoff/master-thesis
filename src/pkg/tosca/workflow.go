@@ -116,7 +116,7 @@ type StepDefinition struct {
 	Filter []ConstraintClauseDefinition `yaml:"filter,omitempty" json:"filter,omitempty"`
 
 	// [mandatory] The list of sequential activities to be performed in this step.
-	Activities []activityDefinition `yaml:"activities,omitempty" json:"activities,omitempty"`
+	Activities []ActivityDefinition `yaml:"activities,omitempty" json:"activities,omitempty"`
 
 	// The optional list of step names to be performed after this one has been completed with success (all activities has been correctly processed).
 	OnSuccess []string `yaml:"on_success,omitempty" json:"on_success,omitempty"`

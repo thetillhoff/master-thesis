@@ -1,7 +1,7 @@
 package tosca
 
 type GroupType struct {
-	abstractType
+	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// - template ; mutually exclusive with type
 	// - type ; mutually exclusive with template

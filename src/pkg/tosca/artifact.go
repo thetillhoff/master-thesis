@@ -1,7 +1,7 @@
 package tosca
 
 type ArtifactType struct {
-	abstractType
+	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// grammar
 	// <artifact_type_name>:

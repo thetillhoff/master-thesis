@@ -1,7 +1,7 @@
 package tosca
 
 type RelationshipType struct {
-	abstractType
+	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// predefined states (own can be added)
 	// - initial (not created, only defined in template)

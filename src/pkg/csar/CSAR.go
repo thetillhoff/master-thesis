@@ -21,10 +21,11 @@ type CSAR struct {
 	OtherDefinitions string `yaml:"Other-Definitions,omitempty" json:"Other-Definitions,omitempty"`
 
 	ServiceTemplate       tosca.ServiceTemplate   // Holds contents of main serviceTemplate
-	otherServiceTemplates []tosca.ServiceTemplate // Holds contents of serviceTemplates declared in otherDefinitions
+	OtherServiceTemplates []tosca.ServiceTemplate // Holds contents of serviceTemplates declared in otherDefinitions
 }
 
-func UnmarshalMetadata(metadata string) CSAR {
+// Used when loading metadata files from CSAR archives
+func unmarshalMetadata(metadata string) CSAR {
 	var (
 		archive CSAR
 		err     error
@@ -37,15 +38,16 @@ func UnmarshalMetadata(metadata string) CSAR {
 	return archive
 }
 
-func UnmarshalServiceTemplate(yamlContent string) tosca.ServiceTemplate {
-	var (
-		serviceTemplate tosca.ServiceTemplate
-		err             error
-	)
-	err = yaml.Unmarshal([]byte(yamlContent), &serviceTemplate)
-	if err != nil {
-		log.Fatalf("ERR Cannot unmarshal data: %v", err)
-	}
+// Is this needed somewhere?
+// func UnmarshalServiceTemplate(yamlContent string) tosca.ServiceTemplate {
+// 	var (
+// 		serviceTemplate tosca.ServiceTemplate
+// 		err             error
+// 	)
+// 	err = yaml.Unmarshal([]byte(yamlContent), &serviceTemplate)
+// 	if err != nil {
+// 		log.Fatalf("ERR Cannot unmarshal data: %v", err)
+// 	}
 
-	return serviceTemplate
-}
+// 	return serviceTemplate
+// }

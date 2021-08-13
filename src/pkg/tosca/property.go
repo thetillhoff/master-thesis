@@ -26,7 +26,7 @@ type PropertyDefinition struct { // indicate desired state
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// An optional key that declares a property as required (true) or not (false). Defaults to true.
-	Required bool `yaml:"required,omitempty" json:"required,omitempty"`
+	Required bool `yaml:"required" json:"required"`
 
 	// An optional key that may provide a value to be used as a default if not provided by another means.
 	//

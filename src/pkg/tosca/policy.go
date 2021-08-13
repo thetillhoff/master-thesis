@@ -2,7 +2,7 @@ package tosca
 
 // A Policy Type defines a type of a policy that affects or governs an application or service’s topology at some stage of its lifecycle, but is not explicitly part of the topology itself (i.e., it does not prevent the application or service from being deployed or run if it did not exist).
 type PolicyType struct {
-	abstractType
+	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// grammar
 	// <policy_type_name>:

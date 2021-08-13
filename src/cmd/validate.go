@@ -22,26 +22,63 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 
-	"github.com/thetillhoff/eat/pkg/tosca"
 	"github.com/thetillhoff/eat/pkg/csar"
 )
 
 // validateCmd represents the validate command
 var validateCmd = &cobra.Command{
 	Use:   "validate",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Load CSAR and validate contents (== try to parse to TOSCA service template)",
+	Long: `Load CSAR from zip-archive (proper CSAR, therefore default) OR from a folder containing the extracted contents of a CSAR.
+	Usage examples:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	eat validate example-csar.zip
+	eat validate -d example-csar/
+	eat validate --directory example-csar/
+`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("validate called")
+		var (
+			csarPath string
+			archive  csar.CSAR
+		)
+
+		if debug {
+			log.Println("debug:", debug)
+			// Set debug for imports
+			csar.Debug = debug
+		}
+
+		// Retrieve flag
+		extractedCSAR, err := cmd.Flags().GetString("directory")
+		if err != nil {
+			log.Fatalln("ERR There was an error while reading the flag 'directory':", err)
+		}
+
+		// Validate usage and run CSAR validation
+		if len(args) == 1 && extractedCSAR == "" { // Load CSAR from zip-archive
+			log.Fatalln("// TODO: Implement LoadFromFile")
+			csarPath = args[0]
+			archive = csar.LoadFromFile(csarPath)
+			if debug {
+				log.Println("SUC Loaded CSAR from file at '" + csarPath + "'.")
+			}
+			csar.PrintCSAR(archive)
+		} else if len(args) == 0 && extractedCSAR != "" { // Load extracted CSAR from directory
+			archive = csar.LoadFromFolder(extractedCSAR)
+			if debug {
+				log.Println("SUC Loaded CSAR from folder at '" + extractedCSAR + "'.")
+			}
+			csar.PrintCSAR(archive)
+		} else if len(args) == 0 && extractedCSAR == "" {
+			log.Fatalln("ERR No CSAR source provided.")
+		} else {
+			log.Fatalln("ERR Concurrent loading of CSAR from zip-archive and from directory is not possible.")
+		}
 	},
 }
 
@@ -57,4 +94,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// validateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	validateCmd.Flags().StringP("directory", "d", "", "Load extracted CSAR contents from directoy instead of zip-archive.")
 }

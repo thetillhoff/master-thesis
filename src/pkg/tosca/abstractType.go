@@ -1,6 +1,6 @@
 package tosca
 
-type abstractType struct {
+type AbstractType struct {
 
 	// None of these attributes (or better: their contained values) should be inherited when tosca's type derivation is used.
 

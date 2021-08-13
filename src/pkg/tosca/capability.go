@@ -1,7 +1,7 @@
 package tosca
 
 type CapabilityType struct {
-	abstractType
+	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	Properties       map[string]PropertyDefinition  // An optional map of property definitions for the Capability Type.
 	Attributes       map[string]AttributeDefinition // An optional map of attribute definitions for the Capability Type.

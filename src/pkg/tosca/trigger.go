@@ -48,7 +48,7 @@ type TriggerDefinition struct {
 	Condition []ConstraintClauseDefinition `yaml:"condition,omitempty" json:"condition,omitempty"`
 
 	// The list of sequential activities to be performed when the event is triggered, and the condition is met (i.e. evaluates to true).
-	Action []activityDefinition `yaml:"action,omitempty" json:"action,omitempty"`
+	Action []ActivityDefinition `yaml:"action,omitempty" json:"action,omitempty"`
 
 	// Additional keynames for the extended condition notation
 

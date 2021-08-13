@@ -36,7 +36,7 @@ repositories:
 # file location of the service template declaring the import.
 imports:
   - relative_path/my_defns/my_typesdefs_1.yaml
-  - url: my_defns/my_typesdefs_n.yaml   
+  - url: my_defns/my_typesdefs_n.yaml
     repository: my_company_repo
     namespace: mycompany
   - profile: org.base.v1

@@ -1,7 +1,7 @@
 package tosca
 
 type DataType struct {
-	abstractType
+	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// grammar
 	// <data_type_name>:
