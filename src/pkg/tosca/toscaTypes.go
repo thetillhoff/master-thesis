@@ -14,6 +14,9 @@ import (
 // - list
 // - map
 
+// Note:
+//
+// - TOSCA versions that include the optional qualifier are considered older than those without a qualifier.
 type ToscaVersion struct {
 	// <major_version>.<minor_version>[.<fix_version>[.<qualifier>[-<build_version] ] ]
 	//

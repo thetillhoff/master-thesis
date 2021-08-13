@@ -45,7 +45,7 @@ type PropertyDefinition struct { // indicate desired state
 	Status string `yaml:"status,omitempty" json:"status,omitempty"`
 
 	// The optional list of sequenced constraint clauses for the property.
-	Constraints []ConstraintClauseDefinition `yaml:"constraints,omitempty" json:"constraints,omitempty"`
+	Constraints []map[Operator]interface{} `yaml:"constraints,omitempty" json:"constraints,omitempty"`
 
 	// The schema definition for the keys used to identify entries in properties of type TOSCA map (or types that derive from map). If not specified, the key_schema defaults to string. For properties of type other than map, the key_schema is not allowed.
 	KeySchema SchemaDefinition `yaml:"key_schema,omitempty" json:"key_schema,omitempty"`

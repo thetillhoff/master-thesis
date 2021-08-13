@@ -18,7 +18,7 @@ type DataType struct {
 	//   entry_schema: <entry_schema_definition>
 
 	// The optional list of sequenced constraint clauses for the Data Type.
-	Constraints []ConstraintClauseDefinition `yaml:"constraints,omitempty" json:"constraints,omitempty"`
+	Constraints []map[Operator]interface{} `yaml:"constraints,omitempty" json:"constraints,omitempty"`
 
 	// The optional map property definitions that comprise the schema for a complex Data Type in TOSCA.
 	// TODO [4.4.4.4] "A valid datatype definition MUST have either a valid derived_from declaration or at least on valid property definition."

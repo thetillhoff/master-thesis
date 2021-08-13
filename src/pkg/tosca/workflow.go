@@ -113,7 +113,7 @@ type StepDefinition struct {
 	OperationHost string `yaml:"operation_host,omitempty" json:"operation_host,omitempty"`
 
 	// Filter is a map of attribute name, list of constraint clause that allows to provide a filtering logic.
-	Filter []ConstraintClauseDefinition `yaml:"filter,omitempty" json:"filter,omitempty"`
+	Filter []map[Operator]interface{} `yaml:"filter,omitempty" json:"filter,omitempty"`
 
 	// [mandatory] The list of sequential activities to be performed in this step.
 	Activities []ActivityDefinition `yaml:"activities,omitempty" json:"activities,omitempty"`

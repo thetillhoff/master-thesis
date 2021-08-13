@@ -45,7 +45,7 @@ type TriggerDefinition struct {
 	TargetFilter EventFilterDefinition `yaml:"target_filter,omitempty" json:"target_filter,omitempty"`
 
 	// The optional condition which contains a list of condition clause definitions containing one or multiple attribute constraints that can be evaluated. For the condition to be fulfilled all the condition clause definitions must evaluate to true (i.e. a logical and). Note: this is optional since sometimes the event occurrence itself is enough to trigger the action.
-	Condition []ConstraintClauseDefinition `yaml:"condition,omitempty" json:"condition,omitempty"`
+	Condition []map[Operator]interface{} `yaml:"condition,omitempty" json:"condition,omitempty"`
 
 	// The list of sequential activities to be performed when the event is triggered, and the condition is met (i.e. evaluates to true).
 	Action []ActivityDefinition `yaml:"action,omitempty" json:"action,omitempty"`

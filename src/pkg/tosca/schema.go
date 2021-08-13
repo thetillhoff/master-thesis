@@ -26,7 +26,7 @@ type SchemaDefinition struct {
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// The optional list of sequenced constraint clauses for the property.
-	Constraints []ConstraintClauseDefinition `yaml:"constraints,omitempty" json:"constraints,omitempty"`
+	Constraints []map[Operator]interface{} `yaml:"constraints,omitempty" json:"constraints,omitempty"`
 
 	// When the schema itself is of type map, the optional schema definition that is used to specify the type of the keys of that map’s entries (if key_schema is not defined it is assumed to be “string” by default). For other schema types, the key_schema must not be defined.
 	KeySchema interface{} `yaml:"key_schema,omitempty" json:"key_schema,omitempty"`
