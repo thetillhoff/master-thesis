@@ -36,11 +36,11 @@ func LoadFromFolder(folderPath string) CSAR {
 	folderContents = loadFolderContents(folderPath)
 
 	if folderContents["TOSCA.meta"] != "" { // If metadata is located at root of CSAR
-		archive = UnmarshalMetadata(folderContents["TOSCA.meta"])
-		archive.ServiceTemplate, archive.otherServiceTemplates = ParseDefinitionContents(elementContent, archive.OtherDefinitions)
+		archive = unmarshalMetadata(folderContents["TOSCA.meta"])
+		archive.ServiceTemplate, archive.OtherServiceTemplates = ParseDefinitionContents(elementContent, archive.OtherDefinitions)
 	} else if folderContents["TOSCA-Metadata/TOSCA.meta"] != "" { // If metadata is located in dedicated metadata subdirectory
-		archive = UnmarshalMetadata(folderContents["TOSCA-Metadata/TOSCA.meta"])
-		archive.ServiceTemplate, archive.otherServiceTemplates = ParseDefinitionContents(elementContent, archive.OtherDefinitions)
+		archive = unmarshalMetadata(folderContents["TOSCA-Metadata/TOSCA.meta"])
+		archive.ServiceTemplate, archive.OtherServiceTemplates = ParseDefinitionContents(elementContent, archive.OtherDefinitions)
 	} else { // If only one yaml-file exists at root of CSAR assume metadata is embedded in that file
 		archive.EntryDefinition = "" // Initialize
 
@@ -71,7 +71,7 @@ func LoadFromFolder(folderPath string) CSAR {
 				archive.EntryDefinition = elementPath
 
 				archive.OtherDefinitions = ""                                                                        // OtherDefinitions: Stays empty; "Note that in a CSAR without TOSCA-metadata it is not possible to unambiguously include definitions for substitution templates as we can have only one topology template defined in a yaml file."
-				archive.ServiceTemplate, archive.otherServiceTemplates = ParseDefinitionContents(elementContent, "") // Parse Entry-Definitions file
+				archive.ServiceTemplate, archive.OtherServiceTemplates = ParseDefinitionContents(elementContent, "") // Parse Entry-Definitions file
 
 				// Try to parse metadata out of entry-file.
 				archive.CsarVersion = translateToscaDefinitionsVersion(archive.ServiceTemplate.ToscaDefinitionsVersion)
@@ -111,9 +111,6 @@ func ParseDefinitionContents(entryDefinitionsContent string, otherDefinitionsFil
 	if err != nil {
 		log.Fatalf("ERR Cannot unmarshal data: %v", err)
 	}
-	if Debug {
-		log.Println("EntryDefinition:", serviceTemplate)
-	}
 
 	// Load contents of otherDefinitions and merge them into serviceTemplate
 	for _, filepath = range strings.Split(otherDefinitionsFilepaths, " ") {
@@ -138,8 +135,8 @@ func ParseDefinitionContents(entryDefinitionsContent string, otherDefinitionsFil
 // Returns the extracted version, f.e. "2.0"
 func translateToscaDefinitionsVersion(toscaDefinitionsVersion string) string {
 
-	if Debug {
-		log.Println("tosca_definitions_version:", toscaDefinitionsVersion)
+	if len(toscaDefinitionsVersion) == 0 {
+		log.Fatalln("ERR Empty 'tosca_definitions_version' cannot be translated to 'CSAR-Version'.")
 	}
 
 	// Replace all '_' with '.'
