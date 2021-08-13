@@ -4,20 +4,42 @@ import (
 	"time"
 )
 
-// other types
-// - string
-// - int
-// - float
-// - boolean
-// - bytes
-// - nil
-// - list
-// - map
+type String struct {
+	DataTypeRoot
+}
+
+type Integer struct {
+	DataTypeRoot
+}
+
+type Float struct {
+	DataTypeRoot
+}
+
+type Boolean struct {
+	DataTypeRoot
+}
+
+type Byte struct {
+	DataTypeRoot
+}
+
+type Nil struct {
+	DataTypeRoot
+}
+
+type List struct {
+	DataTypeRoot
+}
+
+type Map struct {
+	DataTypeRoot
+}
 
 // Note:
 //
 // - TOSCA versions that include the optional qualifier are considered older than those without a qualifier.
-type ToscaVersion struct {
+type Version struct {
 	// <major_version>.<minor_version>[.<fix_version>[.<qualifier>[-<build_version] ] ]
 	//
 	MajorVersion int    `yaml:"major_version,omitempty" json:"major_version,omitempty"` // mandatory
@@ -30,16 +52,16 @@ type ToscaVersion struct {
 }
 
 // Keyword "UNBOUND" is mapped to nil.
-type ToscaIntRange struct { // example: [ 1, 4 ]
+type Range struct { // example: [ 1, 4 ]
 	LowerBound int `yaml:"lower_bound,omitempty" json:"lower_bound,omitempty"`
 	UpperBound int `yaml:"upper_bound,omitempty" json:"upper_bound,omitempty"`
 }
 
-type ToscaTimestamp struct { // example: 2021-08-11T11:09:32
+type Timestamp struct { // example: 2021-08-11T11:09:32
 	Timestamp time.Time
 }
 
-type ToscaSize struct {
+type Size struct {
 	ByteCount uint64
 
 	// units: (don't forget toLower)
@@ -57,7 +79,7 @@ type ToscaSize struct {
 
 }
 
-type ToscaTime struct {
+type Time struct {
 	Time time.Duration
 
 	// units: (don't forget toLower)
@@ -70,7 +92,7 @@ type ToscaTime struct {
 	// ns
 }
 
-type ToscaFrequency struct {
+type Frequency struct {
 	Frequency int64
 
 	// units: (don't forget toLower)
@@ -80,7 +102,7 @@ type ToscaFrequency struct {
 	// ghz = 1000 mhz
 }
 
-type ToscaBitrate struct {
+type Bitrate struct {
 	Bitrate uint64
 
 	// units: (don't forget toLower)

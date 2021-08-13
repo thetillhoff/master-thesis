@@ -20,7 +20,7 @@ type RequirementDefinition struct {
 	// The optional minimum and maximum occurrences for the requirement. If this key is not specified, the implied default of [1,1] will be used.
 	//
 	// Note: the keyword UNBOUNDED is also supported to represent any positive integer.
-	Occurences ToscaIntRange `yaml:"occurences,omitempty" json:"occurences,omitempty"`
+	Occurences Range `yaml:"occurences,omitempty" json:"occurences,omitempty"`
 
 	// Sometimes additional parameters need to be passed to the relationship (perhaps for configuration). Therefore, interface refinements can be declared (e.g. changing implementation definition or declaring additional parameter definitions to be used as inputs/outputs).
 

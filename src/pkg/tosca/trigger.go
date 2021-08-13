@@ -56,7 +56,7 @@ type TriggerDefinition struct {
 	Constraint ConditionClauseDefinition `yaml:"constraint,omitempty" json:"constraint,omitempty"`
 
 	// The optional period to use to evaluate for the condition.
-	Period ToscaTime `yaml:"period,omitempty" json:"period,omitempty"`
+	Period Time `yaml:"period,omitempty" json:"period,omitempty"`
 
 	// The optional number of evaluations that must be performed over the period to assert the condition exists.
 	Evaluations int `yaml:"evaluations,omitempty" json:"evaluations,omitempty"`
