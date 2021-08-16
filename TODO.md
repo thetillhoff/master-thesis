@@ -54,17 +54,20 @@
 - [5.2] "Reserved Environment Variable Names and Usage" not implemented
 - [5.3] "Intrinsic Functions" not implemented (functions.go)
 - Add normative types like string, list etc as "default" data types
+- Test with metadata not embedded in service template but in dedicated file
+- `Equal` should consider constraints etc as well!
+- Size.Parse uses bytefmt which declares f.e. TB==TiB which is not true...
 
 ## issues in tosca spec
-- 4.4.7.2 inconsistent "external-schema"
 - 4.3.5.6.3.3 contains indentation error
-- 5.2.1 yaml-snippet contains indentation error
-- 4.2.6.2.7.2 contains invalid yaml ("constraints: equals: ...")
 - 4.2.1.3.16.3 missing capability definition name("mytypes.myfeatures.transactSQL")
-- 5.3.1.3 missing output name
-- 4.5.5.2 inconsistent type of "properties" and "attributes", only for requirement mappings these are lists, else maps
+- 4.2.6.2.7.2 contains invalid yaml ("constraints: equals: ...")
 - 4.2.6.2.7.2 contains indentation error
 - while in [4.4] / [4.4.1] primitive types are described, the implementation is partly influenced by the simple-profile spec [5.3]
+- 4.4.7.2 inconsistent "external-schema"
+- 4.5.5.2 inconsistent type of "properties" and "attributes", only for requirement mappings these are lists, else maps
+- 5.2.1 yaml-snippet contains indentation error
+- 5.3.1.3 missing output name
 
 
 ## code (simple profile)
@@ -87,17 +90,17 @@
 - 5.3.6.5.4 is followed by 5.3.6.5.6 - WTF
 - 5.3.8 - 5.3.10 don't contain the column "required" - assuming none are required
 - 5.4 first line says thre are three categories of artifacts. Listed are 4.
+- 5.7.1.2 contains indentation error & derive_from is not defined
+- 5.8.3 is the first one to contain a type definitions, earlier subchapters don't contain types - this is inconsistent...
 - 5.8.4.2ff up to 5.8.4.4.2 is incomplete (and the only provided diagram seems to be faulty)
 - 5.8.5 missing property/attribute descriptions
 - 5.8.5.2 missing illustration
+- 5.9.1.3 contains indentation error
 - 5.9.8 1:1 connection between database and user-password combination. Additionally: Why does the Credential type exist, when username and password are then dedicated attributes. (Also observed in other occurences. Just search for "password" or "user")
+- 5.9.9.2 capabilities are TBD
 - there was one occurence where a constraint was larger_or_equal than 0.1 MB or something like that. Why no 0B?
   example at 5.9.10.1
-- 5.9.9.2 capabilities are TBD
-- 5.9.1.3 contains indentation error
-- 5.7.1.2 contains indentation error & derive_from is not defined
 - sometimes the map[string]* forces for name finding, but its sometimes unnecessary (as it has a description). While it allows for reference elsewhere, it should be described clearly where this is possible and whats the use-case is.
-- 5.8.3 is the first one to contain a type definitions, earlier subchapters don't contain types - this is inconsistent...
 
 
 ## code (csar?)
