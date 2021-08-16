@@ -13,7 +13,7 @@ type Root struct {
 	// A unique identifier of the realized instance of a Node Template that derives from any TOSCA normative type.
 	ToscaId string `yaml:"tosca_id,omitempty" json:"tosca_id,omitempty"`
 
-	// This attribute reflects the name of the Node Template as defined in the TOSCA service template.  This name is not unique to the realized instance model of corresponding deployed application as each template in the model can result in one or more instances (e.g., scaled) when orchestrated to a provider environment.
+	// This attribute reflects the name of the Node Template as defined in the TOSCA service template. This name is not unique to the realized instance model of corresponding deployed application as each template in the model can result in one or more instances (e.g., scaled) when orchestrated to a provider environment.
 	ToscaName string `yaml:"tosca_name,omitempty" json:"tosca_name,omitempty"`
 
 	// The state of the node instance.
