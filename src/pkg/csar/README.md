@@ -48,3 +48,6 @@ metadata:
   template_version: 1.0
 ```
 
+## TODO
+- Currently, validating a CSAR-archive also prints it agains afterwards. While this helps with manual checks, it might be not so useful in the future.
+  -> When proper validation takes place (more than just parsing the yaml) remove the printouts and print what was checked instead.

@@ -21,7 +21,7 @@ type DataTypeRoot struct {
 	Constraints []map[Operator]interface{} `yaml:"constraints,omitempty" json:"constraints,omitempty"`
 
 	// The optional map property definitions that comprise the schema for a complex Data Type in TOSCA.
-	// TODO [4.4.4.4] "A valid datatype definition MUST have either a valid derived_from declaration or at least on valid property definition."
+	// TODO [4.4.4.4] "A valid datatype definition MUST have either a valid derived_from declaration or at least one valid property definition."
 	Properties map[string]PropertyDefinition `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// [conditional] For data types that derive from the TOSCA map data type, the optional schema definition for the keys used to identify entries in properties of this data type. If not specified, the key_schema defaults to string.
