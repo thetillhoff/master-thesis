@@ -86,6 +86,8 @@ func LoadFromPath(csarPath string) CSAR {
 		if archive.EntryDefinition == "" { // if no yaml-file was detected at root of CSAR the CSAR is invalid
 			log.Fatalln("ERR Invalid CSAR file. No dedicated metadata and no entry-file detected.")
 		}
+
+		ValidateServiceTemplateFile(archiveContents[archive.EntryDefinition])
 	}
 
 	return archive
