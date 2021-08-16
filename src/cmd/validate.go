@@ -22,23 +22,49 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
+
+	"github.com/thetillhoff/eat/pkg/csar"
 )
 
 // validateCmd represents the validate command
 var validateCmd = &cobra.Command{
 	Use:   "validate",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Load CSAR and validate contents (== try to parse to TOSCA service template)",
+	Long: `Load CSAR either from zip-archive (proper CSAR, detected by extension of provided path) OR from a folder containing the extracted contents of a CSAR.
+	Usage examples:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	eat validate example-csar.zip
+	eat validate example-csar/
+`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("validate called")
+		var (
+			csarPath string = args[0]
+			archive  csar.CSAR
+		)
+
+		if debug {
+			// Set debug for imports
+			csar.Debug = debug
+
+			log.Println("INF debug:", debug)
+
+			log.Println("INF csarPath:", csarPath)
+		}
+
+		archive = csar.LoadFromPath(csarPath)
+		if debug {
+			log.Println("SUC Loaded CSAR from '" + csarPath + "'.")
+		}
+
+		// for _, x := range archive.ServiceTemplate.DataTypes {
+		// 	x.ValidateConstraints()
+		// }
+
+		csar.PrintCSAR(archive)
 	},
 }
 
@@ -54,4 +80,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// validateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
 }
