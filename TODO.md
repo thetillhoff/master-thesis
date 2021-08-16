@@ -94,6 +94,10 @@
 - there was one occurence where a constraint was larger_or_equal than 0.1 MB or something like that. Why no 0B?
   example at 5.9.10.1
 - 5.9.9.2 capabilities are TBD
+- 5.9.1.3 contains indentation error
+- 5.7.1.2 contains indentation error & derive_from is not defined
+- sometimes the map[string]* forces for name finding, but its sometimes unnecessary (as it has a description). While it allows for reference elsewhere, it should be described clearly where this is possible and whats the use-case is.
+- 5.8.3 is the first one to contain a type definitions, earlier subchapters don't contain types - this is inconsistent...
 
 
 ## code (csar?)
