@@ -7,6 +7,14 @@ It should
 - be extensible (might want more information in the future)
 - be rebuildable (by everyone, everywhere on every system)
 
+## MML
+- small size (<50MB)
+- boots fast (<30s)
+- extensible
+- not rebuildable (isos dont work)
+Since building the iso requires some dependencies, I decided to go for building in a container.
+Doesn't work (-> doesn't boot). More info in ./MML/README.md
+
 ## Alpine
 - medium size (<500MB)
 - boots fast
