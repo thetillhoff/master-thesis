@@ -8,6 +8,7 @@ package tosca
 //
 // To prevent a declaration cycle, KeySchema and EntrySchema are of type interface{}
 type SchemaDefinition struct {
+	EquallableTypeRoot
 
 	// grammar
 	// <schema_definition>:

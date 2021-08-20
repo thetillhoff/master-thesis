@@ -1,6 +1,7 @@
 package tosca
 
 type PropertyDefinition struct { // indicate desired state
+	Equallable
 	// allowed types are
 
 	// - string (default)
@@ -61,6 +62,7 @@ type PropertyDefinition struct { // indicate desired state
 }
 
 type PropertyFilterDefinition struct { // docs are incomplete [4.3.5.8]
+	Equallable
 
 	// short notation:
 	// <property_name>: <property_constraint_clause>
@@ -71,6 +73,14 @@ type PropertyFilterDefinition struct { // docs are incomplete [4.3.5.8]
 	//   - ...
 	//   - <property_constraint_clause_n>
 
-	// peroperty_constraint_clause: represents constraint clause(s) that will be used to filter entities based upon the named property’s value(s).
+	// property_constraint_clause: represents constraint clause(s) that will be used to filter entities based upon the named property’s value(s).
 
+	//TODO
+
+}
+
+func (src PropertyFilterDefinition) Equal(dest PropertyFilterDefinition) bool {
+	//TODO
+
+	return true
 }

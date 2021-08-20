@@ -5,7 +5,8 @@ import (
 	"reflect"
 )
 
-func (dt DataTypeRoot) ValidateConstraints(value interface{}) error {
+// Validates constraints of <value> according to constraints specified in <dt>
+func (dt DataType) ValidateConstraints(value interface{}) error {
 	var (
 		constraint map[Operator]interface{}
 		operator   Operator
@@ -100,7 +101,7 @@ func (dt DataTypeRoot) ValidateConstraints(value interface{}) error {
 					if typedArg, ok := arg.([]Equallable); ok {
 						for _, element := range typedArg {
 							if reflect.TypeOf(typedValue) == reflect.TypeOf(element) {
-								if !(typedValue.ValidValues(typedArg)) {
+								if !(typedValue.ContainedIn(typedArg)) {
 									return errors.New("constraint not fulfilled")
 								}
 							} else {

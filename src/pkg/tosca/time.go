@@ -3,7 +3,9 @@ package tosca
 import "time"
 
 type Time struct {
-	Value time.Duration
+	EquallableTypeRoot
+
+	Value time.Duration `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// units: (don't forget toLower)
 	// d
@@ -26,69 +28,18 @@ func ParseTime(input string) (Time, error) {
 
 }
 
-func (value Time) Equal(arg Equallable) bool {
-	if typedArg, ok := arg.(Time); ok {
-		return value.Value == typedArg.Value
-	}
-	return false // if they are not the same type, they can't be equal ;)
+func (value Time) Equal(arg Time) bool {
+	return value.Value == arg.Value
 }
-func (value Time) ValidValues(arg []Equallable) bool {
-	for _, element := range arg {
-		if typedArg, ok := element.(Time); ok {
-			if value.Equal(typedArg) {
-				return true
-			}
-		} // if they are not the same type, they can't be equal ;)
-	}
-	return false
+func (value Time) GreaterThan(arg Time) bool {
+	return value.Value > arg.Value
 }
-func (value Time) GreaterThan(arg Comparable) bool {
-	if typedArg, ok := arg.(Time); ok {
-		return value.Value > typedArg.Value
-	}
-	return false // if they are not the same type, they can't be compared
+func (value Time) LengthEquals(arg Time) bool {
+	return value.Value == arg.Value
 }
-func (value Time) GreaterOrEqual(arg Comparable) bool {
-	if typedArg, ok := arg.(Time); ok {
-		return value.Equal(typedArg) || value.GreaterThan(typedArg) // if equal or greater
-	}
-	return false // if they are not the same type, they can't be compared
+func (value Time) MinLength(arg Time) bool { // inclusive minimum
+	return value.Value >= arg.Value
 }
-func (value Time) LessThan(arg Comparable) bool {
-	if typedArg, ok := arg.(Time); ok {
-		return !value.Equal(typedArg) && !value.GreaterThan(typedArg) // if not equal and not greater
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Time) LessOrEqual(arg Comparable) bool {
-	if typedArg, ok := arg.(Time); ok {
-		return value.Equal(typedArg) || value.LessThan(typedArg) // if equal or less
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Time) InRange(lowerBound Comparable, upperBound Comparable) bool { // "inclusive"
-	if typedLowerBound, ok := lowerBound.(Time); ok {
-		if typedUpperBound, ok := upperBound.(Time); ok {
-			return value.GreaterOrEqual(typedLowerBound) && value.LessOrEqual(typedUpperBound)
-		}
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Time) LengthEquals(arg Comparable) bool {
-	if typedArg, ok := arg.(Time); ok {
-		return value.Value == typedArg.Value
-	}
-	return false
-}
-func (value Time) MinLength(arg Comparable) bool { // inclusive minimum
-	if typedArg, ok := arg.(Time); ok {
-		return value.Value >= typedArg.Value
-	}
-	return false
-}
-func (value Time) MaxLength(arg Comparable) bool { // inclusive maximum
-	if typedArg, ok := arg.(Time); ok {
-		return value.Value <= typedArg.Value
-	}
-	return false
+func (value Time) MaxLength(arg Time) bool { // inclusive maximum
+	return value.Value <= arg.Value
 }

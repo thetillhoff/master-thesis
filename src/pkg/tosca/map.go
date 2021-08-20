@@ -1,31 +1,19 @@
 package tosca
 
 type Map struct {
-	DataTypeRoot
-	Value map[string]Equallable
+	DataType
+
+	Value map[string]Equallable `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
-func (value Map) Equal(arg Equallable) bool {
-	if typedArg, ok := arg.(Map); ok {
-		if len(value.Value) != len(typedArg.Value) {
+func (value Map) Equal(arg Map) bool {
+	if len(value.Value) != len(arg.Value) { // unequal length makes them unequal
+		return false
+	}
+	for key := range value.Value {
+		if !value.Value[key].Equals(arg.Value[key]) {
 			return false
 		}
-		for key := range value.Value {
-			if !value.Value[key].Equal(typedArg.Value[key]) {
-				return false
-			}
-		}
-		return true
-	} // if they are not the same type, they can't be equal ;)
-	return false
-}
-func (value Map) ValidValues(arg []Equallable) bool {
-	for _, element := range arg {
-		if typedElement, ok := element.(Map); ok {
-			if value.Equal(typedElement) {
-				return true
-			}
-		} // if they are note the same type, they can't be equal ;)
 	}
-	return false
+	return true
 }

@@ -2,6 +2,8 @@ package tosca
 
 // A Node Type is a reusable entity that defines the type of one or more Node Templates. As such, a Node Type defines the structure of observable properties and attributes, the capabilities and requirements of the node as well as its supported interfaces and the artifacts it uses.
 type NodeType struct {
+	EquallableTypeRoot
+
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	Properties   map[string]PropertyDefinition   `yaml:"properties,omitempty" json:"properties,omitempty"`
@@ -43,6 +45,8 @@ type NodeType struct {
 }
 
 type NodeTemplate struct {
+	EquallableTypeRoot
+
 	// [mandatory] The name of the Node Type the Node Template is based upon.
 	NodeType string `yaml:"node_type,omitempty" json:"node_type,omitempty"`
 
@@ -85,6 +89,8 @@ type NodeTemplate struct {
 }
 
 type NodeFilter struct {
+	EquallableTypeRoot
+
 	// An optional list of property filters that will be used to select (filter) matching TOSCA entities (e.g., Node Template, Node Type, Capability Types, etc.) based upon their property definitions’ values.
 	Properties []PropertyFilterDefinition `yaml:"properties,omitempty" json:"properties,omitempty"`
 
@@ -95,4 +101,23 @@ type NodeFilter struct {
 
 	// An optional list of property filters that will be used to select (filter) matching TOSCA entities (e.g., Node Template, Node Type, Capability Types, etc.) based upon their capabilities’ property definitions’ values.
 	CapabilityProperties []PropertyFilterDefinition `yaml:"capability_properties,omitempty" json:"capability_properties,omitempty"` // TODO [4.3.5.7.2] "within a capability name or type name"
+}
+
+func (src NodeFilter) Equal(dest NodeFilter) bool {
+	for key := range src.Properties {
+		if !src.Properties[key].Equal(dest.Properties[key]) {
+			return false
+		}
+	}
+	for key := range src.Capabilities {
+		if !src.Capabilities[key].Equal(dest.Capabilities[key]) {
+			return false
+		}
+	}
+	for key := range src.CapabilityProperties {
+		if !src.CapabilityProperties[key].Equal(dest.CapabilityProperties[key]) {
+			return false
+		}
+	}
+	return true
 }

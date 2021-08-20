@@ -64,6 +64,8 @@ var validateCmd = &cobra.Command{
 		// 	x.ValidateConstraints()
 		// }
 
+		// archive.ServiceTemplate = archive.ServiceTemplate.ResolveDerivations
+
 		csar.PrintCSAR(archive)
 	},
 }

@@ -9,6 +9,8 @@ import (
 
 // Keyword "UNBOUND" is mapped to nil.
 type Range struct { // example: [ 1, 4 ]
+	EquallableTypeRoot
+
 	LowerBound   Comparable
 	NoLowerBound bool
 	UpperBound   Comparable
@@ -47,24 +49,13 @@ func (r *Range) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-func (value Range) Equal(arg Equallable) bool {
-	if typedArg, ok := arg.(Range); ok {
-		return value.LowerBound.Equal(typedArg.LowerBound) &&
-			value.UpperBound.Equal(typedArg.UpperBound)
-	}
-	return false // if they are not the same type, they can't be equal ;)
+func (value Range) Equal(arg Range) bool {
+	return value.LowerBound.Equals(arg.LowerBound) &&
+		value.UpperBound.Equals(arg.UpperBound) &&
+		value.NoLowerBound == arg.NoLowerBound &&
+		value.NoUpperBound == arg.NoUpperBound
 }
-func (value Range) ValidValues(arg []Equallable) bool {
-	for _, element := range arg {
-		if typedArg, ok := element.(Range); ok {
-			if value.Equal(typedArg) {
-				return true
-			}
-		} // if they are not the same type, they can't be equal ;)
-	}
-	return false
-}
-func (value Range) InRange(lowerBound Comparable, upperBound Comparable) bool { // "inclusive"
+func (value Range) ContainedIn(lowerBound Comparable, upperBound Comparable) bool { // "inclusive"
 	// func (value Range) InRange(parentRange Range) bool { // "inclusive"
 	if value.LowerBound == nil && lowerBound != nil { // parent Range lowerbound bounded, but own is unbounded
 		return false

@@ -1,8 +1,8 @@
 package tosca
 
 type Equallable interface {
-	Equal(Equallable) bool
-	ValidValues([]Equallable) bool
+	Equals(Equallable) bool
+	ContainedIn([]Equallable) bool
 }
 
 type Comparable interface {

@@ -1,33 +1,27 @@
 package tosca
 
 type List struct {
-	DataTypeRoot
-	Value []Equallable
+	DataType
+	Value []Equallable `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
-func (value List) Equal(arg Equallable) bool {
-	if typedArg, ok := arg.(List); ok {
-		if len(value.Value) != len(typedArg.Value) { // unequal length makes them unequal
+func (value List) Equal(arg List) bool {
+	if len(value.Value) != len(arg.Value) { // unequal length makes them unequal
+		return false
+	}
+	for index := range value.Value {
+		if !value.Value[index].Equals(arg.Value[index]) {
 			return false
 		}
-		for index := range value.Value {
-			if !value.Value[index].Equal(typedArg.Value[index]) {
-				return false
-			}
-		}
-		return true
-	} // if they are not the same type, they can't be equal ;)
+	}
 	return false
 }
-func (value List) ValidValues(arg []Equallable) bool {
-	for _, element := range arg {
-		if typedArg, ok := element.(List); ok {
-			for _, element := range typedArg.Value {
-				if value.Equal(element) {
-					return true
-				}
-			}
-		} // if they are not the same type, they can't be equal ;)
+
+func (value List) Contains(arg Equallable) bool {
+	for _, element := range value.Value {
+		if element.Equals(arg) {
+			return true
+		}
 	}
 	return false
 }

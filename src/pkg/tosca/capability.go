@@ -24,6 +24,12 @@ type CapabilityType struct {
 	// A public network contains IP addresses and ports typically used to listen for incoming traffic to an application or service from the Internet.
 }
 
+func (src CapabilityType) Equal(dest CapabilityType) bool {
+	//TODO
+
+	return true
+}
+
 type CapabilityDefinition struct {
 	// single-line grammar assumes capabilityType keyword is used ('<capability_definition_name>: <capability_type>')
 	// multi-line grammer requires named parameters

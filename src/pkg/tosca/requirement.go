@@ -1,6 +1,7 @@
 package tosca
 
 type RequirementDefinition struct {
+	EquallableTypeRoot
 
 	// The optional description of the Requirement definition.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
@@ -25,11 +26,25 @@ type RequirementDefinition struct {
 	// Sometimes additional parameters need to be passed to the relationship (perhaps for configuration). Therefore, interface refinements can be declared (e.g. changing implementation definition or declaring additional parameter definitions to be used as inputs/outputs).
 
 	// The optional keyname used to provide the name of the Relationship Type as part of the relationship keyname definition.
-	RelationshipType RelationshipType `yaml:"type,omitempty" json:"type,omitempty"`
+	RelationshipType string `yaml:"type,omitempty" json:"type,omitempty"`
 
 	// The optional keyname used to reference declared interface definitions on the corresponding Relationship Type for refinement.
 	Interfaces map[string]InterfaceDefinition `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`
 }
+
+// func (src RequirementDefinition) Equal(dest RequirementDefinition) bool {
+// 	// Assumption: When only Description is different, they can still be equal!
+// 	if src.Capability != dest.Capability ||
+// 		src.Node != dest.Node ||
+// 		src.Relationship != dest.Relationship ||
+// 		src.NodeFilter != dest.NodeFilter ||
+// 		src.Occurences != dest.Occurences ||
+// 		src.RelationshipType != dest.RelationshipType ||
+// 		src.Interfaces != dest.Interfaces {
+// 		return false
+// 	}
+// 	return true
+// }
 
 type RequirementAssignment struct {
 

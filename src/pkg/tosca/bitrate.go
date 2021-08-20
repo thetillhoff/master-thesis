@@ -5,7 +5,8 @@ import (
 )
 
 type Bitrate struct {
-	Value uint64 // Unit is bps
+	DataType
+	Value uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is bps
 
 	// units: (don't forget toLower)
 	// bps
@@ -37,51 +38,9 @@ func ParseBitrate(input string) (Bitrate, error) {
 
 }
 
-func (value Bitrate) Equal(arg Equallable) bool {
-	if typedArg, ok := arg.(Bitrate); ok {
-		return value.Value == typedArg.Value
-	}
-	return false // if they are not the same type, they can't be equal ;)
+func (value Bitrate) Equal(arg Bitrate) bool {
+	return value.Value == arg.Value
 }
-func (value Bitrate) ValidValues(arg []Equallable) bool {
-	for _, element := range arg {
-		if typedArg, ok := element.(Bitrate); ok {
-			if value.Equal(typedArg) {
-				return true
-			}
-		} // if they are not the same type, they can't be equal ;)
-	}
-	return false
-}
-func (value Bitrate) GreaterThan(arg Comparable) bool {
-	if typedArg, ok := arg.(Bitrate); ok {
-		return value.Value > typedArg.Value
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Bitrate) GreaterOrEqual(arg Comparable) bool {
-	if typedArg, ok := arg.(Bitrate); ok {
-		return value.Equal(typedArg) || value.GreaterThan(typedArg) // if equal or greater
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Bitrate) LessThan(arg Comparable) bool {
-	if typedArg, ok := arg.(Bitrate); ok {
-		return !value.Equal(typedArg) && !value.GreaterThan(typedArg) // if not equal and not greater
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Bitrate) LessOrEqual(arg Comparable) bool {
-	if typedArg, ok := arg.(Bitrate); ok {
-		return value.Equal(typedArg) || value.LessThan(typedArg) // if equal or less
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Bitrate) InRange(lowerBound Comparable, upperBound Comparable) bool { // "inclusive"
-	if typedLowerBound, ok := lowerBound.(Bitrate); ok {
-		if typedUpperBound, ok := upperBound.(Bitrate); ok {
-			return value.GreaterOrEqual(typedLowerBound) && value.LessOrEqual(typedUpperBound)
-		}
-	}
-	return false // if they are not the same type, they can't be compared
+func (value Bitrate) GreaterThan(arg Bitrate) bool {
+	return value.Value > arg.Value
 }

@@ -8,7 +8,9 @@ import (
 
 type Version struct {
 	// <major_version>.<minor_version>[.<fix_version>[.<qualifier>[-<build_version] ] ]
-	//
+
+	DataType
+
 	MajorVersion int    `yaml:"major_version" json:"major_version"` // mandatory
 	MinorVersion int    `yaml:"minor_version" json:"minor_version"` // mandatory
 	FixVersion   int    `yaml:"fix_version,omitempty" json:"fix_version,omitempty"`
@@ -69,73 +71,31 @@ func ParseVersion(input string) (Version, error) {
 	return version, nil
 }
 
-func (value Version) Equal(arg Equallable) bool {
-	if typedArg, ok := arg.(Version); ok {
-		return value.MajorVersion == typedArg.MajorVersion &&
-			value.MinorVersion == typedArg.MinorVersion &&
-			value.FixVersion == typedArg.FixVersion &&
-			value.Qualifier == typedArg.Qualifier &&
-			value.BuildVersion == typedArg.BuildVersion
-	}
-	return false // if they are not the same type, they can't be equal ;)
+func (value Version) Equal(arg Version) bool {
+	return value.MajorVersion == arg.MajorVersion &&
+		value.MinorVersion == arg.MinorVersion &&
+		value.FixVersion == arg.FixVersion &&
+		value.Qualifier == arg.Qualifier &&
+		value.BuildVersion == arg.BuildVersion
 }
-func (value Version) ValidValues(arg []Equallable) bool {
-	for _, element := range arg {
-		if typedArg, ok := element.(Version); ok {
-			if value.Equal(typedArg) {
-				return true
-			}
-		} // if they are not the same type, they can't be equal ;)
+func (value Version) GreaterThan(arg Version) bool {
+	if value.MajorVersion > arg.MajorVersion { // MajorVersion larger
+		return true
+	} else if value.MinorVersion > arg.MinorVersion { // MinorVersion larger
+		return true
+	} else if value.FixVersion > arg.FixVersion { // FixVersion larger
+		return true
+	} else if value.MajorVersion == arg.MajorVersion &&
+		value.MinorVersion == arg.MinorVersion &&
+		value.FixVersion == arg.FixVersion &&
+		value.Qualifier == "" && arg.Qualifier != "" { // Versions that include the optional Qualifier are considered older than those without
+		return true
+	} else if value.MajorVersion == arg.MajorVersion &&
+		value.MinorVersion == arg.MinorVersion &&
+		value.FixVersion == arg.FixVersion &&
+		value.Qualifier == arg.Qualifier &&
+		arg.BuildVersion > value.BuildVersion { // Versions with same major, minor and fix versions and same Qualifier string are compared based on build version
+		return true
 	}
 	return false
-}
-func (value Version) GreaterThan(arg Comparable) bool {
-	if typedArg, ok := arg.(Version); ok {
-		if value.MajorVersion > typedArg.MajorVersion { // MajorVersion larger
-			return true
-		} else if value.MinorVersion > typedArg.MinorVersion { // MinorVersion larger
-			return true
-		} else if value.FixVersion > typedArg.FixVersion { // FixVersion larger
-			return true
-		} else if value.MajorVersion == typedArg.MajorVersion &&
-			value.MinorVersion == typedArg.MinorVersion &&
-			value.FixVersion == typedArg.FixVersion &&
-			value.Qualifier == "" && typedArg.Qualifier != "" { // Versions that include the optional Qualifier are considered older than those without
-			return true
-		} else if value.MajorVersion == typedArg.MajorVersion &&
-			value.MinorVersion == typedArg.MinorVersion &&
-			value.FixVersion == typedArg.FixVersion &&
-			value.Qualifier == typedArg.Qualifier &&
-			typedArg.BuildVersion > value.BuildVersion { // Versions with same major, minor and fix versions and same Qualifier string are compared based on build version
-			return true
-		}
-		return false
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Version) GreaterOrEqual(arg Comparable) bool {
-	if typedArg, ok := arg.(Version); ok {
-		return value.Equal(typedArg) || value.GreaterThan(typedArg) // if equal or greater
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Version) LessThan(arg Comparable) bool {
-	if typedArg, ok := arg.(Version); ok {
-		return !value.Equal(typedArg) && !value.GreaterThan(typedArg) // if not equal and not greater
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Version) LessOrEqual(arg Comparable) bool {
-	if typedArg, ok := arg.(Version); ok {
-		return value.Equal(typedArg) || value.LessThan(typedArg) // if equal or less
-	}
-	return false // if they are not the same type, they can't be compared
-}
-func (value Version) InRange(lowerBound Comparable, upperBound Comparable) bool { // "inclusive"
-	if typedLowerBound, ok := lowerBound.(Version); ok {
-		if typedUpperBound, ok := upperBound.(Version); ok {
-			return value.GreaterOrEqual(typedLowerBound) && value.LessOrEqual(typedUpperBound)
-		}
-	}
-	return false // if they are not the same type, they can't be compared
 }

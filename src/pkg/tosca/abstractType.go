@@ -8,7 +8,9 @@ type AbstractType struct {
 	DerivedFrom string `yaml:"derived_from,omitempty" json:"derived_from,omitempty"`
 
 	// An optional version for the type definition.
-	Version Version `yaml:"version,omitempty" json:"version,omitempty"`
+	//
+	// Has to be a string sadly, since go doesn't support chaining types (Version inherits from AbstractType indirectly, so it can't be used here).
+	Version string `yaml:"version,omitempty" json:"version,omitempty"`
 
 	// Defines a section used to declare additional metadata information.
 	Metadata map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`

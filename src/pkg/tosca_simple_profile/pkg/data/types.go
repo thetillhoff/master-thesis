@@ -4,7 +4,7 @@ import "github.com/thetillhoff/eat/pkg/tosca"
 
 // This is the default (root) TOSCA Root Type definition that all complex TOSCA Data Types derive from.
 type Root struct {
-	tosca.DataTypeRoot `yaml:",inline,omitempty" json:",inline,omitempty"`
+	tosca.DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
 // The json type is a TOSCA data Type used to define a string that containst data in the JavaScript Object Notation (JSON) format.
@@ -15,7 +15,7 @@ type XML tosca.String
 
 // The Credential type is a complex TOSCA data Type used when describing authorization credentials used to access network accessible resources.
 type Credential struct {
-	tosca.DataTypeRoot `yaml:",inline,omitempty" json:",inline,omitempty"`
+	tosca.DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// The optional protocol name.
 	Protocol string `yaml:"protocol,omitempty" json:"protocol,omitempty"`
@@ -35,7 +35,7 @@ type Credential struct {
 
 // The TimeInterval type is a complex TOSCA data Type used when describing a period of time using the YAML ISO 8601 format to declare the start and end times.
 type TimeInterval struct {
-	tosca.DataTypeRoot `yaml:",inline,omitempty" json:",inline,omitempty"`
+	tosca.DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// [mandatory] The inclusive start time for the time interval.
 	StartTime tosca.Timestamp `yaml:"start_time,omitempty" json:"start_time,omitempty"`
@@ -46,7 +46,7 @@ type TimeInterval struct {
 
 // The Network type is a complex TOSCA data type used to describe logical network information.
 type NetworkInfo struct {
-	tosca.DataTypeRoot `yaml:",inline,omitempty" json:",inline,omitempty"`
+	tosca.DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// The name of the logical network.
 	//
@@ -62,7 +62,7 @@ type NetworkInfo struct {
 
 // The PortInfo type is a complex TOSCA data type used to describe network port information.
 type NetworkPortInfo struct {
-	tosca.DataTypeRoot `yaml:",inline,omitempty" json:",inline,omitempty"`
+	tosca.DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// The logical network port name.
 	PortName string `yaml:"port_name,omitempty" json:"port_name,omitempty"`
@@ -91,7 +91,7 @@ type NetworkPortDef tosca.Integer
 //
 // A valid PortSpec MUST have a value for the target property that is within the numeric range specified by the property target_range when target_range is specified.
 type NetworkPortSpec struct {
-	tosca.DataTypeRoot `yaml:",inline,omitempty" json:",inline,omitempty"`
+	tosca.DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// [mandatory] The required protocol used on the port.
 	Protocol string `yaml:"protocol,omitempty" json:"protocol,omitempty"`
