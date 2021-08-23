@@ -1,8 +1,8 @@
 package tosca
 
 type Byte struct {
-	DataType
-	Value byte `yaml:",inline,omitempty" json:",inline,omitempty"`
+	DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
+	Value    byte `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
 func (value Byte) Equal(arg Equallable) bool {

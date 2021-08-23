@@ -3,8 +3,8 @@ package tosca
 import "regexp"
 
 type String struct {
-	DataType
-	Value string `yaml:",inline,omitempty" json:",inline,omitempty"`
+	DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
+	Value    string `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
 func (value String) Equal(arg String) bool {

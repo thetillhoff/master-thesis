@@ -1,9 +1,8 @@
 package tosca
 
 type Float struct {
-	DataType
-
-	Value float32 `yaml:",inline,omitempty" json:",inline,omitempty"`
+	DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
+	Value    float32 `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
 func (value Float) Equal(arg Equallable) bool {

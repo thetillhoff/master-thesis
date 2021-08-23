@@ -299,7 +299,7 @@ capability_types:
   tosca.capabilities.Endpoint.Database: # taken from tosca simple profile 5.5.10
   # why is this necessary? could just be endpoint?
     description: This is the default TOSCA type that should be used or extended to define a specialized database endpoint capability.
-    derived_from: tosca.capabilitis.Endpoint
+    derived_from: tosca.capabilities.Endpoint
 
   tosca.capabilities.Attachment: # taken from tosca simple profile 5.5.11
     description: This is the default TOSCA type that should be used or extended to define an attachment capability of a (logical) infrastructure device node (e.g., BlockStorage node).
@@ -386,7 +386,7 @@ relationship_types:
 interface_types:
   tosca.interfaces.Root: # taken from tosca simple profile 5.8.3 (earlier subchapters don't contain types)
     description: This is the default (root) TOSCA Interface Type definition that all other TOSCA Interface Types derive from.
-    derived_from: tosca.entity.Root # WTF THIS IS NEVER DEFINED ?! # TODO
+    #derived_from: tosca.entity.Root # WTF THIS IS NEVER DEFINED ?! # TODO
 
   tosca.interfaces.node.lifecycle.Standard: # taken from tosca simple profile 5.8.4
     description: This lifecycle interface defines the essential, normative operations that TOSCA nodes may support.
@@ -448,7 +448,7 @@ interface_types:
 node_types:
   tosca.nodes.Root: # taken from tosca simple profile 5.9.1
     description: The TOSCA Node Type all other TOSCA base Node Types derive from
-    derived_from: tosca.entity.Root # ??? THIS IS NEVER EVER DEFINED ANYWHERE IN EITHER SPEC & other .Root types are not derived from anything
+    #derived_from: tosca.entity.Root # ??? THIS IS NEVER EVER DEFINED ANYWHERE IN EITHER SPEC & other .Root types are not derived from anything
     attributes:
       tosca_id:
         type: string

@@ -1,8 +1,8 @@
 package tosca
 
 type Boolean struct {
-	DataType
-	Value bool `yaml:",inline,omitempty" json:",inline,omitempty"`
+	DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
+	Value    bool `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
 func (value Boolean) Equal(arg Equallable) bool {
