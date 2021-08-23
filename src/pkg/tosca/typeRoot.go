@@ -7,12 +7,12 @@ type EquallableTypeRoot struct {
 }
 
 func (value EquallableTypeRoot) Equals(arg Equallable) bool {
-	v := reflect.ValueOf(value).Elem()
-	a := reflect.ValueOf(arg).Elem()
-	if v.NumField() != a.NumField() { // different number of fields makes them unequal
+	v := reflect.ValueOf(&value).Elem()
+	a := reflect.ValueOf(&arg).Elem()
+	if v.Type() != a.Type() { // different types make them unequal
 		return false
 	}
-	if v.Type() != a.Type() { // different types make them unequal
+	if v.NumField() != a.NumField() { // different number of fields makes them unequal
 		return false
 	}
 	for i := 0; i < v.NumField(); i++ { // for each field of value
@@ -20,7 +20,7 @@ func (value EquallableTypeRoot) Equals(arg Equallable) bool {
 		varType := v.Type().Field(i).Type
 		varValue := v.Field(i).Interface()
 
-		if !(varName == "DerivedFrom" || varName == "Version" || varName == "Metadata" || varName == "Description") { // This fields should not be derived and I assume, they are thus not important for comparison // TODO is that true?
+		if !(varName == "DerivedFrom" || varName == "Version" || varName == "Metadata" || varName == "Description") { // This fields should not be derived and I therefore assume they are not important for comparison // TODO is that true?
 			if a.Type().Field(i).Name != varName || // if field has different name
 				a.Type().Field(i).Type != varType || // or has different type
 				a.Field(i).Interface() != varValue { // or has different value

@@ -34,3 +34,10 @@ type DataType struct {
 	// For data types that do not derive from the TOSCA list or map data type, the entry_schema is not allowed.
 	Entryschema SchemaDefinition `yaml:"entry_schema,omitempty" json:"entry_schema,omitempty"`
 }
+
+func NewDataType() DataType {
+	return DataType{
+		Constraints: make([]map[Operator]interface{}, 0),
+		Properties:  make(map[string]PropertyDefinition),
+	}
+}

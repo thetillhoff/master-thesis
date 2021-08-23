@@ -44,6 +44,16 @@ type NodeType struct {
 	//   - targets (0-N)
 }
 
+func NewNodeType() NodeType {
+	return NodeType{
+		Properties:   make(map[string]PropertyDefinition),
+		Attributes:   make(map[string]AttributeDefinition),
+		Capabilities: make(map[string]CapabilityDefinition),
+		Interfaces:   make(map[string]InterfaceDefinition),
+		Artifacts:    make(map[string]ArtifactDefinition),
+	}
+}
+
 type NodeTemplate struct {
 	EquallableTypeRoot
 

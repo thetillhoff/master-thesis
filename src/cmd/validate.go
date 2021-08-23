@@ -61,10 +61,10 @@ var validateCmd = &cobra.Command{
 		}
 
 		// for _, x := range archive.ServiceTemplate.DataTypes {
-		// 	x.ValidateConstraints()
+		// 	x.ValidateConstraints() // <- missing value to validate
 		// }
 
-		// archive.ServiceTemplate = archive.ServiceTemplate.ResolveDerivations
+		archive.ServiceTemplate = archive.ServiceTemplate.ResolveDerivations()
 
 		csar.PrintCSAR(archive)
 	},

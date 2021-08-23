@@ -42,6 +42,13 @@ type GroupType struct {
 	Members []string `yaml:"members,omitempty" json:"members,omitempty"`
 }
 
+func NewGroupType() GroupType {
+	return GroupType{
+		Properties: make(map[string]PropertyDefinition),
+		Attributes: make(map[string]AttributeDefinition),
+	}
+}
+
 type GroupDefinition struct {
 
 	// grammar

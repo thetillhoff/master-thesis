@@ -24,6 +24,13 @@ type CapabilityType struct {
 	// A public network contains IP addresses and ports typically used to listen for incoming traffic to an application or service from the Internet.
 }
 
+func NewCapabilityType() CapabilityType {
+	return CapabilityType{
+		Properties: make(map[string]PropertyDefinition),
+		Attributes: make(map[string]AttributeDefinition),
+	}
+}
+
 func (src CapabilityType) Equal(dest CapabilityType) bool {
 	//TODO
 

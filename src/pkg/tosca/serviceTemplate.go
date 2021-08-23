@@ -26,7 +26,7 @@ type ServiceTemplate struct { // [tosca spec 2.0, 4.2.1.1]
 	ArtifactTypes map[string]ArtifactType `yaml:"artifact_types,omitempty" json:"artifact_types,omitempty"`
 
 	// Declares a map of optional TOSCA Data Type definitions.
-	DataTypes map[string]DataTypeRoot `yaml:"data_types,omitempty" json:"data_types,omitempty"`
+	DataTypes map[string]DataType `yaml:"data_types,omitempty" json:"data_types,omitempty"`
 
 	// This section contains an optional map of capability type definitions for use in the service template.
 	CapabilityTypes map[string]CapabilityType `yaml:"capability_types,omitempty" json:"capability_types,omitempty"`
@@ -50,78 +50,90 @@ type ServiceTemplate struct { // [tosca spec 2.0, 4.2.1.1]
 	TopologyTemplate TopologyTemplateDefinition `yaml:"topology_template,omitempty" json:"topology_template,omitempty"`
 }
 
+// func (serviceTemplate ServiceTemplate) getParentType(name string) (error, interface{}) {
+// 	var (
+// 		err     error
+// 		anyType interface{}
+// 	)
+// 	err, anyType = serviceTemplate.getArtifactType(name)
+// 	if err == nil {
+// 		return nil, anyType
+// 	}
 
-// Return the ArtifactType with name <name> from current serviceTemplate
-func (serviceTemplate ServiceTemplate) getArtifactType(name string) (error, ArtifactType) {
-	if value, ok := serviceTemplate.ArtifactTypes[name]; ok {
-		return nil, value // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
-	} else {
-		return errors.New("no ArtifactType with provided name exists in serviceTemplate"), ArtifactType{}
-	}
-}
+// 	return errors.New(""), anyType
+// }
 
-// Returns the DataType with name <name> from current serviceTemplate
-func (serviceTemplate ServiceTemplate) getDataType(name string) (error, DataType) {
-	if value, ok := serviceTemplate.DataTypes[name]; ok {
-		return nil, value // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
-	} else {
-		return errors.New("no DataType with provided name exists in serviceTemplate"), DataType{}
-	}
-}
+// // Return the ArtifactType with name <name> from current serviceTemplate
+// func (serviceTemplate ServiceTemplate) getArtifactType(name string) (ArtifactType, error) {
+// 	if value, ok := serviceTemplate.ArtifactTypes[name]; ok {
+// 		return value, nil // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
+// 	} else {
+// 		return ArtifactType{}, errors.New("no ArtifactType with provided name exists in serviceTemplate")
+// 	}
+// }
 
-// Returns the CapabilityType with name <name> from the current serviceTemplate
-func (serviceTemplate ServiceTemplate) getCapabilityType(name string) (error, CapabilityType) {
-	if value, ok := serviceTemplate.CapabilityTypes[name]; ok {
-		return nil, value // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
-	} else {
-		return errors.New("no CapabilityType with provided name exists in serviceTemplate"), CapabilityType{}
-	}
-}
+// // Returns the DataType with name <name> from current serviceTemplate
+// func (serviceTemplate ServiceTemplate) getDataType(name string) (DataType, error) {
+// 	if value, ok := serviceTemplate.DataTypes[name]; ok {
+// 		return value, nil // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
+// 	} else {
+// 		return DataType{}, errors.New("no DataType with provided name exists in serviceTemplate")
+// 	}
+// }
 
-// Returns the InterfaceType with name <name> from the current serviceTemplate
-func (serviceTemplate ServiceTemplate) getInterfaceType(name string) (error, InterfaceType) {
-	if value, ok := serviceTemplate.InterfaceTypes[name]; ok {
-		return nil, value // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
-	} else {
-		return errors.New("no InterfaceType with provided name exists in serviceTemplate"), InterfaceType{}
-	}
-}
+// // Returns the CapabilityType with name <name> from the current serviceTemplate
+// func (serviceTemplate ServiceTemplate) getCapabilityType(name string) (CapabilityType, error) {
+// 	if value, ok := serviceTemplate.CapabilityTypes[name]; ok {
+// 		return value, nil // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
+// 	} else {
+// 		return CapabilityType{}, errors.New("no CapabilityType with provided name exists in serviceTemplate")
+// 	}
+// }
 
-// Returns the RelationshipType with name <name> from the current serviceTemplate
-func (serviceTemplate ServiceTemplate) getRelationshipType(name string) (error, RelationshipType) {
-	if value, ok := serviceTemplate.RelationshipTypes[name]; ok {
-		return nil, value // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
-	} else {
-		return errors.New("no RelationshipType with provided name exists in serviceTemplate"), RelationshipType{}
-	}
-}
+// // Returns the InterfaceType with name <name> from the current serviceTemplate
+// func (serviceTemplate ServiceTemplate) getInterfaceType(name string) (InterfaceType, error) {
+// 	if value, ok := serviceTemplate.InterfaceTypes[name]; ok {
+// 		return value, nil // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
+// 	} else {
+// 		return InterfaceType{}, errors.New("no InterfaceType with provided name exists in serviceTemplate")
+// 	}
+// }
 
-// Return the NodeType with name <name> from current serviceTemplate
-func (serviceTemplate ServiceTemplate) getNodeType(name string) (error, NodeType) {
-	if value, ok := serviceTemplate.NodeTypes[name]; ok {
-		return nil, value // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
-	} else {
-		return errors.New("no NodeType with provided name exists in serviceTemplate"), NodeType{}
-	}
-}
+// // Returns the RelationshipType with name <name> from the current serviceTemplate
+// func (serviceTemplate ServiceTemplate) getRelationshipType(name string) (RelationshipType, error) {
+// 	if value, ok := serviceTemplate.RelationshipTypes[name]; ok {
+// 		return value, nil // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
+// 	} else {
+// 		return RelationshipType{}, errors.New("no RelationshipType with provided name exists in serviceTemplate")
+// 	}
+// }
 
-// Returns the GroupType with name <name> from the current serviceTemplate
-func (serviceTemplate ServiceTemplate) getGroupType(name string) (error, GroupType) {
-	if value, ok := serviceTemplate.GroupTypes[name]; ok {
-		return nil, value // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
-	} else {
-		return errors.New("no GroupType with provided name exists in serviceTemplate"), GroupType{}
-	}
-}
+// // Return the NodeType with name <name> from current serviceTemplate
+// func (serviceTemplate ServiceTemplate) getNodeType(name string) (NodeType, error) {
+// 	if value, ok := serviceTemplate.NodeTypes[name]; ok {
+// 		return value, nil // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
+// 	} else {
+// 		return NodeType{}, errors.New("no NodeType with provided name exists in serviceTemplate")
+// 	}
+// }
 
-// Returns the PolicyType with name <name> from the current serviceTemplate
-func (serviceTemplate ServiceTemplate) getPolicyType(name string) (error, PolicyType) {
-	if value, ok := serviceTemplate.PolicyTypes[name]; ok {
-		return nil, value // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
-	} else {
-		return errors.New("no PolicyType with provided name exists in serviceTemplate"), PolicyType{}
-	}
-}
+// // Returns the GroupType with name <name> from the current serviceTemplate
+// func (serviceTemplate ServiceTemplate) getGroupType(name string) (GroupType, error) {
+// 	if value, ok := serviceTemplate.GroupTypes[name]; ok {
+// 		return value, nil // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
+// 	} else {
+// 		return GroupType{}, errors.New("no GroupType with provided name exists in serviceTemplate")
+// 	}
+// }
+
+// // Returns the PolicyType with name <name> from the current serviceTemplate
+// func (serviceTemplate ServiceTemplate) getPolicyType(name string) (PolicyType, error) {
+// 	if value, ok := serviceTemplate.PolicyTypes[name]; ok {
+// 		return value, nil // Fails if not in same servicetemplate -> TODO first search local service template, then imported ones / or conditional with ':'
+// 	} else {
+// 		return PolicyType{}, errors.New("no PolicyType with provided name exists in serviceTemplate")
+// 	}
+// }
 
 // Loads all imports into respective namespaces
 func (serviceTemplate ServiceTemplate) ResolveImports() { //TODO

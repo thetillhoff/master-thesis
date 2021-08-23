@@ -11,7 +11,15 @@ type InterfaceType struct {
 	Operations map[string]OperationDefinition `yaml:"operations,omitempty" json:"operations,omitempty"`
 
 	// The optional map of notifications defined for this interface.
-	Notification map[string]NotificationDefinition `yaml:"notifications,omitempty" json:"notifications,omitempty"`
+	Notifications map[string]NotificationDefinition `yaml:"notifications,omitempty" json:"notifications,omitempty"`
+}
+
+func NewInterfaceType() InterfaceType {
+	return InterfaceType{
+		Inputs:        make(map[string]ParameterDefinition),
+		Operations:    make(map[string]OperationDefinition),
+		Notifications: make(map[string]NotificationDefinition),
+	}
 }
 
 // An Interface definition defines an interface (containing operations and notifications definitions) that can be associated with (i.e. defined within) a Node or Relationship Type definition (including Interface definitions in Requirements definitions). An Interface definition may be refined in subsequent Node or Relationship Type derivations.

@@ -35,6 +35,13 @@ type PolicyType struct {
 	Triggers map[string]TriggerDefinition `yaml:"triggers,omitempty" json:"triggers,omitempty"`
 }
 
+func NewPolicyType() PolicyType {
+	return PolicyType{
+		Properties: make(map[string]PropertyDefinition),
+		Triggers:   make(map[string]TriggerDefinition),
+	}
+}
+
 // A policy definition defines a policy that can be associated with a TOSCA topology or top-level entity definition (e.g., group definition, node template, etc.).
 type PolicyDefinition struct {
 

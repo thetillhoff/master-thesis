@@ -14,6 +14,14 @@ type RelationshipType struct {
 
 }
 
+func NewRelationshipType() RelationshipType {
+	return RelationshipType{
+		Properties: make(map[string]PropertyDefinition),
+		Attributes: make(map[string]AttributeDefinition),
+		Interfaces: make(map[string]InterfaceDefinition),
+	}
+}
+
 // The following keywords MAY be used in place of a node or relationship template name:
 // SELF: A TOSCA orchestrator will interpret this keyword as the Node or Relationship Template instance that contains the function at the time the function is evaluated.
 // SOURCE: A TOSCA orchestrator will interpret this keyword as the Node Template instance that is at the source end of the relationship that contains the referencing function.

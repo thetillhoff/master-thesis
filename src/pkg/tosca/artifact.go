@@ -25,6 +25,12 @@ type ArtifactType struct {
 	Properties map[string]PropertyDefinition `yaml:"properties,omitempty" json:"properties,omitempty"`
 }
 
+func NewArtifactType() ArtifactType {
+	return ArtifactType{
+		Properties: make(map[string]PropertyDefinition),
+	}
+}
+
 type ArtifactDefinition struct {
 
 	// short notation:
