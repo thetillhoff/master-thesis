@@ -20,8 +20,8 @@ type CSAR struct {
 	// This references an unambiguous set of files containing substitution templates that can be used to implement nodes defined in the main template (i.e. the file declared in Entry-Definitions). Thus, all the topology templates defined in files listed under the Other-Definitions key are to be used only as substitution templates, and not as standalone services. If such a topology template cannot act as a substitution template, it will be ignored by the orchestrator. The value of the Other-Definitions key is a string containing a list of filenames (relative to the root of the CSAR archive) delimited by a blank space. If the filenames contain blank spaces, the filename should be enclosed by double quotation marks (“)
 	OtherDefinitions string `yaml:"Other-Definitions,omitempty" json:"Other-Definitions,omitempty"`
 
-	ServiceTemplate       tosca.ServiceTemplate   // Holds contents of main serviceTemplate
-	OtherServiceTemplates []tosca.ServiceTemplate // Holds contents of serviceTemplates declared in otherDefinitions
+	ServiceTemplate tosca.ServiceTemplate            // Holds contents of main serviceTemplate
+	imports         map[string]tosca.ServiceTemplate // Holds contents of imports. Key is the namespace. Default namespace is "" (empty == Root namespace).
 }
 
 // Used when loading metadata files from CSAR archives

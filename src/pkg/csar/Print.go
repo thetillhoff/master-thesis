@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func PrintCSAR(archive CSAR) {
+func (archive CSAR) Print() {
 	var (
 		err         error
 		archiveYaml string

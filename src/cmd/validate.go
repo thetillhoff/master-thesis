@@ -64,9 +64,13 @@ var validateCmd = &cobra.Command{
 		// 	x.ValidateConstraints() // <- missing value to validate
 		// }
 
-		archive.ServiceTemplate = archive.ServiceTemplate.ResolveDerivations()
+		//archive.ServiceTemplate = archive.ResolveDerivations()
 
-		csar.PrintCSAR(archive)
+		// archive.Print()
+
+		if debug {
+			log.Println("len(nodeTypes):", len(archive.ServiceTemplate.NodeTypes))
+		}
 	},
 }
 

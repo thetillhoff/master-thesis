@@ -1,0 +1,726 @@
+tosca_definitions_version: tosca_2_0
+
+profile: org.oasis-open.tosca.simple:2.0 # OR io.kubernetes:1.18
+
+metadata:
+  creation_date: 2021-08-15
+  date_updated: 2021-08-15
+  status: developmental
+  template_name: Webapp example with Tosca 2.0
+  template_author: Till Hoffmann
+  template_version: 0.0.1
+
+description: This template's purpose is to demonstrate how a demo-application (more specifically a webapp) is defined (and worked with on the orchestrators' side.
+
+# An example import of definitions files from a location relative to the
+# file location of the service template declaring the import.
+imports:
+- url: example_tosca_simple_yaml_1_3/service_template.yaml
+- url: importable_types/service_template.yaml
+  namespace: importable
+#   - relative_path/my_defns/my_typesdefs_1.yaml
+#   - url: my_defns/my_typesdefs_n.yaml
+#     repository: my_company_repo
+#     namespace: mycompany
+#   - profile: org.base.v1
+#     namespace: p1 # usage like `type: p1:Host`
+
+artifact_types:
+  HtmlFile:
+    derived_from: tosca.artifacts.File
+    description: HTML file artifact type
+    mime_type: text/html
+    file_ext: [ html ]
+
+data_types:
+  # TODO: webapp-credentials?
+
+capability_types:
+
+  tosca.capabilities.Compute: # taken from tosca simple profile 5.5.3
+    # The Compute capability, when included on a Node Type or Template definition, indicates that the node can provide hosting on a named compute resource.
+    derived_from: tosca.capabilities.Container
+    properties:
+      name:
+        type: string
+        required: false
+      num_cpus:
+        type: integer
+        required: false
+        constraints:
+          - greater_or_equal: 1
+      cpu_frequency:
+        type: scalar-unit.frequency
+        required: false
+        constraints:
+          - greater_or_equal: 0.1 GHz
+      disk_size:
+        type: scalar-unit.size
+        required: false
+        constraints:
+          - greater_or_equal: 0 MB
+      mem_size:
+        type: scalar-unit.size
+        required: false
+        constraints:
+          - greater_or_equal: 0 MB
+
+  tosca.capabilities.Network: # taken from tosca simple profile 5.5.4
+    # The Storage capability, when included on a Node Type or Template definition, indicates that the node can provide addressiblity for the resource a named network with the specified ports.
+    derived_from: tosca.capabilities.Root
+    properties:
+      name:
+        type: string
+        required: false
+
+  tosca.capabilities.Storage: # taken from tosca simple profile 5.5.5
+    # The Storage capability, when included on a Node Type or Template definition, indicates that the node can provide a named storage location with specified size range.
+    derived_from: tosca.capabilities.Root
+    properties:
+      name:
+        type: string
+        required: false
+
+  tosca.capabilities.Container: # taken from tosca simple profile 5.5.6
+    # The Container capability, when included on a Node Type or Template definition, indicates that the node can act as a container for (or a host for) one or more other declared Node Types.
+    derived_from: tosca.capabilities.Root
+
+  tosca.capabilities.Endpoint: # taken from tosca simple profile 5.5.7
+  # This is the default TOSCA type that should be used or extended to define a network endpoint capability. This includes the information to express a basic endpoint with a single port or a complex endpoint with multiple ports.  By default the Endpoint is assumed to represent an address on a private network unless otherwise specified.
+    derived_from: tosca.capabilities.Root
+    properties:
+      protocol:
+        type: string
+        required: true
+        default: tcp
+      port: # either port or ports has to be filled -> why not unify to ports with min-length of one? doesnt make sense
+        type: PortDef
+        required: false
+      secure:
+        type: boolean
+        required: false
+      url_path:
+        type: string
+        required: false
+      port_name: # ?
+        type: string
+        required: false
+      network_name: # ?
+        type: string
+        required: false
+        default: PRIVATE
+      initiator: # ?
+        type: string
+        required: false
+        default: source
+        constraints:
+          - valid_values: [ source, target, peer ]
+      ports: # map? named map? why no list and have description?
+        type: map
+        required: false
+        constraints:
+          - min_length: 1
+        entry_schema:
+          type: PortSpec
+    attributes:
+      ip_address:
+        type: string
+  
+  tosca.capabilities.Endpoint.Public: # taken from tosca simple profile 5.5.8
+    # This capability represents a public endpoint which is accessible to the general internet (and its public IP address ranges).
+    # This public endpoint capability also can be used to create a floating (IP) address that the underlying network assigns from a pool allocated from the application’s underlying public network.  This floating address is managed by the underlying network such that can be routed an application’s private address and remains reliable to internet clients.
+    derived_from: tosca.capabilities.Endpoint
+    properties:
+      # Change the default network_name to use the first public network found
+      network_name:
+        type: string
+        default: PUBLIC
+        constraints:
+          - equal: PUBLIC
+      floating:
+        description: >
+          indicates that the public address should be allocated from a pool of floating IPs that are associated with the network.
+        type: boolen
+        default: false
+        status: experimental
+      dns_name: # if set, orchestrator should register dns-entry at dns-registry automatically
+        description: The optional name to register with DNS
+        type: string
+        required: false
+        status: experimental
+
+  tosca.capabilities.Endpoint.Admin: # taken from tosca simple profile 5.5.9
+    # This is the default TOSCA type that should be used or extended to define a specialized administrator endpoint capability.
+    derived_from: tosca.capabilities.Endpoint
+    # Change Endpoint secure indicator to true from its default value of false
+    properties:
+      secure:
+        type: boolean
+        default: true
+        constraints:
+          - equal: true
+
+  tosca.capabilities.Endpoint.Database: # taken from tosca simple profile 5.5.10 # why is this necessary? could just be endpoint?
+    # This is the default TOSCA type that should be used or extended to define a specialized database endpoint capability.
+    derived_from: tosca.capabilitis.Endpoint
+
+  tosca.capabilities.Attachment: # taken from tosca simple profile 5.5.11
+    # This is the default TOSCA type that should be used or extended to define an attachment capability of a (logical) infrastructure device node (e.g., BlockStorage node).
+    derived_from: tosca.capabilities.Root
+
+  tosca.capabilities.OperatingSystem: # taken from tosca simple profile 5.5.12
+    # This is the default TOSCA type that should be used to express an Operating System capability for a node.  
+    derived_from: tosca.capabilities.Root
+    properties:
+      architecture:
+        type: string
+        required: false
+
+  tosca.capabilities.Scalable: # taken from tosca simple profile 5.5.13
+    # This is the default TOSCA type that should be used to express a scalability capability for a node.  
+    derived_from: tosca.capabilities.Root
+    properties:
+      min_instances:
+        type: integer
+        default: 1
+      max_instances:
+        type: integer
+        default: 1
+      default_instances:
+        type: integer
+  
+  tosca.capabilities.Bindable: # taken from tosca simple profile 5.5.14
+    # A node type that includes the Bindable capability indicates that it can be bound to a logical network association via a network port.
+    derived_from: tosca.capabilities.Node
+  
+interface_types:
+  mycompany.interfaces.service.Signal:
+    operations:
+      signal_begin_receive:
+        description: Operation to signal start of some message processing.
+      signal_end_receive:
+        description: Operation to signal end of some message processed.
+  mycompany.mytypes.myinterfaces.MyConfigure:
+    derived_from: tosca.interfaces.relationship.Root
+    description: My custom configure Interface Type
+    inputs:
+      mode:
+        type: string
+    operations:
+      pre_configure_service:
+        description: pre-configure operation for my service
+      post_configure_service:
+        description: post-configure operation for my service
+
+node_types:
+  derivedFromImportable:
+    derived_from: importable:importableNodeType
+    properties:
+      password:
+        type: string
+        description: The password.
+
+  tosca.nodes.Root: # taken from tosca simple profile 5.9.1
+    derived_from: tosca.entity.Root # ??? THIS IS NEVER EVER DEFINED ANYWHERE IN EITHER SPEC
+    description: The TOSCA Node Type all other TOSCA base Node Types derive from
+    attributes:
+      tosca_id:
+        type: string
+      tosca_name:
+        type: string
+      state:
+        type: string
+    capabilities:
+      feature:
+        type: tosca.capabilities.Node
+    requirements:
+      - dependency:
+          capability: tosca.capabilities.Node
+          node: tosca.nodes.Root
+          relationship: tosca.relationships.DependsOn
+          occurences: [ 0, UNBOUNDED ]
+
+  tosca.nodes.WebApplication: # originally taken from tosca simple profile 5.9.6 but altered a lot
+    derived_from: tosca.nodes.Root
+    properties:
+      scheme:
+        type: string
+        required: false
+        default: http
+        description: >
+          Defines which scheme/protocol this webapp uses.
+          Example:
+          A value of "https" would result in a webapp reachable at "https://<host>:<port>/<path>"
+      host: # == domain
+        type: string
+        required: true
+        description: >
+          The web application’s context root which designates the application’s URL path within the web server it is hosted on.
+          Example:
+          A value of "somedomain.tld" would result in a webapp reachable at "somedomain.tld:<port>/thisapp/".
+      port:
+        type: integer
+        required: false
+        default: 80
+      path:
+        type: string
+        required: true
+        description: >
+          The web application’s context root which designates the application’s URL path within the web server it is hosted on.
+          Example:
+          A value of "thisapp/" would result in a webapp reachable at "<host>:<port>/thisapp/".
+    artifacts:
+      index.html: #TODO
+    requirements:
+      - host:
+          capability: tosca.capabilities.Compute
+          node: tosca.nodes.WebServer
+          relationship: tosca.relationships.HostedOn
+
+  tosca.nodes.SoftwareComponent: # taken from tosca simple profile 5.9.4
+    derived_from: tosca.nodes.Root
+    properties:
+      # domain-specific software component version
+      component_version:
+        type: version
+        required: false
+      admin_credential:
+        type: tosca.datatypes.Credential
+        required: false
+    requirements:
+      - host:
+          capability: tosca.capabilities.Compute
+          node: tosca.nodes.Compute
+          relationship: tosca.relationships.HostedOn
+  
+  tosca.nodes.WebServer: # taken from tosca simple profile 5.9.5
+    derived_from: tosca.nodes.SoftwareComponent
+    capabilities:
+      data_endpoint: tosca.capabilities.Endpoint
+      #admin_endpoint: tosca.capabilities.Endpoint.Admin # not needed here
+      host:
+        type: tosca.capabilities.Compute
+        valid_source_types: [ tosca.nodes.WebApplication ]
+
+  tosca.nodes.Database : # taken from tosca simple profile 5.9.8
+    derived_from: tosca.nodes.Root
+    properties:
+      name:
+        type: string
+        description: The logical name of the database
+      port:
+        type: integer
+        description: The port the underlying database service will listen for connections
+      user:
+        type: string
+        description: The optional user account name for DB administration
+        required: false
+      password:
+        type: string
+        description: The optional password for the DB user
+    requirements:
+      - host:
+          capability: tosca.capabilites.Compute
+          node: tosca.nodes.DBMS
+          relationship: tosca.relationships.HostedOn
+    capabilities:
+      database_endpoint:
+        type: tosca.capabilities.Endpoint.Database
+
+  tosca.nodes.DBMS: # taken from tosca simple profile 5.9.7
+    derived_from: tosca.nodes.SoftwareComponent
+    properties:
+      root_password:
+        type: string
+        required: false
+        description: The optional root password for the DBMS service.
+      port:
+        type: integer
+        required: false
+        description: The port othe DBMS service will listen to for connections. Default varies per DBMS.
+      capabilities:
+        host:
+          type: tosca.capabilities.Compute
+          valid_source_types: [tosca.nodes.Database]
+
+  tosca.nodes.Abstract.Compute:
+    derived_from: tosca.nodes.Root
+    capabilities:
+      host:
+        type: tosca.capabilities.Compute
+        valid_source_types: []
+
+  tosca.nodes.Compute: # taken from tosca simple profile 5.9.3
+    derived_from: tosca.nodes.Abstract.Compute
+    attributes:
+      private_address:
+        type: string
+      public_address:
+        type: string
+      networks:
+        type: map
+        entry_schema:
+          type: tosca.datatypes.network.NetworkInfo
+      ports:
+        type: map
+        entry_schema:
+          type: tosca.datatypes.network.PortInfo
+    requirements:
+      - local_storage:
+          capability: tosca.capabilities.Attachment
+          node: tosca.nodes.Storage.BlockStorage
+          relationship: tosca.relationships.AttachesTo
+          occurrences: [0, UNBOUNDED]  
+    capabilities:
+      host:
+        type: tosca.capabilities.Compute
+        valid_source_types: [tosca.nodes.SoftwareComponent]
+      endpoint:
+        type: tosca.capabilities.Endpoint.Admin
+      os:
+        type: tosca.capabilities.OperatingSystem
+      scalable:
+        type: tosca.capabilities.Scalable
+      binding:
+        type: tosca.capabilities.network.Bindable
+
+  tosca.nodes.Abstract.Storage: # taken from tosca simple profile 5.9.9
+    derived_from: tosca.nodes.Root
+    properties:
+      name:
+        type: string
+      size:
+        type: scalar-unit.size
+        default: 0 MB
+        constraints:
+          - greater_or_equal: 0 MB
+    capabilities: #TBD
+  Storage.ObjectStorage: #TBD
+  Storage.BlockStorage: #TBD
+
+  tosca.capabilities.OperatingSystem: #TBD (capability of Compute)
+
+  FileSystem: #TBD
+  FileSystem.NTFS: #TBD
+  FileSystem.FAT: #TBD
+  FileSystem.exFAT: #TBD
+  FileSystem.BTRFS: #TBD
+  FileSystem.ZFS: #TBD
+  FileSystem.EXT3: #TBD
+
+  Folder: #TBD
+  File: #TBD (exists somewhere)
+  File.Archive: #TBD: allow input as archive, extract to destination (with arguments like --strip)
+
+  Drive: #TBD
+    # mount-point on host
+    # serial number
+    # vendor
+    # model
+    # capacity
+  Drive.SSD: #TBD SATA,SAS,M2 (NVMe) (length) -> requirement
+  Drive.HDD: #TBD SATA,SAS
+  Drive.Thumbdrive: #TBD -> requires USB
+  Drive.CD: #TBD
+  Drive.DVD: #TBD
+  Drive.Virtual: #TBD for iso files -> no host requirement except only OS-level
+    # iso file as artifact
+
+  Case: #TBD mb-formfactors, drive-slots, ...
+  Case.19inch: # property for number of U
+  Case.Tower: #TBD
+  
+  Mainboard: #TBD SATA,SAS, M2 (NVMe) (length), PCIeSlot, USB -> capability
+  PCIeCard: #TBD
+  PCIeCard.GraphicCard: #TBD
+  PCIeCard.NetworkCard: #TBD number of jacks
+
+  # my_company.my_types.my_app_node_type: # example leftover
+  #   derived_from: tosca.nodes.SoftwareComponent
+  #   description: My company’s custom applicaton
+  #   properties:
+  #     num_cpus:
+  #       type: integer
+  #       description: Number of CPUs requested for a software node instance.
+  #       default: 1
+  #       required: true
+  #       constraints:
+  #         - valid_values: [ 1, 2, 4, 8 ]
+  #     my_app_password:
+  #       type: string
+  #       description: application password
+  #       constraints:
+  #         - min_length: 6
+  #         - max_length: 10
+  #   attributes:
+  #     my_app_port:
+  #       type: integer
+  #       description: application port number
+  #   requirements:
+  #     - some_database:
+  #         capability: EndPoint.Database
+  #         node: Database   
+  #         relationship: ConnectsTo
+
+group_types:
+  mycompany.mytypes.myScalingGroup:
+    derived_from: tosca.groups.Root
+  mycompany.mytypes.groups.placement:
+    description: My company’s group type for placing nodes of type Compute
+    members: [ tosca.nodes.Compute ]
+
+
+policy_types:
+  mycompany.mytypes.myScalingPolicy:
+    derived_from: tosca.policies.Scaling
+  mycompany.mytypes.policies.placement.Container.Linux:
+    description: My company’s placement policy for linux
+    derived_from: tosca.policies.Root
+
+
+topology_template:
+  inputs:
+    fooName:
+      type: string
+      description: Simple string typed parameter definition with no constraints.
+      default: bar
+    SiteName:
+      type: string
+      description: string typed parameter definition with constraints
+      default: My Site
+      constraints:
+        - min_length: 9
+    cpus:
+      type: integer
+      constraints:
+        less_than: 2 # OR use “defaults” key
+    cpus2:
+      type: integer
+      description: Number of CPUs for the server.
+      constraints:
+        - valid_values: [ 1, 2, 4, 8 ]
+
+  node_templates:
+    my_webapp_node_template:
+      type: WebApplication
+    my_database_node_template:
+      type: Database
+    server1:
+      type: tosca.nodes.Compute
+      # more details ...
+    server2:
+      type: tosca.nodes.Compute
+      # more details ...
+    server3:
+      type: tosca.nodes.Compute
+      # more details ...
+    some_service:
+      type: MyService
+      properties:
+        rate: 100
+      interfaces:
+        Standard:
+          start: scripts/start_server.sh
+        Configure:
+          pre_configure_source:
+            implementation:
+              primary: scripts/pre_configure_source.sh
+              dependencies:
+                - scripts/setup.sh
+                - binaries/library.rpm
+                - scripts/register.py
+        Configure2:
+          pre_configure_source:
+            implementation:
+              primary:
+                file: scripts/pre_configure_source.sh
+                type: tosca.artifacts.Implementation.Bash
+                repository: my_service_catalog
+              dependencies:
+                - file : scripts/setup.sh
+                  type : tosca.artifacts.Implementation.Bash
+                  repository : my_service_catalog
+    mysql:
+      type: tosca.nodes.DBMS.MySQL
+      properties:
+        root_password: { get_input: my_mysql_rootpw }
+        port: { get_input: my_mysql_port }
+      requirements:
+        - host: db_server
+        - host:
+            node: tosca.nodes.Compute
+            node_filter:
+              capabilities:
+                - host:
+                    properties:
+                      - num_cpus: { in_range: [ 1, 4 ] }
+                      - mem_size: { greater_or_equal: 512 MB }
+                - os:
+                    properties:
+                      - architecture: { equal: x86_64 }
+                      - type: { equal: linux }
+                      - distribution: { equal: ubuntu }
+                - mytypes.capabilities.compute.encryption:
+                    properties:
+                      - algorithm: { equal: aes }
+                      - keylength: { valid_values: [ 128, 256 ] }
+      interfaces:
+        Standard:
+          operations:
+            configure: scripts/my_own_configure.sh
+      some_node_template:
+    capabilities:
+      some_capability:
+        properties:
+          limit: 100
+    my_application_node_template: # Example of a requirement fulfilled by a specific web server node template
+      type: tosca.nodes.WebApplication
+      #...
+      requirements:
+        - host:
+            node: tosca.nodes.WebServer
+    my_application_node_template2: # Example of a (database) requirement that is fulfilled by a node template named “my_database”, but also requires a custom database connection relationship
+      requirements:
+        - database:
+            node: my_database
+            capability: Endpoint.Database
+            relationship: my.types.CustomDbConnection
+    my_critical_application_node_template: # Example of a (redundant_database) requirement that is fulfilled by two node templates named “database1” and “database1
+      requirements:
+        - redundant_database: database1
+        - redundant_database: database2
+    my_node_template:
+      # other details omitted for brevity
+      requirements:
+        - host:
+            node_filter:
+              capabilities:
+                # My “host” Compute node needs these properties:     
+                - host:
+                    properties:
+                      - num_cpus: { in_range: [ 1, 4 ] }
+                      - mem_size: { greater_or_equal: 512 MB }
+      artifacts:
+        my_file_artifact: ../my_apps_files/operation_artifact.txt
+        sw_image:
+          description: Image for virtual machine
+          type: tosca.artifacts.Deployment.Image.VM
+          file: http://10.10.86.141/images/Juniper_vSRX_15.1x49_D80_preconfigured.qcow2
+          checksum: ba411cafee2f0f702572369da0b765e2
+          version: 3.2
+          checksum_algorithm: MD5
+          properties:
+            name: vSRX
+            container_format: BARE
+            disk_format: QCOW2
+            min_disk: 1 GB
+            size: 649 MB
+    load_balancer:
+      # The following example snippet shows an imaginary relationship definition from a load-balancer node to worker nodes. A script is defined for the add_target operation of the Configure interface of the relationship, and the ip_address attribute of the target is specified as input to the script:
+      # The add_target operation will be invoked, whenever a new target member is being added to the load-balancer. With the above inputs declaration, a member_ip environment variable that will hold the IP address of the target being added will be provided to the configure_members.py script. In addition, the IP addresses of all current load-balancer members will be provided as environment variables with a naming scheme of <target node ID>_member_ip. This will allow, for example, scripts that always just write the complete list of load-balancer members into a configuration file to do so instead of updating existing list, which might be more complicated.
+      # Assuming that the TOSCA application instance includes five load-balancer members, node1 through node5, where node5 is the current target being added, the following environment variables (plus potentially more variables) will be provided to the script:
+      # # the ID of the current target and the IDs of all targets     
+      # TARGET=node5
+      # TARGETS=node1,node2,node3,node4,node5
+      # # the input for the current target and the inputs of all targets
+      # member_ip=10.0.0.5
+      # node1_member_ip=10.0.0.1
+      # node2_member_ip=10.0.0.2
+      # node3_member_ip=10.0.0.3
+      # node4_member_ip=10.0.0.4
+      # node5_member_ip=10.0.0.5
+      type: some.vendor.LoadBalancer
+      requirements:
+        - member:
+            relationship: some.vendor.LoadBalancerToMember
+            interfaces:
+              Configure:
+                add_target:
+                  inputs:
+                    member_ip: { get_attribute: [ TARGET, ip_address ] }
+                  implementation: scripts/configure_members.py
+  relationship_templates:
+    my_connectsto_relationship:
+      type: tosca.relationships.ConnectsTo
+      interfaces:
+        Configure:
+          inputs:
+            speed: { get_attribute: [ SOURCE, connect_speed ] }
+    storage_attachment:
+      type: AttachesTo
+      properties:
+        location: /my_mount_point
+  outputs:
+    server_address:
+      description: The first private IP address for the provisioned server.
+      value: { get_attribute: [ node5, networks, private, addresses, 0 ] }
+    server_ip:
+      description: The private IP address of the provisioned server.
+      value: { get_attribute: [ my_server, private_address ] }
+    some_output:
+      description: Concatenate the URL for a server from other template values
+      server_url:
+      value: { concat: [ 'http://',
+                        get_attribute: [ server, public_address ],
+                        ':',
+                        get_attribute: [ server, port ] ] }
+    example1:
+      # Result: prefix_1111_suffix
+      value: { join: [ ["prefix", 1111, "suffix" ], "_" ] }
+    example2:
+      # Result: 9.12.1.10,9.12.1.20
+      value: { join: [ { get_input: my_IPs }, “,” ] }
+    webserver_port:
+      description: the port provided at the end of my server’s endpoint’s IP address
+      value: { token: [ get_attribute: [ my_server, data_endpoint, ip_address ],
+                       ‘:’,
+                       1 ] }
+  groups:
+    # server2 and server3 are part of the same group
+    server_group_1:
+      type: tosca.groups.Root
+      members: [ server2, server3 ]
+    my_app_placement_group:
+      type: tosca.groups.Root
+      description: My application’s logical component grouping for placement
+      members: [ my_web_server, my_sql_database ]
+  policies:
+    - my_placement_policy:
+        type: mycompany.mytypes.policy.placement
+    - my_compute_placement_policy:
+      type: tosca.policies.placement
+      description: Apply my placement policy to my application’s servers
+      targets: [ my_server_1, my_server_2 ]
+      # remainder of policy definition left off for brevity
+  substitution_mappings:  # docs are incomplete
+    first_mapping:
+      node_type: MyService
+      properties:  # Do not care if running or matching (e.g., Compute node)
+        # get from outside? Get from constraint?
+        num_cpus: cpus # Implied “PUSH”
+        # get from some node in the topology…
+        num_cpus: [ <node>, <cap>, <property> ]
+        # 1) Running
+        architecture:
+          # a) Explicit
+          value: { get_property: [some_service, architecture] }
+          # b) implicit
+          value: [ some_service, <req | cap name>, <property name> architecture ]
+          default: “amd”
+          # c) INPUT mapping?
+          #???
+        # 2) Catalog (Matching)
+        architecture:
+          contraints:
+            equals: “x86”
+      capabilities:
+        bar: [ some_service, bar ]
+        some_capability: mytypes.mycapabilities.MyCapabilityTypeName # Simple notation, no properties need to be refined
+        some_capability2: # Full notation, refining properties
+          type: mytypes.mycapabilities.MyCapabilityTypeName
+          properties:
+            limit:
+              default: 100
+      requirements:
+        foo: [ some_service, foo ]
+

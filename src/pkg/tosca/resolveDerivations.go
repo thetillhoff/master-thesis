@@ -97,7 +97,7 @@ func (artifactType ArtifactType) resolveArtifactTypeDerivation(serviceTemplate S
 	newArtifactType = NewArtifactType()
 
 	if artifactType.DerivedFrom != "" { // Only if derived_from is set
-		if value, ok := serviceTemplate.ArtifactTypes[artifactType.DerivedFrom]; ok {
+		if value, ok := serviceTemplate.ArtifactTypes[artifactType.DerivedFrom]; ok { // Check if derivedFrom type exists
 			parentArtifactType = value
 			if parentArtifactType.DerivedFrom != "" {
 				parentArtifactType, err = parentArtifactType.resolveArtifactTypeDerivation(serviceTemplate) // recursion

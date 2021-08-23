@@ -47,7 +47,7 @@ type ServiceTemplate struct { // [tosca spec 2.0, 4.2.1.1]
 	PolicyTypes map[string]PolicyType `yaml:"policy_types,omitempty" json:"policy_types,omitempty"`
 
 	// Defines the topology template of an application or service, consisting of node templates that represent the application’s or service’s components, as well as relationship templates representing relations between the components.
-	TopologyTemplate TopologyTemplateDefinition `yaml:"topology_template,omitempty" json:"topology_template,omitempty"`
+	TopologyTemplate TopologyTemplate `yaml:"topology_template,omitempty" json:"topology_template,omitempty"`
 }
 
 // func (serviceTemplate ServiceTemplate) getParentType(name string) (error, interface{}) {
