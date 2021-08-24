@@ -7,6 +7,11 @@ type AbstractType struct {
 	// An optional parent type name from which this type derives.
 	DerivedFrom string `yaml:"derived_from,omitempty" json:"derived_from,omitempty"`
 
+	// A list which contains the list of all ancestors. Ancestors are retrieved by following the chain of "DerivedFrom" parents.
+	//
+	// Own addition
+	derivedFromAncestors []string
+
 	// An optional version for the type definition.
 	//
 	// Has to be a string sadly, since go doesn't support chaining types (Version inherits from AbstractType indirectly, so it can't be used here).

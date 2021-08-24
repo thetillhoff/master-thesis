@@ -48,7 +48,7 @@ var validateCmd = &cobra.Command{
 
 		if debug {
 			// Set debug for imports
-			csar.Debug = debug
+			csar.Debug()
 
 			log.Println("INF debug:", debug)
 

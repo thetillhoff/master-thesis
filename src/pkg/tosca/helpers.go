@@ -20,3 +20,12 @@ type Indexable interface {
 	MinLength(arg Comparable) bool
 	MaxLength(arg Comparable) bool
 }
+
+func listContainsString(l []string, e string) bool {
+	for _, listEntry := range l {
+		if listEntry == e {
+			return true
+		}
+	}
+	return false
+}

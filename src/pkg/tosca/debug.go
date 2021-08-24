@@ -1,6 +1,4 @@
-package csar
-
-import "github.com/thetillhoff/eat/pkg/tosca"
+package tosca
 
 var (
 	debug bool = false // Output more verbose when true
@@ -8,5 +6,4 @@ var (
 
 func Debug() {
 	debug = true
-	tosca.Debug()
 }

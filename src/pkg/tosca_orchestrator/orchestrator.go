@@ -17,6 +17,10 @@ func Install(serviceTemplate tosca.ServiceTemplate) {
 	// 	fmt.Println(key, value)
 	// }
 
+	serviceTemplate.NodeTypes["derivedFromImportable"].Properties["test"] = tosca.PropertyDefinition{Description: "Testproperty description"}
+
+	fmt.Println(serviceTemplate.NodeTypes["derivedFromImportable"])
+
 	fmt.Println("len(NodeTypes[derivedFromImportable].Properties):", len(serviceTemplate.NodeTypes["derivedFromImportable"].Properties))
 	// for key, value := range serviceTemplate.NodeTypes["derivedFromImportable"].Properties {
 	// 	fmt.Println(key, value)

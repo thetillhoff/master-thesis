@@ -25,14 +25,14 @@ func LoadFromPath(csarPath string) CSAR {
 
 	// Detect whether folder or zip-file is provided (only by extension for now)
 	if path.Ext(csarPath) == ".zip" {
-		if Debug {
+		if debug {
 			log.Println("INF The provided CSAR archive is in zip format.")
 		}
 		archiveContents = loadZipContents(csarPath)
 		// For zip-variant remove the extension from csarPath (required later for "level"-checking).
 		csarPath = strings.TrimSuffix(csarPath, path.Ext(csarPath))
 	} else {
-		if Debug {
+		if debug {
 			log.Println("INF The provided CSAR archive is in folder format.")
 		}
 		archiveContents = loadFolderContents(csarPath)
@@ -52,16 +52,16 @@ func LoadFromPath(csarPath string) CSAR {
 		}
 
 		for elementPath = range archiveContents {
-			if Debug {
-				log.Println("INF Checking file at '" + elementPath + "'.")
+			if debug {
 			}
 			if (path.Ext(elementPath) == ".yaml" || path.Ext(elementPath) == ".yml") && path.Dir(elementPath) == csarPath { // If yaml-file exists at root of CSAR (".yaml" OR ".yml")
-				if Debug {
+				if debug {
 					log.Println("INF Entry-file detected at '" + elementPath + "'.")
 				}
 				if archive.EntryDefinition != "" { // If another EntryDefinition was already detected == If another yaml-file exists at root of CSAR
 					log.Println("ERR Invalid CSAR file. No dedicated metadata and ambiguous entry-files detected.")
-					if Debug {
+					if debug {
+						// Print additional debug information
 						log.Println(archive.EntryDefinition)
 						log.Println(elementPath)
 						log.Fatal()
@@ -77,7 +77,7 @@ func LoadFromPath(csarPath string) CSAR {
 
 				// Parse Entry-Definitions yaml-file
 				// otherDefinitionsFilepaths: Stays empty; "Note that in a CSAR without TOSCA-metadata it is not possible to unambiguously include definitions for substitution templates as we can have only one topology template defined in a yaml file."
-				archive.ServiceTemplate = parseServiceTemplate(archive.EntryDefinition, csarPath)
+				archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
 
 				// Try to parse metadata out of entry-file.
 				archive.CsarVersion = translateToscaDefinitionsVersion(archive.ServiceTemplate.ToscaDefinitionsVersion)
@@ -90,7 +90,7 @@ func LoadFromPath(csarPath string) CSAR {
 		}
 	}
 
-	archive = archive.createSingleServiceTemplate()
+	// archive = archive.createSingleServiceTemplate()
 
 	return archive
 }

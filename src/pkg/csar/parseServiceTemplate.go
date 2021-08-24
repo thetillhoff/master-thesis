@@ -8,9 +8,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Input content of EntryDefinitionsFile and optionally space-seperated list of paths to OtherDefinitions
+// Input path to serviceTemplate and optionally space-seperated list of paths to OtherDefinitions (==serviceTemplates with substitutions).
 //
-// Returns full TOSCA service template and list of full TOSCA service templates declared in otherDefinitions
+// Returns full TOSCA service template, with completed substitutions.
 //
 // NOTE: Actual imports and substitutions happen at runtime
 func parseServiceTemplate(relativePath string, otherDefinitionsFilepaths string) tosca.ServiceTemplate {
@@ -36,7 +36,7 @@ func parseServiceTemplate(relativePath string, otherDefinitionsFilepaths string)
 		log.Fatalln("ERR Invalid serviceTemplate. First line must define 'tosca_definitions_version'.")
 	}
 
-	// Parse EntryDefinitions and add them to serviceTemplate
+	// Parse serviceTemplateContents
 	err = yaml.Unmarshal([]byte(serviceTemplateContent), &serviceTemplate)
 	if err != nil {
 		log.Fatalf("ERR Cannot unmarshal data: %v", err)
@@ -55,11 +55,22 @@ func parseServiceTemplate(relativePath string, otherDefinitionsFilepaths string)
 		otherServiceTemplates = append(otherServiceTemplates, otherServiceTemplate)
 
 	}
-
 	// TODO: Implement substitution contained in otherServiceTemplates here. Return only one serviceTemplate later on.
 	// otherServiceTemplates contains absolue/relative paths IN the CSAR package.
 
 	// Note that any further TOSCA definitions files required by the definitions specified by Entry-Definitions or Other-Definitions can be found by a TOSCA orchestrator by processing respective imports statements. Note also that artifact files (e.g. scripts, binaries, configuration files) used by the TOSCA definitions and included in the CSAR are fully described and referred via relative path names in artifact definitions in the respective TOSCA definitions files contained in the CSAR.
+
+	if debug {
+		var totalTypes int = len(serviceTemplate.ArtifactTypes) +
+			len(serviceTemplate.DataTypes) +
+			len(serviceTemplate.CapabilityTypes) +
+			len(serviceTemplate.InterfaceTypes) +
+			len(serviceTemplate.RelationshipTypes) +
+			len(serviceTemplate.NodeTypes) +
+			len(serviceTemplate.GroupTypes) +
+			len(serviceTemplate.PolicyTypes)
+		log.Println("INF Parsed ServiceTemplate from '"+relativePath+"' contained", totalTypes, "own Types.")
+	}
 
 	return serviceTemplate
 }
