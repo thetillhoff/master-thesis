@@ -1,7 +1,7 @@
 package tosca
 
 type RequirementDefinition struct {
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	// The optional description of the Requirement definition.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`

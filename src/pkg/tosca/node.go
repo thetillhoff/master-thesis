@@ -1,8 +1,15 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 // A Node Type is a reusable entity that defines the type of one or more Node Templates. As such, a Node Type defines the structure of observable properties and attributes, the capabilities and requirements of the node as well as its supported interfaces and the artifacts it uses.
 type NodeType struct {
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
@@ -54,8 +61,26 @@ func NewNodeType() NodeType {
 	}
 }
 
+func (nodeType NodeType) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&nodeType)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
+}
+
 type NodeTemplate struct {
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	// [mandatory] The name of the Node Type the Node Template is based upon.
 	NodeType string `yaml:"node_type,omitempty" json:"node_type,omitempty"`
@@ -99,7 +124,7 @@ type NodeTemplate struct {
 }
 
 type NodeFilter struct {
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	// An optional list of property filters that will be used to select (filter) matching TOSCA entities (e.g., Node Template, Node Type, Capability Types, etc.) based upon their property definitions’ values.
 	Properties []PropertyFilterDefinition `yaml:"properties,omitempty" json:"properties,omitempty"`

@@ -3,7 +3,7 @@ package tosca
 import "reflect"
 
 type EquallableTypeRoot struct {
-	Equallable
+	Equallable `yaml:",omitempty" json:",omitempty"`
 }
 
 func (value EquallableTypeRoot) Equals(arg Equallable) bool {

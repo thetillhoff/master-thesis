@@ -1,5 +1,12 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 type ImportDefinition struct {
 	// imports can relate to profiles OR service template
 
@@ -19,6 +26,24 @@ type ImportDefinition struct {
 	//
 	// The seperator between namespaces and "normal" names is the colon ':'.
 	Namespace string `yaml:"namespace,omitempty" json:"namespace,omitempty"`
+}
+
+func (importDefinition ImportDefinition) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&importDefinition)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
 }
 
 // Custom unmarshaller, since both single-line and multi-line grammar have to be supported

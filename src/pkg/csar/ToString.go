@@ -2,16 +2,14 @@ package csar
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 
 	"gopkg.in/yaml.v3"
 )
 
-func (archive CSAR) Print() {
+func (archive CSAR) ToString() string {
 	var (
 		err         error
-		archiveYaml string
 		buffer      bytes.Buffer
 		yamlEncoder *yaml.Encoder
 	)
@@ -24,7 +22,5 @@ func (archive CSAR) Print() {
 	}
 	defer yamlEncoder.Close()
 
-	archiveYaml = buffer.String()
-
-	fmt.Println(archiveYaml)
+	return buffer.String()
 }

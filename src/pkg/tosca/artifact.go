@@ -1,5 +1,12 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 type ArtifactType struct {
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
@@ -29,6 +36,24 @@ func NewArtifactType() ArtifactType {
 	return ArtifactType{
 		Properties: make(map[string]PropertyDefinition),
 	}
+}
+
+func (artifactType ArtifactType) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&artifactType)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
 }
 
 type ArtifactDefinition struct {

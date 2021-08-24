@@ -1,5 +1,12 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 type GroupType struct {
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
@@ -47,6 +54,24 @@ func NewGroupType() GroupType {
 		Properties: make(map[string]PropertyDefinition),
 		Attributes: make(map[string]AttributeDefinition),
 	}
+}
+
+func (groupType GroupType) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&groupType)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
 }
 
 type GroupDefinition struct {

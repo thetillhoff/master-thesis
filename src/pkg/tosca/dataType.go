@@ -1,7 +1,14 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 type DataType struct {
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
@@ -40,4 +47,22 @@ func NewDataType() DataType {
 		Constraints: make([]map[Operator]interface{}, 0),
 		Properties:  make(map[string]PropertyDefinition),
 	}
+}
+
+func (dataType DataType) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&dataType)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
 }

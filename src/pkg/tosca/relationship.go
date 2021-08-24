@@ -1,5 +1,12 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 type RelationshipType struct {
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
@@ -20,6 +27,24 @@ func NewRelationshipType() RelationshipType {
 		Attributes: make(map[string]AttributeDefinition),
 		Interfaces: make(map[string]InterfaceDefinition),
 	}
+}
+
+func (relationshipType RelationshipType) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&relationshipType)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
 }
 
 // The following keywords MAY be used in place of a node or relationship template name:

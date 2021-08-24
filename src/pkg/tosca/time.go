@@ -3,7 +3,7 @@ package tosca
 import "time"
 
 type Time struct {
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	Value time.Duration `yaml:",inline,omitempty" json:",inline,omitempty"`
 

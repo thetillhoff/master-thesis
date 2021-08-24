@@ -1,5 +1,12 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 // interfaceTypes MUST NOT include any implementations for defined operations or notifications.
 type InterfaceType struct {
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
@@ -20,6 +27,24 @@ func NewInterfaceType() InterfaceType {
 		Operations:    make(map[string]OperationDefinition),
 		Notifications: make(map[string]NotificationDefinition),
 	}
+}
+
+func (interfaceType InterfaceType) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&interfaceType)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
 }
 
 // An Interface definition defines an interface (containing operations and notifications definitions) that can be associated with (i.e. defined within) a Node or Relationship Type definition (including Interface definitions in Requirements definitions). An Interface definition may be refined in subsequent Node or Relationship Type derivations.

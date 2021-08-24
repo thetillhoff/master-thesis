@@ -1,5 +1,12 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 // A Policy Type defines a type of a policy that affects or governs an application or service’s topology at some stage of its lifecycle, but is not explicitly part of the topology itself (i.e., it does not prevent the application or service from being deployed or run if it did not exist).
 type PolicyType struct {
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
@@ -40,6 +47,24 @@ func NewPolicyType() PolicyType {
 		Properties: make(map[string]PropertyDefinition),
 		Triggers:   make(map[string]TriggerDefinition),
 	}
+}
+
+func (policyType PolicyType) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&policyType)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
 }
 
 // A policy definition defines a policy that can be associated with a TOSCA topology or top-level entity definition (e.g., group definition, node template, etc.).

@@ -3,7 +3,7 @@ package tosca
 import "code.cloudfoundry.org/bytefmt"
 
 type Size struct {
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	Value uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is byte
 

@@ -1,5 +1,12 @@
 package tosca
 
+import (
+	"bytes"
+	"log"
+
+	"gopkg.in/yaml.v3"
+)
+
 type CapabilityType struct {
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
@@ -29,6 +36,24 @@ func NewCapabilityType() CapabilityType {
 		Properties: make(map[string]PropertyDefinition),
 		Attributes: make(map[string]AttributeDefinition),
 	}
+}
+
+func (capabilityType CapabilityType) ToString() string {
+	var (
+		err         error
+		buffer      bytes.Buffer
+		yamlEncoder *yaml.Encoder
+	)
+
+	yamlEncoder = yaml.NewEncoder(&buffer)
+	yamlEncoder.SetIndent(2) // Default is 4 spaces
+	err = yamlEncoder.Encode(&capabilityType)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer yamlEncoder.Close()
+
+	return buffer.String()
 }
 
 func (src CapabilityType) Equal(dest CapabilityType) bool {

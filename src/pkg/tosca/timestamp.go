@@ -3,7 +3,7 @@ package tosca
 import "time"
 
 type Timestamp struct { // example: 2021-08-11T11:09:32
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	Value time.Time `yaml:",inline,omitempty" json:",inline,omitempty"`
 }

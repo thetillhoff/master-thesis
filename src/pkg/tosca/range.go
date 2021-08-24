@@ -9,7 +9,7 @@ import (
 
 // Keyword "UNBOUND" is mapped to nil.
 type Range struct { // example: [ 1, 4 ]
-	EquallableTypeRoot
+	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	LowerBound   Comparable
 	NoLowerBound bool
