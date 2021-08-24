@@ -16,8 +16,6 @@ type Version struct {
 	FixVersion   int    `yaml:"fix_version,omitempty" json:"fix_version,omitempty"`
 	Qualifier    string `yaml:"qualifier,omitempty" json:"qualifier,omitempty"`
 	BuildVersion int    `yaml:"build_version,omitempty" json:"build_version,omitempty"`
-
-	// version string // TODO: only allow specific version types (f.e. SEMVER)
 }
 
 func ParseVersion(input string) (Version, error) {

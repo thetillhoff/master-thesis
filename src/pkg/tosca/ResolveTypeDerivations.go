@@ -9,49 +9,49 @@ func (serviceTemplate ServiceTemplate) ResolveTypeDerivations() ServiceTemplate 
 
 	// ArtifactType
 	for typeName, typeDefinition := range serviceTemplate.ArtifactTypes {
-		serviceTemplate.ArtifactTypes[typeName] = ResolveArtifactTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		serviceTemplate.ArtifactTypes[typeName] = resolveArtifactTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// DataType
 	for typeName, typeDefinition := range serviceTemplate.DataTypes {
-		serviceTemplate.DataTypes[typeName] = ResolveDataTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		serviceTemplate.DataTypes[typeName] = resolveDataTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// CapabilityType
 	for typeName, typeDefinition := range serviceTemplate.CapabilityTypes {
-		serviceTemplate.CapabilityTypes[typeName] = ResolveCapabilityTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		serviceTemplate.CapabilityTypes[typeName] = resolveCapabilityTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// InterfaceType
 	for typeName, typeDefinition := range serviceTemplate.InterfaceTypes {
-		serviceTemplate.InterfaceTypes[typeName] = ResolveInterfaceTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		serviceTemplate.InterfaceTypes[typeName] = resolveInterfaceTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// RelationshipType
 	for typeName, typeDefinition := range serviceTemplate.RelationshipTypes {
-		serviceTemplate.RelationshipTypes[typeName] = ResolveRelationshipTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		serviceTemplate.RelationshipTypes[typeName] = resolveRelationshipTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// NodeType
 	for typeName, typeDefinition := range serviceTemplate.NodeTypes {
-		serviceTemplate.NodeTypes[typeName] = ResolveNodeTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		serviceTemplate.NodeTypes[typeName] = resolveNodeTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// GroupType
 	for typeName, typeDefinition := range serviceTemplate.GroupTypes {
-		serviceTemplate.GroupTypes[typeName] = ResolveGroupTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		serviceTemplate.GroupTypes[typeName] = resolveGroupTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// PolicyType
 	for typeName, typeDefinition := range serviceTemplate.PolicyTypes {
-		serviceTemplate.PolicyTypes[typeName] = ResolvePolicyTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		serviceTemplate.PolicyTypes[typeName] = resolvePolicyTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	return serviceTemplate
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, serviceTemplate ServiceTemplate) ArtifactType {
+func resolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, serviceTemplate ServiceTemplate) ArtifactType {
 	var (
 		parent  ArtifactType
 		newType ArtifactType = NewArtifactType()
@@ -72,7 +72,7 @@ func ResolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, s
 		parent = serviceTemplate.ArtifactTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveArtifactTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
+		parent = resolveArtifactTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -94,6 +94,8 @@ func ResolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, s
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, parent.derivedFromAncestors...)
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, thisType.DerivedFrom)
+	} else if thisType.DerivedFrom == "" { // If derivation is NOT necessary
+		newType = thisType
 	}
 
 	// return fully derived type (== derivedFromAncestors is filled with all necessary Ancestors AND properties etc contain all derived values)
@@ -101,40 +103,39 @@ func ResolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, s
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveDataTypeDerivation(thisTypeName string, thisType DataType, serviceTemplate ServiceTemplate) DataType {
+func resolveDataTypeDerivation(thisTypeName string, thisType DataType, serviceTemplate ServiceTemplate) DataType {
 	var (
 		parent  DataType
 		newType DataType = NewDataType()
 
 		emptySchema SchemaDefinition
+
+		normativeTypes []string = []string{"string", "integer", "float", "boolean", "byte", "frequency", "time", "timestamp", "size", "range", "map", "list"}
 	)
-	// If derivation is necessary AND not already done
+
+	// If derivation is necessary AND not already done AND not derived from a normativeType
 	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving DataType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
-		// check whether parent exists, if not: fail
-		if _, ok := serviceTemplate.DataTypes[thisType.DerivedFrom]; !ok {
-			log.Fatalln("ERR No DataType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		// If thisType is derived from normativeType, don't derive further
+		if listContainsString(normativeTypes, thisType.DerivedFrom) {
+			return thisType
+		} else {
+			// check whether parent exists, if not: fail
+			if _, ok := serviceTemplate.DataTypes[thisType.DerivedFrom]; !ok {
+				log.Fatalln("ERR No DataType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+			}
+
+			// retrieve parent type by name with serviceTemplate.DataTypes[type.derivedFrom]
+			parent = serviceTemplate.DataTypes[thisType.DerivedFrom]
+
+			// run same derivation for parent (recursion), which returns fully derived parent
+			parent = resolveDataTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 		}
 
-		// retrieve parent type by name with serviceTemplate.DataTypes[type.derivedFrom]
-		parent = serviceTemplate.DataTypes[thisType.DerivedFrom]
-
-		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveDataTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
-
 		// Resolve derivation with type and (now fully derived) parent
-
-		// TODO
-		// if dataType.DerivedFrom != "" { // Only if derived_from is set
-		// 	switch dataType.DerivedFrom { // "standard datatypes"
-		// 	case "string":
-		// 		parentDataType = DataType{}
-		// 	case "integer":
-		// 		parentDataType = DataType{}
-		// 	default:
 
 		// First, add the parent Constraints
 		newType.Constraints = append(newType.Constraints, parent.Constraints...)
@@ -165,6 +166,8 @@ func ResolveDataTypeDerivation(thisTypeName string, thisType DataType, serviceTe
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, parent.derivedFromAncestors...)
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, thisType.DerivedFrom)
+	} else if thisType.DerivedFrom == "" { // If derivation is NOT necessary
+		newType = thisType
 	}
 
 	// return fully derived type (== derivedFromAncestors is filled with all necessary Ancestors AND properties etc contain all derived values)
@@ -172,7 +175,7 @@ func ResolveDataTypeDerivation(thisTypeName string, thisType DataType, serviceTe
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveCapabilityTypeDerivation(thisTypeName string, thisType CapabilityType, serviceTemplate ServiceTemplate) CapabilityType {
+func resolveCapabilityTypeDerivation(thisTypeName string, thisType CapabilityType, serviceTemplate ServiceTemplate) CapabilityType {
 	var (
 		parent  CapabilityType
 		newType CapabilityType = NewCapabilityType()
@@ -193,7 +196,7 @@ func ResolveCapabilityTypeDerivation(thisTypeName string, thisType CapabilityTyp
 		parent = serviceTemplate.CapabilityTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveCapabilityTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
+		parent = resolveCapabilityTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -234,7 +237,7 @@ func ResolveCapabilityTypeDerivation(thisTypeName string, thisType CapabilityTyp
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType, serviceTemplate ServiceTemplate) InterfaceType {
+func resolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType, serviceTemplate ServiceTemplate) InterfaceType {
 	var (
 		parent  InterfaceType
 		newType InterfaceType = NewInterfaceType()
@@ -255,7 +258,7 @@ func ResolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType,
 		parent = serviceTemplate.InterfaceTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveInterfaceTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
+		parent = resolveInterfaceTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -289,6 +292,8 @@ func ResolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType,
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, parent.derivedFromAncestors...)
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, thisType.DerivedFrom)
+	} else if thisType.DerivedFrom == "" { // If derivation is NOT necessary
+		newType = thisType
 	}
 
 	// return fully derived type (== derivedFromAncestors is filled with all necessary Ancestors AND properties etc contain all derived values)
@@ -296,7 +301,7 @@ func ResolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType,
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveRelationshipTypeDerivation(thisTypeName string, thisType RelationshipType, serviceTemplate ServiceTemplate) RelationshipType {
+func resolveRelationshipTypeDerivation(thisTypeName string, thisType RelationshipType, serviceTemplate ServiceTemplate) RelationshipType {
 	var (
 		parent  RelationshipType
 		newType RelationshipType = NewRelationshipType()
@@ -317,7 +322,7 @@ func ResolveRelationshipTypeDerivation(thisTypeName string, thisType Relationshi
 		parent = serviceTemplate.RelationshipTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveRelationshipTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
+		parent = resolveRelationshipTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -360,6 +365,8 @@ func ResolveRelationshipTypeDerivation(thisTypeName string, thisType Relationshi
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, parent.derivedFromAncestors...)
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, thisType.DerivedFrom)
+	} else if thisType.DerivedFrom == "" { // If derivation is NOT necessary
+		newType = thisType
 	}
 
 	// return fully derived type (== derivedFromAncestors is filled with all necessary Ancestors AND properties etc contain all derived values)
@@ -367,7 +374,7 @@ func ResolveRelationshipTypeDerivation(thisTypeName string, thisType Relationshi
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTemplate ServiceTemplate) NodeType {
+func resolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTemplate ServiceTemplate) NodeType {
 	var (
 		parent  NodeType
 		newType NodeType = NewNodeType()
@@ -388,7 +395,7 @@ func ResolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTe
 		parent = serviceTemplate.NodeTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveNodeTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
+		parent = resolveNodeTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -470,7 +477,7 @@ func ResolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTe
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveGroupTypeDerivation(thisTypeName string, thisType GroupType, serviceTemplate ServiceTemplate) GroupType {
+func resolveGroupTypeDerivation(thisTypeName string, thisType GroupType, serviceTemplate ServiceTemplate) GroupType {
 	var (
 		parent  GroupType
 		newType GroupType = NewGroupType()
@@ -491,7 +498,7 @@ func ResolveGroupTypeDerivation(thisTypeName string, thisType GroupType, service
 		parent = serviceTemplate.GroupTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveGroupTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
+		parent = resolveGroupTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -525,6 +532,8 @@ func ResolveGroupTypeDerivation(thisTypeName string, thisType GroupType, service
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, parent.derivedFromAncestors...)
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, thisType.DerivedFrom)
+	} else if thisType.DerivedFrom == "" { // If derivation is NOT necessary
+		newType = thisType
 	}
 
 	// return fully derived type (== derivedFromAncestors is filled with all necessary Ancestors AND properties etc contain all derived values)
@@ -532,7 +541,7 @@ func ResolveGroupTypeDerivation(thisTypeName string, thisType GroupType, service
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, serviceTemplate ServiceTemplate) PolicyType {
+func resolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, serviceTemplate ServiceTemplate) PolicyType {
 	var (
 		parent  PolicyType
 		newType PolicyType = NewPolicyType()
@@ -553,7 +562,7 @@ func ResolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, servi
 		parent = serviceTemplate.PolicyTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolvePolicyTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
+		parent = resolvePolicyTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -587,6 +596,8 @@ func ResolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, servi
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, parent.derivedFromAncestors...)
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, thisType.DerivedFrom)
+	} else if thisType.DerivedFrom == "" { // If derivation is NOT necessary
+		newType = thisType
 	}
 
 	// return fully derived type (== derivedFromAncestors is filled with all necessary Ancestors AND properties etc contain all derived values)

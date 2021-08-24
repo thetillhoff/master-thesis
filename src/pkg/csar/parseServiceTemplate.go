@@ -42,6 +42,32 @@ func parseServiceTemplate(relativePath string, otherDefinitionsFilepaths string)
 		log.Fatalf("ERR Cannot unmarshal data: %v", err)
 	}
 
+	// Initialize maps even if empty
+	if len(serviceTemplate.ArtifactTypes) == 0 {
+		serviceTemplate.ArtifactTypes = make(map[string]tosca.ArtifactType)
+	}
+	if len(serviceTemplate.DataTypes) == 0 {
+		serviceTemplate.DataTypes = make(map[string]tosca.DataType)
+	}
+	if len(serviceTemplate.CapabilityTypes) == 0 {
+		serviceTemplate.CapabilityTypes = make(map[string]tosca.CapabilityType)
+	}
+	if len(serviceTemplate.InterfaceTypes) == 0 {
+		serviceTemplate.InterfaceTypes = make(map[string]tosca.InterfaceType)
+	}
+	if len(serviceTemplate.RelationshipTypes) == 0 {
+		serviceTemplate.RelationshipTypes = make(map[string]tosca.RelationshipType)
+	}
+	if len(serviceTemplate.NodeTypes) == 0 {
+		serviceTemplate.NodeTypes = make(map[string]tosca.NodeType)
+	}
+	if len(serviceTemplate.GroupTypes) == 0 {
+		serviceTemplate.GroupTypes = make(map[string]tosca.GroupType)
+	}
+	if len(serviceTemplate.PolicyTypes) == 0 {
+		serviceTemplate.PolicyTypes = make(map[string]tosca.PolicyType)
+	}
+
 	// Load contents of otherDefinitions and merge them into serviceTemplate
 	// TODO this should resolve the substitions defined in otherDefinitions instead of just merging it
 	for _, filepath = range strings.Split(otherDefinitionsFilepaths, " ") {

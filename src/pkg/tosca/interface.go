@@ -57,7 +57,7 @@ type InterfaceDefinition struct {
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// The optional map of input parameter refinements and new input parameter definitions available to all operations defined for this interface (the input parameters to be refined have been defined in the Interface Type definition).
-	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"` // TODO OR parameter refinements
+	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"`
 
 	// The optional map of operations refinements for this interface. The referred operations must have been defined in the Interface Type definition.
 	Operations map[string]OperationDefinition `yaml:"operations,omitempty" json:"operations,omitempty"`
