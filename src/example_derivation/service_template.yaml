@@ -24,63 +24,63 @@ imports:
 #   - profile: org.base.v1
 #     namespace: p1 # usage like `type: p1:Host`
 
-artifact_types:
-  HtmlFile:
-    derived_from: tosca.artifacts.File
-    description: HTML file artifact type
-    mime_type: text/html
-    file_ext: [ html ]
+# artifact_types:
+#   HtmlFile:
+#     derived_from: tosca.artifacts.File
+#     description: HTML file artifact type
+#     mime_type: text/html
+#     file_ext: [ html ]
 
 data_types:
   # TODO: webapp-credentials?
 
 node_types:
   derivedFromImportable:
-    derived_from: importable:importableNodeType
+    derived_from: importable:importable.importableNodeType
     properties:
       password:
         type: string
-        description: The password.
+        description: The password of root:derivedFromImportable.
 
-  Storage.ObjectStorage: #TBD
-  Storage.BlockStorage: #TBD
+  # Storage.ObjectStorage: #TBD
+  # Storage.BlockStorage: #TBD
 
-  tosca.capabilities.OperatingSystem: #TBD (capability of Compute)
+  # tosca.capabilities.OperatingSystem: #TBD (capability of Compute)
 
-  FileSystem: #TBD
-  FileSystem.NTFS: #TBD
-  FileSystem.FAT: #TBD
-  FileSystem.exFAT: #TBD
-  FileSystem.BTRFS: #TBD
-  FileSystem.ZFS: #TBD
-  FileSystem.EXT3: #TBD
+  # FileSystem: #TBD
+  # FileSystem.NTFS: #TBD
+  # FileSystem.FAT: #TBD
+  # FileSystem.exFAT: #TBD
+  # FileSystem.BTRFS: #TBD
+  # FileSystem.ZFS: #TBD
+  # FileSystem.EXT3: #TBD
 
-  Folder: #TBD
-  File: #TBD (exists somewhere)
-  File.Archive: #TBD: allow input as archive, extract to destination (with arguments like --strip)
+  # Folder: #TBD
+  # File: #TBD (exists somewhere)
+  # File.Archive: #TBD: allow input as archive, extract to destination (with arguments like --strip)
 
-  Drive: #TBD
-    # mount-point on host
-    # serial number
-    # vendor
-    # model
-    # capacity
-  Drive.SSD: #TBD SATA,SAS,M2 (NVMe) (length) -> requirement
-  Drive.HDD: #TBD SATA,SAS
-  Drive.Thumbdrive: #TBD -> requires USB
-  Drive.CD: #TBD
-  Drive.DVD: #TBD
-  Drive.Virtual: #TBD for iso files -> no host requirement except only OS-level
-    # iso file as artifact
+  # Drive: #TBD
+  #   # mount-point on host
+  #   # serial number
+  #   # vendor
+  #   # model
+  #   # capacity
+  # Drive.SSD: #TBD SATA,SAS,M2 (NVMe) (length) -> requirement
+  # Drive.HDD: #TBD SATA,SAS
+  # Drive.Thumbdrive: #TBD -> requires USB
+  # Drive.CD: #TBD
+  # Drive.DVD: #TBD
+  # Drive.Virtual: #TBD for iso files -> no host requirement except only OS-level
+  #   # iso file as artifact
 
-  Case: #TBD mb-formfactors, drive-slots, ...
-  Case.19inch: # property for number of U
-  Case.Tower: #TBD
+  # Case: #TBD mb-formfactors, drive-slots, ...
+  # Case.19inch: # property for number of U
+  # Case.Tower: #TBD
   
-  Mainboard: #TBD SATA,SAS, M2 (NVMe) (length), PCIeSlot, USB -> capability
-  PCIeCard: #TBD
-  PCIeCard.GraphicCard: #TBD
-  PCIeCard.NetworkCard: #TBD number of jacks
+  # Mainboard: #TBD SATA,SAS, M2 (NVMe) (length), PCIeSlot, USB -> capability
+  # PCIeCard: #TBD
+  # PCIeCard.GraphicCard: #TBD
+  # PCIeCard.NetworkCard: #TBD number of jacks
 
 topology_template:
   inputs:

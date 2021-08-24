@@ -1,0 +1,9 @@
+tosca_definitions_version: tosca_2_0
+
+node_types:
+  otherimportable.importableNodeType:
+    properties:
+      port:
+        type: integer
+        required: false
+        description: The port of other_importable_types:importableNodeType.

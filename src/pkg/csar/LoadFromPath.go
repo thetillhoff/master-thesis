@@ -40,10 +40,10 @@ func LoadFromPath(csarPath string) CSAR {
 
 	if archiveContents["TOSCA.meta"] != "" { // If metadata is located at root of CSAR
 		archive = unmarshalMetadata(archiveContents["TOSCA.meta"])
-		archive.ServiceTemplate = parseServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
+		archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
 	} else if archiveContents["TOSCA-Metadata/TOSCA.meta"] != "" { // If metadata is located in dedicated metadata subdirectory
 		archive = unmarshalMetadata(archiveContents["TOSCA-Metadata/TOSCA.meta"])
-		archive.ServiceTemplate = parseServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
+		archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
 	} else { // If only one yaml-file exists at root of CSAR assume metadata is embedded in that file
 		archive.EntryDefinition = "" // Initialize
 
@@ -53,6 +53,7 @@ func LoadFromPath(csarPath string) CSAR {
 
 		for elementPath = range archiveContents {
 			if debug {
+				log.Println("INF Checking file at '" + elementPath + "' whether it is a valid Entry-file.")
 			}
 			if (path.Ext(elementPath) == ".yaml" || path.Ext(elementPath) == ".yml") && path.Dir(elementPath) == csarPath { // If yaml-file exists at root of CSAR (".yaml" OR ".yml")
 				if debug {

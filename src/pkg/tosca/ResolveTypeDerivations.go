@@ -1,53 +1,57 @@
 package tosca
 
+import (
+	"log"
+)
+
 // Resolve derivation for all types in provided serviceTemplate
 func (serviceTemplate ServiceTemplate) ResolveTypeDerivations() ServiceTemplate {
 
 	// ArtifactType
 	for typeName, typeDefinition := range serviceTemplate.ArtifactTypes {
-		serviceTemplate.ArtifactTypes[typeName] = ResolveArtifactTypeDerivation(typeDefinition, serviceTemplate)
+		serviceTemplate.ArtifactTypes[typeName] = ResolveArtifactTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// DataType
 	for typeName, typeDefinition := range serviceTemplate.DataTypes {
-		serviceTemplate.DataTypes[typeName] = ResolveDataTypeDerivation(typeDefinition, serviceTemplate)
+		serviceTemplate.DataTypes[typeName] = ResolveDataTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// CapabilityType
 	for typeName, typeDefinition := range serviceTemplate.CapabilityTypes {
-		serviceTemplate.CapabilityTypes[typeName] = ResolveCapabilityTypeDerivation(typeDefinition, serviceTemplate)
+		serviceTemplate.CapabilityTypes[typeName] = ResolveCapabilityTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// InterfaceType
 	for typeName, typeDefinition := range serviceTemplate.InterfaceTypes {
-		serviceTemplate.InterfaceTypes[typeName] = ResolveInterfaceTypeDerivation(typeDefinition, serviceTemplate)
+		serviceTemplate.InterfaceTypes[typeName] = ResolveInterfaceTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// RelationshipType
 	for typeName, typeDefinition := range serviceTemplate.RelationshipTypes {
-		serviceTemplate.RelationshipTypes[typeName] = ResolveRelationshipTypeDerivation(typeDefinition, serviceTemplate)
+		serviceTemplate.RelationshipTypes[typeName] = ResolveRelationshipTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// NodeType
 	for typeName, typeDefinition := range serviceTemplate.NodeTypes {
-		serviceTemplate.NodeTypes[typeName] = ResolveNodeTypeDerivation(typeDefinition, serviceTemplate)
+		serviceTemplate.NodeTypes[typeName] = ResolveNodeTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// GroupType
 	for typeName, typeDefinition := range serviceTemplate.GroupTypes {
-		serviceTemplate.GroupTypes[typeName] = ResolveGroupTypeDerivation(typeDefinition, serviceTemplate)
+		serviceTemplate.GroupTypes[typeName] = ResolveGroupTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// PolicyType
 	for typeName, typeDefinition := range serviceTemplate.PolicyTypes {
-		serviceTemplate.PolicyTypes[typeName] = ResolvePolicyTypeDerivation(typeDefinition, serviceTemplate)
+		serviceTemplate.PolicyTypes[typeName] = ResolvePolicyTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	return serviceTemplate
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveArtifactTypeDerivation(thisType ArtifactType, serviceTemplate ServiceTemplate) ArtifactType {
+func ResolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, serviceTemplate ServiceTemplate) ArtifactType {
 	var (
 		parent  ArtifactType
 		newType ArtifactType = NewArtifactType()
@@ -59,13 +63,16 @@ func ResolveArtifactTypeDerivation(thisType ArtifactType, serviceTemplate Servic
 			log.Println("INF Deriving ArtifactType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
+		// check whether parent exists, if not: fail
+		if _, ok := serviceTemplate.ArtifactTypes[thisType.DerivedFrom]; !ok {
+			log.Fatalln("ERR No ArtifactType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		}
 
 		// retrieve parent type by name with serviceTemplate.ArtifactTypes[type.derivedFrom]
-		// TODO add check whether parent exists, if not: fail; else
 		parent = serviceTemplate.ArtifactTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveArtifactTypeDerivation(parent, serviceTemplate)
+		parent = ResolveArtifactTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -94,27 +101,29 @@ func ResolveArtifactTypeDerivation(thisType ArtifactType, serviceTemplate Servic
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveDataTypeDerivation(thisType DataType, serviceTemplate ServiceTemplate) DataType {
+func ResolveDataTypeDerivation(thisTypeName string, thisType DataType, serviceTemplate ServiceTemplate) DataType {
 	var (
 		parent  DataType
 		newType DataType = NewDataType()
 
 		emptySchema SchemaDefinition
 	)
+	// If derivation is necessary AND not already done
+	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving DataType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
-	// if type.derivedFrom != "" AND ! derivedFromAncestors.contains(derivedFrom) (== derivation not already done)
-	if thisType.DerivedFrom != "" && (!listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom)) {
-		//     except when type.derivedFrom == string, integer, float, ... // TODO what if? -> rethink with DataTypes in mind
+		// check whether parent exists, if not: fail
+		if _, ok := serviceTemplate.DataTypes[thisType.DerivedFrom]; !ok {
+			log.Fatalln("ERR No DataType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		}
 
 		// retrieve parent type by name with serviceTemplate.DataTypes[type.derivedFrom]
-		// TODO add check whether parent exists, if not: fail; else
 		parent = serviceTemplate.DataTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveDataTypeDerivation(parent, serviceTemplate)
+		parent = ResolveDataTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -163,22 +172,28 @@ func ResolveDataTypeDerivation(thisType DataType, serviceTemplate ServiceTemplat
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveCapabilityTypeDerivation(thisType CapabilityType, serviceTemplate ServiceTemplate) CapabilityType {
+func ResolveCapabilityTypeDerivation(thisTypeName string, thisType CapabilityType, serviceTemplate ServiceTemplate) CapabilityType {
 	var (
 		parent  CapabilityType
 		newType CapabilityType = NewCapabilityType()
 	)
 
+	// If derivation is necessary AND not already done
+	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving CapabilityType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
+		// check whether parent exists, if not: fail
+		if _, ok := serviceTemplate.CapabilityTypes[thisType.DerivedFrom]; !ok {
+			log.Fatalln("ERR No CapabilityType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		}
+
 		// retrieve parent type by name with serviceTemplate.CapabilityTypes[type.derivedFrom]
-		// TODO add check whether parent exists, if not: fail; else
 		parent = serviceTemplate.CapabilityTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveCapabilityTypeDerivation(parent, serviceTemplate)
+		parent = ResolveCapabilityTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -219,22 +234,28 @@ func ResolveCapabilityTypeDerivation(thisType CapabilityType, serviceTemplate Se
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveInterfaceTypeDerivation(thisType InterfaceType, serviceTemplate ServiceTemplate) InterfaceType {
+func ResolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType, serviceTemplate ServiceTemplate) InterfaceType {
 	var (
 		parent  InterfaceType
 		newType InterfaceType = NewInterfaceType()
 	)
 
+	// If derivation is necessary AND not already done
+	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving InterfaceType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
+		// check whether parent exists, if not: fail
+		if _, ok := serviceTemplate.InterfaceTypes[thisType.DerivedFrom]; !ok {
+			log.Fatalln("ERR No InterfaceType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		}
+
 		// retrieve parent type by name with serviceTemplate.InterfaceTypes[type.derivedFrom]
-		// TODO add check whether parent exists, if not: fail; else
 		parent = serviceTemplate.InterfaceTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveInterfaceTypeDerivation(parent, serviceTemplate)
+		parent = ResolveInterfaceTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -275,22 +296,28 @@ func ResolveInterfaceTypeDerivation(thisType InterfaceType, serviceTemplate Serv
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveRelationshipTypeDerivation(thisType RelationshipType, serviceTemplate ServiceTemplate) RelationshipType {
+func ResolveRelationshipTypeDerivation(thisTypeName string, thisType RelationshipType, serviceTemplate ServiceTemplate) RelationshipType {
 	var (
 		parent  RelationshipType
 		newType RelationshipType = NewRelationshipType()
 	)
 
+	// If derivation is necessary AND not already done
+	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving RelationshipType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
+		// check whether parent exists, if not: fail
+		if _, ok := serviceTemplate.RelationshipTypes[thisType.DerivedFrom]; !ok {
+			log.Fatalln("ERR No RelationshipType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		}
+
 		// retrieve parent type by name with serviceTemplate.RelationshipTypes[type.derivedFrom]
-		// TODO add check whether parent exists, if not: fail; else
 		parent = serviceTemplate.RelationshipTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveRelationshipTypeDerivation(parent, serviceTemplate)
+		parent = ResolveRelationshipTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -340,32 +367,44 @@ func ResolveRelationshipTypeDerivation(thisType RelationshipType, serviceTemplat
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveNodeTypeDerivation(thisType NodeType, serviceTemplate ServiceTemplate) NodeType {
+func ResolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTemplate ServiceTemplate) NodeType {
 	var (
 		parent  NodeType
 		newType NodeType = NewNodeType()
 	)
 
+	// If derivation is necessary AND not already done
+	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving NodeType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
+		// check whether parent exists, if not: fail
+		if _, ok := serviceTemplate.NodeTypes[thisType.DerivedFrom]; !ok {
+			log.Fatalln("ERR No NodeType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		}
+
 		// retrieve parent type by name with serviceTemplate.NodeTypes[type.derivedFrom]
-		// TODO add check whether parent exists, if not: fail; else
 		parent = serviceTemplate.NodeTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveNodeTypeDerivation(parent, serviceTemplate)
+		parent = ResolveNodeTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
 		// First, derive the parent Properties
 		for key, value := range parent.Properties {
 			newType.Properties[key] = value
+			if debug {
+				log.Println("INF parent property key:", key)
+			}
 		}
 		// Then, add/overwrite with child Properties
 		for key, value := range thisType.Properties {
 			newType.Properties[key] = value
+			if debug {
+				log.Println("INF child property key:", key)
+			}
 		}
 
 		// First, derive the parent Attributes
@@ -422,6 +461,8 @@ func ResolveNodeTypeDerivation(thisType NodeType, serviceTemplate ServiceTemplat
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, parent.derivedFromAncestors...)
 		newType.derivedFromAncestors = append(newType.derivedFromAncestors, thisType.DerivedFrom)
+	} else if thisType.DerivedFrom == "" { // If derivation is NOT necessary
+		newType = thisType
 	}
 
 	// return fully derived type (== derivedFromAncestors is filled with all necessary Ancestors AND properties etc contain all derived values)
@@ -429,22 +470,28 @@ func ResolveNodeTypeDerivation(thisType NodeType, serviceTemplate ServiceTemplat
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolveGroupTypeDerivation(thisType GroupType, serviceTemplate ServiceTemplate) GroupType {
+func ResolveGroupTypeDerivation(thisTypeName string, thisType GroupType, serviceTemplate ServiceTemplate) GroupType {
 	var (
 		parent  GroupType
 		newType GroupType = NewGroupType()
 	)
 
+	// If derivation is necessary AND not already done
+	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving GroupType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
+		// check whether parent exists, if not: fail
+		if _, ok := serviceTemplate.GroupTypes[thisType.DerivedFrom]; !ok {
+			log.Fatalln("ERR No GroupType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		}
+
 		// retrieve parent type by name with serviceTemplate.GroupTypes[type.derivedFrom]
-		// TODO add check whether parent exists, if not: fail; else
 		parent = serviceTemplate.GroupTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolveGroupTypeDerivation(parent, serviceTemplate)
+		parent = ResolveGroupTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 
@@ -485,22 +532,28 @@ func ResolveGroupTypeDerivation(thisType GroupType, serviceTemplate ServiceTempl
 }
 
 // Resolve derivation of this type only - but completely (recursive)
-func ResolvePolicyTypeDerivation(thisType PolicyType, serviceTemplate ServiceTemplate) PolicyType {
+func ResolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, serviceTemplate ServiceTemplate) PolicyType {
 	var (
 		parent  PolicyType
 		newType PolicyType = NewPolicyType()
 	)
 
+	// If derivation is necessary AND not already done
+	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving PolicyType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
 
+		// check whether parent exists, if not: fail
+		if _, ok := serviceTemplate.PolicyTypes[thisType.DerivedFrom]; !ok {
+			log.Fatalln("ERR No PolicyType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
+		}
+
 		// retrieve parent type by name with serviceTemplate.PolicyTypes[type.derivedFrom]
-		// TODO add check whether parent exists, if not: fail; else
 		parent = serviceTemplate.PolicyTypes[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
-		parent = ResolvePolicyTypeDerivation(parent, serviceTemplate)
+		parent = ResolvePolicyTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
 
 		// Resolve derivation with type and (now fully derived) parent
 

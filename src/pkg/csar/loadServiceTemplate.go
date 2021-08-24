@@ -18,19 +18,23 @@ func loadServiceTemplate(serviceTemplatePath string, otherDefinitions string) to
 		importedServiceTemplate tosca.ServiceTemplate
 	)
 
-	// Chaining imports is possible in tosca!
-
 	// parse Service Template at path into serviceTemplate variable, so imports and types are filled
 	serviceTemplate = parseServiceTemplate(serviceTemplatePath, otherDefinitions)
 
 	// for each importDefinition of serviceTemplate.imports:
 	for _, importDefinition := range serviceTemplate.Imports {
+
+		if importDefinition.Url == "" {
+			log.Fatalln("ERR Imports can currently only be defined with Url. Other fields are ignored.")
+		}
+
 		// create path to should-be-imported serviceTemplate
 		// path.Dir is required, since path.Join does something like Join("a/b/c.yaml","../y/z.yaml")=>"a/b/y/z.yaml" -> This means the filename has to be removed before joining.
 		importPath = path.Join(path.Dir(serviceTemplatePath), importDefinition.Url)
 
-		// load ServiceTemplate of importDefinition (recursion, ignore otherDefinition (=="")) into importedServiceTemplate -> might contain types like "someNodeType" but also "chainedImport:someNodeType"
-		importedServiceTemplate = loadServiceTemplate(importPath, otherDefinitions) // otherDefinitions could also be meant to substitute nodes in imports. Therefore it has to be passed on recursion
+		// load ServiceTemplate of importDefinition (recursion) into importedServiceTemplate -> might contain types like "someNodeType" but also "chainedImport:someNodeType"
+		// otherDefinitions could also be meant to substitute nodes in imports. Therefore it has to be passed in recursion
+		importedServiceTemplate = loadServiceTemplate(importPath, otherDefinitions)
 
 		// if namespace of importDefinition is named
 		if importDefinition.Namespace != "" {
