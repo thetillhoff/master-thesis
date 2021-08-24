@@ -23,15 +23,17 @@ RUN apk add \
 
 # Create a user (e.g. build) and add them to the abuild group
 #RUN adduser -h /home/build -D build -G abuild
+RUN adduser build -G abuild
 
 # Give administrative access to the abuild group
 #RUN echo "build ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/abuild
+RUN echo "%abuild ALL=(ALL) ALL" > /etc/sudoers.d/abuild
 
 # Change to the build user
-#USER build
+USER build
 
 # # Then create signing keys (-i installs them in /etc/apk/keys which is required for later)
-# RUN abuild-keygen -i -a
+RUN abuild-keygen -i -a
 
 # # Tip: Make sure your public keys are placed in /etc/apk/keys/ (example: build-xxxxxxxx.rsa.pub)
 # RUN ls /etc/apk/keys/
