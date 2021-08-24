@@ -63,7 +63,7 @@ type PreconditionDefinition struct {
 	// list_of_condition_clause_definition: represents the list of condition clauses to be evaluated. The value of the resulting condition is evaluated as an AND clause between the different elements.
 
 	// [mandatory] The target of the precondition (this can be a node template name, a group name)
-	Target string `yaml:"target,omitempty" json:"target,omitempty"`
+	Target string `yaml:"target" json:"target"`
 
 	// The optional name of a requirement of the target in case the precondition has to be processed on a relationship rather than a node or group. Note that this is applicable only if the target is a node.
 	TargetRelationship string `yaml:"target_relationship,omitempty" json:"target_relationship,omitempty"`
@@ -98,7 +98,7 @@ type StepDefinition struct {
 	// target_step_name: represents the name of another step of the workflow.
 
 	// [mandatory] The target of the step (this can be a node template name, a group name)
-	Target string `yaml:"target,omitempty" json:"target,omitempty"`
+	Target string `yaml:"target" json:"target"`
 
 	// The optional name of a requirement of the target in case the step refers to a relationship rather than a node or group. Note that this is applicable only if the target is a node.
 	TargetRelationship string `yaml:"target_relationship,omitempty" json:"target_relationship,omitempty"`
@@ -116,7 +116,7 @@ type StepDefinition struct {
 	Filter []map[Operator]interface{} `yaml:"filter,omitempty" json:"filter,omitempty"`
 
 	// [mandatory] The list of sequential activities to be performed in this step.
-	Activities []ActivityDefinition `yaml:"activities,omitempty" json:"activities,omitempty"`
+	Activities []ActivityDefinition `yaml:"activities" json:"activities"`
 
 	// The optional list of step names to be performed after this one has been completed with success (all activities has been correctly processed).
 	OnSuccess []string `yaml:"on_success,omitempty" json:"on_success,omitempty"`

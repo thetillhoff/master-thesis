@@ -5,7 +5,7 @@ package tosca
 // - inputs and outputs of workflows
 // - inputs and outputs of service templates
 //
-// From the perspective of the TOSCA orchestrator such parameters are either “incoming” (i.e. transferring a value from the external world to the orchestrator) or “outgoing” (transferring a value from the orchestrator to the external world). Thus:
+// From the perspective of the TOSCA orchestrator such parameters are either "incoming" (i.e. transferring a value from the external world to the orchestrator) or "outgoing" (transferring a value from the orchestrator to the external world). Thus:
 // outgoing parameters are:
 // – template outputs
 // – internal workflow outputs
@@ -18,9 +18,9 @@ package tosca
 // –      operation outputs
 // –      notification outputs
 //
-// An “outgoing” parameter definition is essentially the same as a TOSCA property definition, however it may optionally inherit the data type of the value assigned to it rather than have an explicit data type defined.
+// An "outgoing" parameter definition is essentially the same as a TOSCA property definition, however it may optionally inherit the data type of the value assigned to it rather than have an explicit data type defined.
 //
-// An “incoming” parameter definition may define an attribute mapping of the parameter value to an attribute of a node. Optionally, it may inherit the data type of the attribute it is mapped to, rather than have an explicit data type defined for it.
+// An "incoming" parameter definition may define an attribute mapping of the parameter value to an attribute of a node. Optionally, it may inherit the data type of the attribute it is mapped to, rather than have an explicit data type defined for it.
 type ParameterDefinition struct {
 
 	// grammar
@@ -54,10 +54,10 @@ type ParameterDefinition struct {
 	// Note: This keyname is mandatory for a TOSCA Property definition but is NOT mandatory for a TOSCA Parameter definition.
 	DataType string `yaml:"type,omitempty" json:"type,omitempty"`
 
-	// The type-compatible value to assign to the parameter.  Parameter values may be provided as the result from the evaluation of an expression or a function. May only be defined for outgoing parameters. Mutually exclusive with the “mapping” keyname.
+	// The type-compatible value to assign to the parameter.  Parameter values may be provided as the result from the evaluation of an expression or a function. May only be defined for outgoing parameters. Mutually exclusive with the "mapping" keyname.
 	Value interface{} `yaml:"value,omitempty" json:"value,omitempty"`
 
-	// A mapping that specifies the node or relationship attribute into which the returned output value must be stored. May only be defined for incoming parameters. Mutually exclusive with the “value” keyname.
+	// A mapping that specifies the node or relationship attribute into which the returned output value must be stored. May only be defined for incoming parameters. Mutually exclusive with the "value" keyname.
 	Mapping AttributeSelectionFormat `yaml:"mapping,omitempty" json:"mapping,omitempty"`
 }
 

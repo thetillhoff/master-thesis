@@ -14,7 +14,7 @@ type EventFilterDefinition struct {
 	// capability_name: represents the optional name of a capability that will be used to select (filter) the attribute to monitor. If a requirement_name is specified, then the capability_name refers to a capability of the node that is targeted by the requirement.
 
 	// [mandatory] The mandatory name of the node type or template that contains either the attribute to be monitored or contains the requirement that references the node that contains the attribute to be monitored.
-	NodeType string `yaml:"node,omitempty" json:"node,omitempty"`
+	NodeType string `yaml:"node" json:"node"`
 
 	// The optional name of the requirement within the filter’s node that can be used to locate a referenced node that contains an attribute to monitor.
 	Requirement string `yaml:"requirement,omitempty" json:"requirement,omitempty"`

@@ -7,7 +7,7 @@ type RequirementDefinition struct {
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// [mandatory] The mandatory keyname used to provide either the: 'symbolic name of a Capability definition' within a target Node Type that can fulfill the requirement. 'name of a Capability Type' that the TOSCA orchestrator will use to select a type-compatible target node to fulfill the requirement at runtime.
-	Capability string `yaml:"capability,omitempty" json:"capability,omitempty"`
+	Capability string `yaml:"capability" json:"capability"`
 
 	// [conditional] The optional keyname used to provide the name of a valid Node Type that contains the capability definition that can be used to fulfill the requirement.	If a symbolic name of a Capability definition has been used for the capability keyname, then the node keyname is mandatory.
 	Node string `yaml:"node,omitempty" json:"node,omitempty"`

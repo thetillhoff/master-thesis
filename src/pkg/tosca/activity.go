@@ -31,7 +31,7 @@ type DelegateWorkflowActivityDefinition struct {
 	// [mandatory] Defines the name of the delegate workflow and optional input assignments.
 	//
 	// This activity requires the target to be provided by the orchestrator (no-op node or relationship).
-	Delegate string `yaml:"delegate,omitempty" json:"delegate,omitempty"`
+	Delegate string `yaml:"delegate" json:"delegate"`
 
 	// The name of the delegate workflow. Mandatory in the extended notation.
 	Workflow string `yaml:"workflow,omitempty" json:"workflow,omitempty"`
@@ -100,7 +100,7 @@ type InlineWorkflowActivityDefinition struct {
 	// parameter_assignments: represents the optional map of parameter assignments for passing parameters as inputs to this workflow delegation.
 
 	// [mandatory] The definition includes the name of a workflow to be inlined and optional workflow input assignments.
-	Inline string `yaml:"inline,omitempty" json:"inline,omitempty"`
+	Inline string `yaml:"inline" json:"inline"`
 
 	// The name of the inlined workflow. Mandatory in the extended notation.
 	Workflow string `yaml:"workflow,omitempty" json:"workflow,omitempty"`

@@ -8,7 +8,7 @@ type TopologyTemplate struct {
 	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"`
 
 	// [mandatory] An mandatory map of node template definitions for the Topology Template.
-	NodeTemplates map[string]NodeTemplate `yaml:"node_templates,omitempty" json:"node_templates,omitempty"`
+	NodeTemplates map[string]NodeTemplate `yaml:"node_templates" json:"node_templates"`
 
 	// An optional map of relationship templates for the Topology Template.
 	RelationshipTemplates map[string]RelationshipTemplate `yaml:"relationship_templates,omitempty" json:"relationship_templates,omitempty"`

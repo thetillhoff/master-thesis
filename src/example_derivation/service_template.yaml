@@ -3,14 +3,14 @@ tosca_definitions_version: tosca_2_0
 profile: org.oasis-open.tosca.simple:2.0 # OR io.kubernetes:1.18
 
 metadata:
-  creation_date: 2021-08-15
-  date_updated: 2021-08-15
+  creation_date: 2021-08-24
+  date_updated: 2021-08-24
   status: developmental
-  template_name: Webapp example with Tosca 2.0
+  template_name: Derivation example with Tosca 2.0
   template_author: Till Hoffmann
   template_version: 0.0.1
 
-description: This template's purpose is to demonstrate how a demo-application (more specifically a webapp) is defined (and worked with on the orchestrators' side.
+description: This template's purpose is to demonstrate how a type derivation works in tosca.
 
 # An example import of definitions files from a location relative to the
 # file location of the service template declaring the import.
@@ -97,7 +97,7 @@ topology_template:
     cpus:
       type: integer
       constraints:
-        less_than: 2 # OR use “defaults” key
+        less_than: 2 # OR use "defaults" key
     cpus2:
       type: integer
       description: Number of CPUs for the server.
@@ -183,13 +183,13 @@ topology_template:
       requirements:
         - host:
             node: tosca.nodes.WebServer
-    my_application_node_template2: # Example of a (database) requirement that is fulfilled by a node template named “my_database”, but also requires a custom database connection relationship
+    my_application_node_template2: # Example of a (database) requirement that is fulfilled by a node template named "my_database", but also requires a custom database connection relationship
       requirements:
         - database:
             node: my_database
             capability: Endpoint.Database
             relationship: my.types.CustomDbConnection
-    my_critical_application_node_template: # Example of a (redundant_database) requirement that is fulfilled by two node templates named “database1” and “database1
+    my_critical_application_node_template: # Example of a (redundant_database) requirement that is fulfilled by two node templates named "database1" and "database1
       requirements:
         - redundant_database: database1
         - redundant_database: database2
@@ -199,7 +199,7 @@ topology_template:
         - host:
             node_filter:
               capabilities:
-                # My “host” Compute node needs these properties:     
+                # My "host" Compute node needs these properties:     
                 - host:
                     properties:
                       - num_cpus: { in_range: [ 1, 4 ] }
@@ -273,7 +273,7 @@ topology_template:
       value: { join: [ ["prefix", 1111, "suffix" ], "_" ] }
     example2:
       # Result: 9.12.1.10,9.12.1.20
-      value: { join: [ { get_input: my_IPs }, “,” ] }
+      value: { join: [ { get_input: my_IPs }, "," ] }
     webserver_port:
       description: the port provided at the end of my server’s endpoint’s IP address
       value: { token: [ get_attribute: [ my_server, data_endpoint, ip_address ],
@@ -301,7 +301,7 @@ topology_template:
       node_type: MyService
       properties:  # Do not care if running or matching (e.g., Compute node)
         # get from outside? Get from constraint?
-        num_cpus: cpus # Implied “PUSH”
+        num_cpus: cpus # Implied "PUSH"
         # get from some node in the topology…
         num_cpus: [ <node>, <cap>, <property> ]
         # 1) Running
@@ -310,13 +310,13 @@ topology_template:
           value: { get_property: [some_service, architecture] }
           # b) implicit
           value: [ some_service, <req | cap name>, <property name> architecture ]
-          default: “amd”
+          default: "amd"
           # c) INPUT mapping?
           #???
         # 2) Catalog (Matching)
         architecture:
           contraints:
-            equals: “x86”
+            equals: "x86"
       capabilities:
         bar: [ some_service, bar ]
         some_capability: mytypes.mycapabilities.MyCapabilityTypeName # Simple notation, no properties need to be refined

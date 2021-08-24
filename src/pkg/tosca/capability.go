@@ -76,7 +76,7 @@ type CapabilityDefinition struct {
 	//   occurrences: <range_of_occurrences>
 
 	// [mandatory] The mandatory name of the Capability Type this capability definition is based upon. MUST be derived from parent node type definition OR the same.
-	CapabilityType string `yaml:"type,omitempty" json:"type,omitempty"`
+	CapabilityType string `yaml:"type" json:"type"`
 
 	// The optional description of the Capability definition.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`

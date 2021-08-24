@@ -31,32 +31,31 @@
 - "Orchestrators SHALL" are never implemented. Example in 5.3.6.3 of simple-profile spec
 
 ## code (tosca)
-- [ ] replace '“' with '"'
+- [x] replace '"' with '"'
 - [ ] replace all <double spaces> with <tabs>
+- [ ] 4.3.5.8 PropertyFilterDefinition is not implemented
 - [ ] where to place conditions? [4.6.7.6ff]
 - tosca spec [4.8.4] why the hell is this here and not in simple-profile?
 - [ ] add examples to service_template.yaml
   - 5.4.1.3
   - 5.4.2.3
-- check SubstitutionMapping
-- status as const
-- search for _name and check whether that should be added as variable to those structs
-- OtherServiceTemplates of CSAR?
+- [ ] check SubstitutionMapping
+- [ ] search for _name and check whether that should be added as variable to those structs
 - "AssertionDefinition" not used
 - "AttributeAssignment" not used
-- check if abstractType is used everywhere it should
 - "ParameterAssignment" and "ParameterMappingAssignment" not used
 - "InterfaceMapping" unused
 - dsl_definitions are completely ignored (intended by spec, but worth noting specifically)
 - PropertyFilterDefinition not implemented
-- on mandatory ("[mandatory]") attributes remove the omitempty
+- [x] on mandatory ("[mandatory]") attributes remove the omitempty
 - [5.1] "Reserved Function Keywords" not implemented
 - [5.2] "Reserved Environment Variable Names and Usage" not implemented
 - [5.3] "Intrinsic Functions" not implemented (functions.go)
-- Add normative types like string, list etc as "default" data types
-- Test with metadata not embedded in service template but in dedicated file
+- [ ] Add normative types like string, list etc as "default" data types
+- [ ] Test with metadata not embedded in service template but in dedicated file
 - `Equal` should consider constraints etc as well!
-- Size.Parse uses bytefmt which declares f.e. TB==TiB which is not true...
+- [ ] Size.Parse uses bytefmt which declares f.e. TB==TiB which is not true -> reimplement, but too much effort for MA
+- [x] Imports not resolved right now -> should be done, and resolving derivation should use this as well
 
 ## issues in tosca spec
 - 4.3.5.6.3.3 contains indentation error
@@ -70,13 +69,13 @@
 - 5.3.1.3 missing output name
 
 
-## code (simple profile)
+<!-- ## code (simple profile)
 - Simple profile uses yaml-timestamps. tosca has own timestamp types. Decide for one.
 - See issue on "operation implementation" and "notification implementation", omitted the distinction since all values are nullable.
 - on mandatory ("[mandatory]") attributes remove the omitempty
 - [dataTypes.yaml] check metadata and other initial stuff
 - *dataTypes often have default values or "only this is allowed" - this is not implemented yet
-- 5.8.4.3 TOSCA Orchestrator processing of Deployment artifacts - what?
+- 5.8.4.3 TOSCA Orchestrator processing of Deployment artifacts - what? -->
 
 ## issues in simple profile spec
 - 2.1 invalid tosca_definitions_version
@@ -102,10 +101,13 @@
   example at 5.9.10.1
 - sometimes the map[string]* forces for name finding, but its sometimes unnecessary (as it has a description). While it allows for reference elsewhere, it should be described clearly where this is possible and whats the use-case is.
 
-
-## code (csar?)
-- when parsing a serviceTemplate, what happens when stuff is ignored? Can UnMarshallStrict help here?
-  Example: dsl_definitions
+## code (csar)
+- [ ] Resolving OtherDefinitions should:
+  - parse them as service templates, resolve imports and profiles
+  - resolve substitutions
+- Imports will only work via absolute and relative paths. Paths beginning with "https:" and "file:" will result in an error (file doesn't exist).
+  "Profile" keyword is not supported (yet).
+  Sufficient for MA, but important to note somewhere.
 
 ## goal:
 - grow infrastructure with minimal manual effort

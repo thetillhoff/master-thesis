@@ -8,7 +8,7 @@ import (
 )
 
 type CSAR struct {
-	// This is the version number of the CSAR specification. It defines the structure of the CSAR and the format of the TOSCA.meta file. The value MUST be “2.0” for this version of the CSAR specification.
+	// This is the version number of the CSAR specification. It defines the structure of the CSAR and the format of the TOSCA.meta file. The value MUST be "2.0" for this version of the CSAR specification.
 	CsarVersion string `yaml:"CSAR-Version,omitempty" json:"CSAR-Version,omitempty"`
 
 	// The person or organization that created the CSAR.
@@ -17,7 +17,7 @@ type CSAR struct {
 	// This references the TOSCA definitions file that SHOULD be used as entry point for processing the contents of the CSAR (e.g. the main TOSCA service template).
 	EntryDefinition string `yaml:"Entry-Definitions,omitempty" json:"Entry-Definitions,omitempty"`
 
-	// This references an unambiguous set of files containing substitution templates that can be used to implement nodes defined in the main template (i.e. the file declared in Entry-Definitions). Thus, all the topology templates defined in files listed under the Other-Definitions key are to be used only as substitution templates, and not as standalone services. If such a topology template cannot act as a substitution template, it will be ignored by the orchestrator. The value of the Other-Definitions key is a string containing a list of filenames (relative to the root of the CSAR archive) delimited by a blank space. If the filenames contain blank spaces, the filename should be enclosed by double quotation marks (“)
+	// This references an unambiguous set of files containing substitution templates that can be used to implement nodes defined in the main template (i.e. the file declared in Entry-Definitions). Thus, all the topology templates defined in files listed under the Other-Definitions key are to be used only as substitution templates, and not as standalone services. If such a topology template cannot act as a substitution template, it will be ignored by the orchestrator. The value of the Other-Definitions key is a string containing a list of filenames (relative to the root of the CSAR archive) delimited by a blank space. If the filenames contain blank spaces, the filename should be enclosed by double quotation marks (")
 	OtherDefinitions string `yaml:"Other-Definitions,omitempty" json:"Other-Definitions,omitempty"`
 
 	ServiceTemplate tosca.ServiceTemplate // Holds contents of main serviceTemplate

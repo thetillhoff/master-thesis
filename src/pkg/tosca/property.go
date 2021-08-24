@@ -21,7 +21,7 @@ type PropertyDefinition struct { // indicate desired state
 	//   - .bitrate
 
 	// [mandatory] The data type for the property.
-	DataType string `yaml:"type,omitempty" json:"type,omitempty"`
+	DataType string `yaml:"type" json:"type"`
 
 	// The optional description for the property.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
@@ -54,7 +54,7 @@ type PropertyDefinition struct { // indicate desired state
 	// The schema definition for the entries in properties of TOSCA collection types such as list, map, or types that derive from list or map) If the property type is a collection type, the entry schema is mandatory. For other types, the entry_schema is not allowed.
 	EntrySchema SchemaDefinition `yaml:"entry_schema,omitempty" json:"entry_schema,omitempty"`
 
-	// The optional key that contains a schema definition that TOSCA Orchestrators MAY use for validation when the “type” key’s value indicates an External schema (e.g., “json”)// See section “External schema” below for further explanation and usage.
+	// The optional key that contains a schema definition that TOSCA Orchestrators MAY use for validation when the "type" key’s value indicates an External schema (e.g., "json")// See section "External schema" below for further explanation and usage.
 	ExternalSchema string `yaml:"external-schema,omitempty" json:"external-schema,omitempty"`
 
 	// Defines a section used to declare additional metadata information.

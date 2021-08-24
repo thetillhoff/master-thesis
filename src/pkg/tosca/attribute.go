@@ -20,7 +20,7 @@ type AttributeDefinition struct {
 	// 		   <metadata_map>
 
 	// [mandatory] The mandatory data type for the attribute.
-	DataType string `yaml:"type,omitempty" json:"type,omitempty"`
+	DataType string `yaml:"type" json:"type"`
 
 	// The optional description for the attribute.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
@@ -69,7 +69,7 @@ type AttributeSelectionFormat struct {
 	// [mandatory] For operation outputs in interfaces on node templates, the only allowed keyname is SELF: output values must always be stored into attributes that belong to the node template that has the interface for which the output values are returned.
 	//
 	// For operation outputs in interfaces on relationship templates, allowable keynames are SELF, SOURCE, or TARGET.
-	Target string `yaml:"target,omitempty" json:"target,omitempty"`
+	Target string `yaml:"target" json:"target"`
 
 	// The optional name of the capability within the specified node template that contains the attribute into which the output value must be stored.
 	CapabilityName string `yaml:"capability_name,omitempty" json:"capability_name,omitempty"`

@@ -63,11 +63,24 @@ func (relationshipType RelationshipType) ToString() string {
 //
 // SOURCE: For an implementation artifact that is executed in the context of a relationship, this keyword, if present, identifies a Node Template instance in a TOSCA application’s instance model that is a source of the context relationship, and which is being acted upon in the current operation. The value of this environment variable will be the identifier of the single source node instance (i.e., the tosca_id attribute of the node).
 type RelationshipTemplate struct {
-	RelationshipType string                         `yaml:"type,omitempty" json:"type,omitempty"`               // [mandatory] The name of the Relationship Type the Relationship Template is based upon.
-	Description      string                         `yaml:"description,omitempty" json:"description,omitempty"` // An optional description for the Relationship Template.
-	Metadata         map[string]string              `yaml:"metadata,omitempty" json:"metadata,omitempty"`       // Defines a section used to declare additional metadata information.
-	Properties       map[string]interface{}         `yaml:"properties,omitempty" json:"properties,omitempty"`   // An optional map of property assignments for the Relationship Template.
-	Attributes       map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`   // An optional map of attribute assignments for the Relationship Template.
-	Interfaces       map[string]InterfaceAssignment `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`   // An optional map of interface assignments for the relationship template.
-	Copy             string                         `yaml:"copy,omitempty" json:"copy,omitempty"`               // The optional (symbolic) name of another relationship template to copy from (all keynames and values) and use as a basis for this relationship template. The source relationship template provided MUST NOT itself use the copy keyname.
+	// [mandatory] The name of the Relationship Type the Relationship Template is based upon.
+	RelationshipType string `yaml:"type" json:"type"`
+
+	// An optional description for the Relationship Template.
+	Description string `yaml:"description,omitempty" json:"description,omitempty"`
+
+	// Defines a section used to declare additional metadata information.
+	Metadata map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`
+
+	// An optional map of property assignments for the Relationship Template.
+	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
+
+	// An optional map of attribute assignments for the Relationship Template.
+	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+
+	// An optional map of interface assignments for the relationship template.
+	Interfaces map[string]InterfaceAssignment `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`
+
+	// The optional (symbolic) name of another relationship template to copy from (all keynames and values) and use as a basis for this relationship template. The source relationship template provided MUST NOT itself use the copy keyname.
+	Copy string `yaml:"copy,omitempty" json:"copy,omitempty"`
 }

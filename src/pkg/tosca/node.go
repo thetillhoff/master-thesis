@@ -83,7 +83,7 @@ type NodeTemplate struct {
 	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	// [mandatory] The name of the Node Type the Node Template is based upon.
-	NodeType string `yaml:"node_type,omitempty" json:"node_type,omitempty"`
+	NodeType string `yaml:"node_type" json:"node_type"`
 
 	// An optional description for the Node Template.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`

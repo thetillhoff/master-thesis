@@ -32,7 +32,7 @@ type GroupType struct {
 	//   members: [ <list_of_valid_member_types> ]
 	//
 	// group_type_name: represents the mandatory symbolic name of the Group Type being declared as a string.
-	// parent_group_type_name: represents the name (string) of the Group Type this Group Type definition derives from (i.e. its “parent” type).
+	// parent_group_type_name: represents the name (string) of the Group Type this Group Type definition derives from (i.e. its "parent" type).
 	// version_number: represents the optional TOSCA version number for the Group Type.
 	// group_description: represents the optional description string for the corresponding group_type_name.
 	// attribute_definitions: represents the optional map of attribute definitions for the Group Type.

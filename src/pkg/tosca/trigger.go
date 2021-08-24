@@ -1,6 +1,6 @@
 package tosca
 
-// A trigger definition defines the event, condition and action that is used to “trigger” a policy it is associated with.
+// A trigger definition defines the event, condition and action that is used to "trigger" a policy it is associated with.
 type TriggerDefinition struct {
 
 	// short-notation grammar
@@ -38,8 +38,8 @@ type TriggerDefinition struct {
 	// The optional description string for the trigger.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 
-	// [mandatory] The mandatory name of the event that activates the trigger’s action. A deprecated form of this keyname is “event_type”.
-	Event string `yaml:"event,omitempty" json:"event,omitempty"`
+	// [mandatory] The mandatory name of the event that activates the trigger’s action. A deprecated form of this keyname is "event_type".
+	Event string `yaml:"event" json:"event"`
 
 	// The optional filter used to locate the attribute to monitor for the trigger’s defined condition. This filter helps locate the TOSCA entity (i.e., node or relationship) or further a specific capability of that entity that contains the attribute to monitor.
 	TargetFilter EventFilterDefinition `yaml:"target_filter,omitempty" json:"target_filter,omitempty"`

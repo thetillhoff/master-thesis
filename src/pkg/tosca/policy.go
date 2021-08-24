@@ -25,7 +25,7 @@ type PolicyType struct {
 	//     <trigger_definitions>
 	//
 	// policy_type_name: represents the mandatory symbolic name of the Policy Type being declared as a string.
-	// parent_policy_type_name: represents the name (string) of the Policy Type this Policy Type definition derives from (i.e., its “parent” type).
+	// parent_policy_type_name: represents the name (string) of the Policy Type this Policy Type definition derives from (i.e., its "parent" type).
 	// version_number: represents the optional TOSCA version number for the Policy Type.
 	// policy_description: represents the optional description string for the corresponding policy_type_name.
 	// property_definitions: represents the optional map of property definitions for the Policy Type.
@@ -91,7 +91,7 @@ type PolicyDefinition struct {
 	// trigger_definitions: represents the optional map of trigger definitions for the policy; these triggers apply in addition to the triggers defined in the policy type.
 
 	// [mandatory] The name of the policy type the policy definition is based upon.
-	PolicyType string `yaml:"type,omitempty" json:"type,omitempty"`
+	PolicyType string `yaml:"type" json:"type"`
 
 	// The optional description for the policy definition.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`

@@ -26,7 +26,7 @@ type SubstitutionMapping struct {
 	// interfaces: represents the <optional> map of interfaces mappings.
 
 	// [mandatory] The mandatory name of the Node Type the Topology Template is providing an implementation for.
-	NodeType string `yaml:"node_type,omitempty" json:"node_type,omitempty"`
+	NodeType string `yaml:"node_type" json:"node_type"`
 
 	// The optional filter that further constrains the abstract node templates for which this topology template can provide an implementation.
 	SubstitutionFilter NodeFilter `yaml:"substitution_filter,omitempty" json:"substitution_filter,omitempty"`
@@ -114,7 +114,7 @@ type CapabilityMapping struct {
 	//   attributes:
 	//     <attribute_name>: <attribute_value>
 	//
-	// capability_name: represents the name of the capability as it appears in the Node Type definition for the Node Type (name) that is declared as the value for on the substitution_mappings’ “node_type” key.
+	// capability_name: represents the name of the capability as it appears in the Node Type definition for the Node Type (name) that is declared as the value for on the substitution_mappings’ "node_type" key.
 	// node_template_name: represents a valid name of a Node Template definition (within the same topology_template declaration as the substitution_mapping is declared).
 	// node_template_capability_name: represents a valid name of a capability definition within the <node_template_name> declared in this mapping.
 	// property_name: represents the name of a property of the capability.
@@ -226,7 +226,7 @@ type InterfaceMapping struct {
 	// <interface_name>:
 	//   <operation_name>: <workflow_name>
 	//
-	// interface_name: represents the name of the interface as it appears in the Node Type definition for the Node Type (name) that is declared as the value for on the substitution_mappings’ “node_type” key. Or the name of a new management interface to add to the generated type.
+	// interface_name: represents the name of the interface as it appears in the Node Type definition for the Node Type (name) that is declared as the value for on the substitution_mappings’ "node_type" key. Or the name of a new management interface to add to the generated type.
 	// operation_name: represents the name of the operation as it appears in the interface type definition.
 	// workflow_name: represents the name of a workflow of the template to map to the specified operation.
 
