@@ -7,7 +7,7 @@ import (
 type Frequency struct {
 	DataType
 
-	Value int64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is Hz.
+	Value uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is Hz.
 
 	// units: (don't forget toLower)
 	// hz
@@ -16,24 +16,20 @@ type Frequency struct {
 	// ghz = 1000 mhz
 }
 
-func ParseFrequency(input string) (Frequency, error) {
-	var (
-		newValue int64
-		err      error
-	)
-
-	// remove whitespace (between value and unit)
-	// input = strings.ReplaceAll(input, " ", "")
-
-	err = errors.New("frequency cannot be parsed. Not implemented")
-
-	return Frequency{Value: newValue}, err
-
-}
-
 func (value Frequency) Equal(arg Frequency) bool {
 	return value.Value == arg.Value
 }
 func (value Frequency) GreaterThan(arg Frequency) bool {
 	return value.Value > arg.Value
+}
+
+func ParseFrequency(arg interface{}) (uint64, error) {
+	var (
+		value uint64
+	)
+	if typedArg, ok := arg.(uint64); ok {
+		// TODO: retrieve and remove of unit, then parse as uint, then use unit for multiplication
+		return typedArg, nil
+	}
+	return value, errors.New("cannot parse to frequency")
 }

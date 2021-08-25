@@ -18,16 +18,24 @@ type Version struct {
 	BuildVersion int    `yaml:"build_version,omitempty" json:"build_version,omitempty"`
 }
 
-func ParseVersion(input string) (Version, error) {
+func ParseVersion(arg interface{}) (Version, error) {
 	var (
+		typedArg               string
 		version                Version
 		err                    error
 		splittedVersion        []string
 		splitted               []string
 		unverifiedBuildVersion string
+		ok                     bool
 	)
 
-	splittedVersion = strings.Split(input, ".")
+	if typedArg, ok = arg.(string); !ok {
+		return Version{}, errors.New("invalid version: Not of type string")
+	}
+
+	// TODO Make conformant with ParseInteger
+
+	splittedVersion = strings.Split(typedArg, ".")
 	if !(len(splittedVersion) >= 2) { // minimal version
 		return Version{}, errors.New("invalid version: At least <major>.<minor> required")
 	}

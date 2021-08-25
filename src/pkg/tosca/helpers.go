@@ -5,6 +5,7 @@ type Equallable interface {
 	ContainedIn([]Equallable) bool
 }
 
+// [3.6.3.1.1, 3.3.6.3] includes integer, float, timestamp, string, version, size, time, frequency, and bitrate
 type Comparable interface {
 	Equallable
 	GreaterThan(Comparable) bool

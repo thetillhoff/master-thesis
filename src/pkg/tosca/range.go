@@ -70,3 +70,13 @@ func (value Range) ContainedIn(lowerBound Comparable, upperBound Comparable) boo
 		return false
 	}
 }
+
+// TODO func ParseRange(arg interface{}) (int, error) {
+// 	var (
+// 		value int
+// 	)
+// 	if typedArg, ok := arg.(int); ok {
+// 		return typedArg, nil
+// 	}
+// 	return value, errors.New("cannot parse to range")
+// }

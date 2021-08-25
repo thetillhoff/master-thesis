@@ -1,6 +1,9 @@
 package tosca
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type Time struct {
 	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
@@ -17,17 +20,6 @@ type Time struct {
 	// ns
 }
 
-func ParseTime(input string) (Time, error) {
-	var (
-		newValue time.Duration
-		err      error
-	)
-
-	newValue, err = time.ParseDuration(input)
-	return Time{Value: newValue}, err
-
-}
-
 func (value Time) Equal(arg Time) bool {
 	return value.Value == arg.Value
 }
@@ -42,4 +34,16 @@ func (value Time) MinLength(arg Time) bool { // inclusive minimum
 }
 func (value Time) MaxLength(arg Time) bool { // inclusive maximum
 	return value.Value <= arg.Value
+}
+
+func ParseTime(arg interface{}) (time.Duration, error) {
+	var (
+		value time.Duration
+		ok    bool
+	)
+
+	if value, ok = arg.(time.Duration); ok {
+		return value, nil
+	}
+	return value, errors.New("cannot parse to time")
 }

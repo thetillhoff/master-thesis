@@ -1,5 +1,7 @@
 package tosca
 
+import "log"
+
 type PropertyDefinition struct { // indicate desired state
 	Equallable `yaml:",omitempty" json:",omitempty"`
 	// allowed types are
@@ -80,7 +82,7 @@ type PropertyFilterDefinition struct { // docs are incomplete [4.3.5.8]
 }
 
 func (src PropertyFilterDefinition) Equal(dest PropertyFilterDefinition) bool {
-	//TODO
+	log.Fatalln("ERR PropertyfilterDefinition.Equal not implemented.")
 
 	return true
 }

@@ -13,7 +13,7 @@ package tosca
 // – operation inputs
 // incoming parameters are:
 // – template inputs
-//–      internal workflow inputs
+// –      internal workflow inputs
 // –      external workflow outputs
 // –      operation outputs
 // –      notification outputs
@@ -54,7 +54,7 @@ type ParameterDefinition struct {
 	// Note: This keyname is mandatory for a TOSCA Property definition but is NOT mandatory for a TOSCA Parameter definition.
 	DataType string `yaml:"type,omitempty" json:"type,omitempty"`
 
-	// The type-compatible value to assign to the parameter.  Parameter values may be provided as the result from the evaluation of an expression or a function. May only be defined for outgoing parameters. Mutually exclusive with the "mapping" keyname.
+	// The type-compatible value to assign to the parameter. Parameter values may be provided as the result from the evaluation of an expression or a function. May only be defined for outgoing parameters. Mutually exclusive with the "mapping" keyname.
 	Value interface{} `yaml:"value,omitempty" json:"value,omitempty"`
 
 	// A mapping that specifies the node or relationship attribute into which the returned output value must be stored. May only be defined for incoming parameters. Mutually exclusive with the "value" keyname.

@@ -1,6 +1,9 @@
 package tosca
 
-import "regexp"
+import (
+	"errors"
+	"regexp"
+)
 
 type String struct {
 	DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
@@ -25,4 +28,12 @@ func (value String) Pattern(arg string) bool { // regex as argument
 		return false // invalid patterns can't be matched ;)
 	}
 	return matched
+}
+
+func ParseString(arg interface{}) (string, error) {
+	if typedArg, ok := arg.(string); ok {
+		return typedArg, nil
+	} else {
+		return "", errors.New("cannot parse to string")
+	}
 }

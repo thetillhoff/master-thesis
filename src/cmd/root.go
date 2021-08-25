@@ -64,7 +64,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.eat.yaml)")
-	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Display more information during command execution. Defaults to false")
+	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Display more information during command execution. Defaults to false.")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

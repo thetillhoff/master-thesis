@@ -23,19 +23,15 @@ type Bitrate struct {
 
 }
 
-func ParseBitrate(input string) (Bitrate, error) {
+func ParseBitrate(arg interface{}) (uint64, error) {
 	var (
-		newValue uint64
-		err      error
+		value uint64
 	)
-
-	// remove whitespace (between value and unit)
-	//input = strings.ReplaceAll(input, " ", "")
-
-	err = errors.New("bitrate cannot be parsed. Not implemented")
-
-	return Bitrate{Value: newValue}, err
-
+	if typedArg, ok := arg.(uint64); ok {
+		// TODO: remove 'ps' of unit, then parse as size (bytefmt, see Size)
+		return typedArg, nil
+	}
+	return value, errors.New("cannot parse to bitrate")
 }
 
 func (value Bitrate) Equal(arg Bitrate) bool {

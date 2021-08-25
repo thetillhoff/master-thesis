@@ -22,20 +22,19 @@ type Size struct {
 
 }
 
-func ParseSize(input string) (Size, error) {
-	var (
-		bytes uint64
-		err   error
-	)
-
-	bytes, err = bytefmt.ToBytes(input)
-	return Size{Value: bytes}, err
-
-}
-
 func (value Size) Equal(arg Size) bool {
 	return value.Value == arg.Value
 }
 func (value Size) GreaterThan(arg Size) bool {
 	return value.Value > arg.Value
+}
+
+func ParseSize(arg interface{}) (Size, error) {
+	var (
+		value uint64
+		err   error
+	)
+
+	value, err = bytefmt.ToBytes(arg.(string)) // TODO make type assertion extra step, with extra error check
+	return Size{Value: value}, err
 }

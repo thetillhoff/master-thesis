@@ -1,5 +1,7 @@
 package tosca
 
+import "errors"
+
 type Map struct {
 	DataType
 
@@ -16,4 +18,14 @@ func (value Map) Equal(arg Map) bool {
 		}
 	}
 	return true
+}
+
+func ParseMap(arg interface{}) (map[string]interface{}, error) {
+	var (
+		value map[string]interface{}
+	)
+	if typedArg, ok := arg.(map[string]interface{}); ok {
+		return typedArg, nil
+	}
+	return value, errors.New("cannot parse to map")
 }

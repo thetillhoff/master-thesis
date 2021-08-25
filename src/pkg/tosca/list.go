@@ -1,5 +1,7 @@
 package tosca
 
+import "errors"
+
 type List struct {
 	DataType
 	Value []Equallable `yaml:",inline,omitempty" json:",inline,omitempty"`
@@ -24,4 +26,15 @@ func (value List) Contains(arg Equallable) bool {
 		}
 	}
 	return false
+}
+
+func ParseList(arg interface{}) ([]interface{}, error) {
+	var (
+		value []interface{}
+	)
+	if typedArg, ok := arg.([]interface{}); ok {
+		// TODO: remove 'ps' of unit, then parse as size (bytefmt, see Size)
+		return typedArg, nil
+	}
+	return value, errors.New("cannot parse to list")
 }
