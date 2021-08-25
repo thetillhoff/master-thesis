@@ -36,15 +36,26 @@ to quickly create a Cobra application.`,
 		var (
 			csarPath string = args[0]
 			archive  csar.CSAR
+			inputs   []string
+			err      error
 		)
+
+		inputs, err = cmd.PersistentFlags().GetStringSlice("input")
+		if err != nil {
+			log.Fatalln(err)
+		}
 
 		if debug {
 			// Set debug for imports
 			csar.Debug()
 
+			toscaorchestrator.Debug()
+
 			log.Println("INF debug:", debug)
 
 			log.Println("INF csarPath:", csarPath)
+
+			log.Println("INF inputs:", inputs)
 		}
 
 		archive = csar.LoadFromPath(csarPath)
@@ -58,7 +69,7 @@ to quickly create a Cobra application.`,
 		// 	x.ValidateConstraints() // <- missing value to validate
 		// }
 
-		toscaorchestrator.Install(archive.ServiceTemplate)
+		toscaorchestrator.Install(archive.ServiceTemplate, inputs)
 	},
 }
 
@@ -70,6 +81,8 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// installCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	installCmd.PersistentFlags().StringSliceP("input", "i", []string{}, "Define inputs for CSAR's TopologyTemplate, f.e. '-i port=443'. Multiple inputs are possible.")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
