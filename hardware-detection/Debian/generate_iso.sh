@@ -19,14 +19,19 @@ export UNSQUASHEDFS=/tmp/unsquashedfs
 mkdir -p ${UNSQUASHEDFS}
 unsquashfs -f -d ${UNSQUASHEDFS} ${EX_ISO}/live/filesystem.squashfs
 
+# Prepare editing live system
 cp /etc/resolv.conf ${UNSQUASHEDFS}/etc/
 cp /container/chroot.sh ${UNSQUASHEDFS}/
 #mount -t proc -o bind /proc ${UNSQUASHEDFS}/proc
 mount -o bind /dev/pts ${UNSQUASHEDFS}/dev/pts
 #mount none -t devpts /dev/pts
+
+# Edit live system
 chroot ${UNSQUASHEDFS} /chroot.sh # for manual edits run `chroot ${UNSQUASHEDFS}` and later on `exit`
 # TODO install open-ssh as well?
 #bash # for debugging; have shell open for manual changes, after `exit`, this script continues
+
+# Finish editing live system
 umount "${UNSQUASHEDFS}/dev/pts"
 rm ${UNSQUASHEDFS}/chroot.sh
 rm ${UNSQUASHEDFS}/etc/resolv.conf
