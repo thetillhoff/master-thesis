@@ -1,90 +1,53 @@
 #!/bin/sh
 
-# Extract filename from SRCISO
+# Extract filename from source ISO
 export ISONAME="${ISOSRC##*/}"
 
-# If SRCISO isn't downloaded yet
+# If source ISO isn't downloaded yet
 if [ ! -f /container/${ISONAME} ]; then
-  # Download SRCISO
+  # Download source ISO to volume, so on rerun it doesn't need to download again
   wget ${ISOSRC} -O /container/${ISONAME}
 fi
 
-# Extract SRCISO
-export EX_SRCISO=/tmp/extractedSRCISO
-mkdir -p ${EX_SRCISO}
-xorriso -osirrox on -indev /container/${ISONAME} -extract / ${EX_SRCISO}
+# Extract source ISO
+export EX_ISO=/tmp/extractedISO
+mkdir -p ${EX_ISO}
+xorriso -osirrox on -indev /container/${ISONAME} -extract / ${EX_ISO}
 
-# Extracting squashfs
-mkdir -p /tmp/squashedfs
-unsquashfs -f -d /tmp/squashedfs ${EX_SRCISO}/live/filesystem.squashfs
+# Unpacking squashfs
+export UNSQUASHEDFS=/tmp/unsquashedfs
+mkdir -p ${UNSQUASHEDFS}
+unsquashfs -f -d ${UNSQUASHEDFS} ${EX_ISO}/live/filesystem.squashfs
 
-cp /etc/resolv.conf /tmp/squashedfs/etc/
-#mount -t proc -o bind /proc /tmp/squashedfs/proc
-mount -o bind /dev/pts /tmp/squashedfs/dev/pts
-chroot /tmp/squashedfs # ...
-# apt update && apt upgrade -y && apt install -y lighttpd && apt autoremove -y && apt clean
-rm /tmp/squashedfs/etc/resolv.conf
+cp /etc/resolv.conf ${UNSQUASHEDFS}/etc/
+cp /container/chroot.sh ${UNSQUASHEDFS}/
+#mount -t proc -o bind /proc ${UNSQUASHEDFS}/proc
+mount -o bind /dev/pts ${UNSQUASHEDFS}/dev/pts
+#mount none -t devpts /dev/pts
+chroot ${UNSQUASHEDFS} /chroot.sh # for manual edits run `chroot ${UNSQUASHEDFS}` and later on `exit`
+# TODO install open-ssh as well?
+#bash # for debugging; have shell open for manual changes, after `exit`, this script continues
+umount "${UNSQUASHEDFS}/dev/pts"
+rm ${UNSQUASHEDFS}/chroot.sh
+rm ${UNSQUASHEDFS}/etc/resolv.conf
 
+# Repacking squashfs (and overwrite the previous one)
+mksquashfs ${UNSQUASHEDFS}/ ${EX_ISO}/live/filesystem.squashfs -comp xz
 
+# Editing isolinux configuration (boot menu for bios)
+#   The only change is for timeout; no timeout -> 1s timeout (units of 1/10s)
+sed -i 's/^timeout 0$/timeout 10/g' ${EX_ISO}/isolinux/isolinux.cfg
 
-# # Editing initrd contents (==filesystem of the installer)
-# #echo /container/preseed.cfg | cpio -H newc -o -A -F ${EX_SRCISO}/install.amd/initrd
-# #debootstrap --arch=amd64 stable /tmp/initrd http://deb.debian.org/debian/
-# chroot /tmp/squashedfs
-# cat << EOF | schroot -c custom .
-# touch /yoloman
-# apt update
-# apt install -y \
-#   lighttpd \
-#   openssh-server
-# apt clean
-# EOF
+# Editing grub2 configuration (boot menu for efi)
+#   default=0 makes the first option the default, timeout=1 (unit of 1s)
+sed -i '$adefault=0\ntimeout=1' ${EX_ISO}/boot/grub/grub.cfg
 
-bash
+# Recreating hash (required for efi-boot)
+cd ${EX_ISO}
+find . -type f -print0 | xargs -0 md5sum | tee ${EX_ISO}/md5sum.txt
+cd -
 
+# Repacking SRCISO to new iso - with bios- and efi-boot-support
+xorriso -as mkisofs -o ${ISODST} -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat ${EX_ISO}/
 
-# # Regenerating new md5sum.txt
-# cd ${EX_SRCISO}
-# chmod +w ${EX_SRCISO}/md5sum.txt
-# find ${EX_SRCISO}/ -follow -type f ! -name md5sum.txt -print0 | xargs -0 md5sum > ${EX_SRCISO}/md5sum.txt
-# chmod -w ${EX_SRCISO}/md5sum.txt
-
-# # Extract first 432 bytes of original iso (they contain an MBR, which enables booting from usb-sticks on legacy BIOS)
-# export MBR_TEMPLATE=/mbr_template.bin
-# dd if="/container/${ISONAME}" bs=1 count=432 of="/tmp/${MBR_TEMPLATE}"
-
-# # Creating a new bootable iso image
-# # genisoimage -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
-# #   -no-emul-boot -boot-load-size 4 -boot-info-table \
-# #   -o /container/preseed-debian-10.2.0-i386-netinst.iso ${EX_SRCISO}
-# # ---
-# # Create the new ISO image
-# xorriso -as mkisofs \
-#   -r -V 'Debian_11_amd64_Preseeded' \
-#   -o "${ISODST}" \
-#   -J -joliet-long -cache-inodes \
-#   -isohybrid-mbr /tmp/${MBR_TEMPLATE} \
-#   -b isolinux/isolinux.bin \
-#   -c isolinux/boot.cat \
-#   -boot-load-size 4 -boot-info-table -no-emul-boot \
-#   -eltorito-alt-boot \
-#   -e boot/grub/efi.img \
-#   -no-emul-boot \
-#   -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
-#   "${EX_SRCISO}"
-
-# # xorriso -as mkisofs 
-# #   -r 
-# # #  -checksum_algorithm_iso sha256,sha512 
-# #   -V 'Debian 11.0.0 amd64 n' 
-# #   -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2bullseyeamd64/debian-11.0.0-amd64-NETINST-1.iso 
-# # #  -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2bullseyeamd64/bullseye/checksum-check 
-# #   -J -joliet-long -cache-inodes
-# #   -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin 
-# #   -b isolinux/isolinux.bin 
-# #   -c isolinux/boot.cat 
-# #   -boot-load-size 4 -boot-info-table -no-emul-boot 
-# #   -eltorito-alt-boot 
-# #   -e boot/grub/efi.img 
-# #   -no-emul-boot 
-# #   -isohybrid-gpt-basdat -isohybrid-apm-hfsplus boot1 CD1
+#bash # for debugging; leave shell open after everything else
