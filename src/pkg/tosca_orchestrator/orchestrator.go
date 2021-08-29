@@ -6,9 +6,16 @@ import (
 	"github.com/thetillhoff/eat/pkg/tosca"
 )
 
-func Install(serviceTemplate tosca.ServiceTemplate) {
+func Install(serviceTemplate tosca.ServiceTemplate, inputs []string) {
 
-	var value tosca.DataType = serviceTemplate.DataTypes["testString"]
-	fmt.Println(value.ToString())
+	// TODO: Add derivation from NodeType to NodeTemplate, so all properties etc are available.
+
+	serviceTemplate.TopologyTemplate = AddInputsToTopologyTemplate(serviceTemplate.TopologyTemplate, inputs)
+
+	// TODO: Add installation here
+
+	serviceTemplate.TopologyTemplate = AddOutputsOfTopologyTemplate(serviceTemplate.TopologyTemplate)
+
+	fmt.Println(serviceTemplate.ToString())
 
 }
