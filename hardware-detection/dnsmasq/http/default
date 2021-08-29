@@ -1,0 +1,18 @@
+#!ipxe
+
+# base-url must end with a slash
+set boot-url http://XXX.XXX.XXX.XXX/
+
+# Figure out if client is 64-bit capable
+cpuid --ext 29 && set arch x64 || set arch x86
+cpuid --ext 29 && set archl amd64 || set archl i386
+
+# boot from iso
+echo Booting Debian 
+sleep 1
+sanboot --no-describe ${boot-url}debian-live-11.0.0-amd64-standard.iso || goto failed
+
+:failed
+echo Booting failed
+prompt --key s Press 's' to drop to shell && shell ||
+exit

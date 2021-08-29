@@ -3,6 +3,7 @@
 # installing lighttpd
 apt update
 apt upgrade -y
+apt autoremove -y
 apt install -y lighttpd
 apt clean
 
