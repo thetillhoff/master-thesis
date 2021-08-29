@@ -48,15 +48,18 @@ type AttributeDefinition struct {
 	Metadata map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`
 }
 
-type AttributeAssignment struct {
-	// no keywords
+// func InitAttributeAssignment(attributedefinition AttributeDefinition, attributeAssignment interface{}) (interface{}, error) {
+// 	var (
+// 		assignment interface{}
+// 	)
+// 	if attributedefinition.DefaultValue != nil {
+// 		assignment = attributedefinition.DefaultValue
+// 	} else {
+// 		assignment = attributeAssignment
+// 	}
 
-	// grammar
-	// <attribute_name>: <attribute_value> | { <attribute_value_expression> }
-	//
-	// attribute_name: represents the name of an attribute that will be used to select an attribute definition with the same name within on a TOSCA entity (e.g., Node Template, Relationship Template, etc.) which is declared (or reflected from a Property definition) in its declared type (e.g., a Node Type, Node Template, Capability Type, etc.).
-	// attribute_value, attribute_value_expresssion: represent the type-compatible value to assign to the attribute.  Attribute values may be provided as the result from the evaluation of an expression or a function.
-}
+// 	return assignment, nil
+// }
 
 // The attribute_selection_format is a list of the following format:
 // [ <SELF | SOURCE | TARGET >, <optional_capability_name>, <attribute_name>, <nested_attribute_name_or_index_1>, ...,  <nested_attribute_name_or_index_or_key_n> ]

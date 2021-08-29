@@ -145,7 +145,7 @@ func loadServiceTemplate(serviceTemplatePath string, otherDefinitions string) to
 
 	// now all imported types exist (with correct namespace in name) in serviceTemplate; next comes the derivation of types (== resolving derivedFrom).
 	// loops below and above can't be merged since types might depend on other imports.
-	serviceTemplate = serviceTemplate.ResolveTypeDerivations()
+	serviceTemplate = tosca.ResolveTypeDerivations(serviceTemplate)
 
 	// return serviceTemplate
 	return serviceTemplate

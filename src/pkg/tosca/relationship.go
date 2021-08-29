@@ -76,7 +76,7 @@ type RelationshipTemplate struct {
 	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// An optional map of attribute assignments for the Relationship Template.
-	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+	Attributes map[string]interface{} `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 
 	// An optional map of interface assignments for the relationship template.
 	Interfaces map[string]InterfaceAssignment `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`

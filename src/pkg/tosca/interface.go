@@ -76,3 +76,38 @@ type InterfaceAssignment struct {
 	// The optional map of notifications assignments specified for this interface.
 	Notifications map[string]NotificationAssignment `yaml:"notifications,omitempty" json:"notifications,omitempty"`
 }
+
+func NewInterfaceAssignment() InterfaceAssignment {
+	return InterfaceAssignment{
+		Inputs:        make(map[string]ParameterDefinition),
+		Operations:    make(map[string]OperationAssignment),
+		Notifications: make(map[string]NotificationAssignment),
+	}
+}
+
+// func InitInterfaceAssignment(interfaceDefinition InterfaceDefinition, interfaceAssignment InterfaceAssignment) (InterfaceAssignment, error) {
+// 	var (
+// 		err        error
+// 		assignment InterfaceAssignment = NewInterfaceAssignment()
+// 	)
+
+// 	for parameterName, parameterContent := range interfaceDefinition.Inputs {
+// 		assignment.Inputs[parameterName] = parameterContent
+// 	}
+
+// 	for operationName, operationContent := range interfaceDefinition.Operations {
+// 		assignment.Operations[operationName], err = InitOperationAssignment(operationContent, interfaceAssignment.Operations[operationName])
+// 		if err != nil {
+// 			return assignment, err
+// 		}
+// 	}
+
+// 	for notificationName, notificationContent := range interfaceDefinition.Notifications {
+// 		assignment.Notifications[notificationName], err = InitNotificationAssignment(notificationContent, interfaceAssignment.Notifications[notificationName])
+// 		if err != nil {
+// 			return assignment, err
+// 		}
+// 	}
+
+// 	return assignment, nil
+// }

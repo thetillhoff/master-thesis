@@ -129,7 +129,7 @@ type CapabilityMapping struct {
 	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// [conditional] This field is mutually exclusive with the mapping keyname and allows to provide a capability assignment for the template and specify it’s related attributes.
-	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+	Attributes map[string]interface{} `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 }
 
 // Custom unmarshaller, since both single-line and multi-line grammar have to be supported
@@ -140,9 +140,9 @@ func (capabilityMapping *CapabilityMapping) UnmarshalYAML(unmarshal func(interfa
 		err     error
 
 		multilineCapabilityMapping struct { // Basically the same as CapabilityMapping, but without a custom unmarshaller.
-			Mapping    []string                       `yaml:"mapping,omitempty" json:"mapping,omitempty"`
-			Properties map[string]interface{}         `yaml:"properties,omitempty" json:"properties,omitempty"`
-			Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+			Mapping    []string               `yaml:"mapping,omitempty" json:"mapping,omitempty"`
+			Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
+			Attributes map[string]interface{} `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 		}
 	)
 
@@ -183,7 +183,7 @@ type RequirementMapping struct {
 	Properties []interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// [conditional] This field is mutually exclusive with the mapping keyname and allow to provide a requirement for the template and specify it’s related attributes.
-	Attributes []AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+	Attributes []interface{} `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 }
 
 // Custom unmarshaller, since both single-line and multi-line grammar have to be supported
@@ -194,9 +194,9 @@ func (requirementMapping *RequirementMapping) UnmarshalYAML(unmarshal func(inter
 		err     error
 
 		multilineRequirementMapping struct { // Basically the same as RequirementMapping, but without a custom unmarshaller.
-			Mapping    []string              `yaml:"mapping,omitempty" json:"mapping,omitempty"`
-			Properties []interface{}         `yaml:"properties,omitempty" json:"properties,omitempty"`
-			Attributes []AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+			Mapping    []string      `yaml:"mapping,omitempty" json:"mapping,omitempty"`
+			Properties []interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
+			Attributes []interface{} `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 		}
 	)
 

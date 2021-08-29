@@ -34,7 +34,7 @@ type OperationAssignment struct {
 	Implementation ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
 
 	// The optional map of parameter value assignments for assigning values to operation inputs.
-	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"`
+	Inputs map[string]ParameterAssignment `yaml:"inputs,omitempty" json:"inputs,omitempty"`
 
 	// The optional map of parameter mapping assignments that specify how operation outputs are mapped onto attributes of the node or relationship that contains the operation definition.
 	Outputs map[string]ParameterMappingAssignment `yaml:"outputs,omitempty" json:"outputs,omitempty"`
@@ -49,7 +49,7 @@ func (operationAssignment *OperationAssignment) UnmarshalYAML(unmarshal func(int
 
 		multilineOperationAssignment struct { // Basically the same as OperationAssignment, but without a custom unmarshaller.
 			Implementation ImplementationDefinition              `yaml:"implementation,omitempty" json:"implementation,omitempty"`
-			Inputs         map[string]ParameterDefinition        `yaml:"inputs,omitempty" json:"inputs,omitempty"`
+			Inputs         map[string]ParameterAssignment        `yaml:"inputs,omitempty" json:"inputs,omitempty"`
 			Outputs        map[string]ParameterMappingAssignment `yaml:"outputs,omitempty" json:"outputs,omitempty"`
 		}
 	)
@@ -72,3 +72,33 @@ func (operationAssignment *OperationAssignment) UnmarshalYAML(unmarshal func(int
 
 	return err
 }
+
+func NewOperationAssignment() OperationAssignment {
+	return OperationAssignment{
+		Inputs:  make(map[string]ParameterAssignment),
+		Outputs: make(map[string]ParameterMappingAssignment),
+	}
+}
+
+// func InitOperationAssignment(operationDefinition OperationDefinition, operationAssignment OperationAssignment) (OperationAssignment, error) {
+// 	var (
+// 		err        error
+// 		assignment OperationAssignment = NewOperationAssignment()
+// 	)
+
+// 	for propertyName, propertyContent := range operationDefinition.Inputs {
+// 		assignment.Inputs[propertyName], err = InitPropertyAssignment(propertyContent, OperationAssignment.Inputs[propertyName])
+// 		if err != nil {
+// 			return assignment, err
+// 		}
+// 	}
+
+// 	for attributeName, attributeContent := range operationDefinition.Outputs {
+// 		assignment.Outputs[attributeName], err = InitAttributeAssignment(attributeContent, OperationAssignment.Outputs[attributeName])
+// 		if err != nil {
+// 			return assignment, err
+// 		}
+// 	}
+
+// 	return assignment, nil
+// }

@@ -123,6 +123,17 @@ type NodeTemplate struct {
 	Copy string `yaml:"copy,omitempty" json:"copy,omitempty"`
 }
 
+func NewNodeTemplate() NodeTemplate {
+	return NodeTemplate{
+		Metadata:     make(map[string]string),
+		Properties:   make(map[string]interface{}),
+		Attributes:   make(map[string]interface{}),
+		Capabilities: make(map[string]CapabilityAssignment),
+		Interfaces:   make(map[string]InterfaceAssignment),
+		Artifacts:    make(map[string]ArtifactDefinition),
+	}
+}
+
 type NodeFilter struct {
 	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 

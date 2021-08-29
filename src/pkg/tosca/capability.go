@@ -11,12 +11,12 @@ type CapabilityType struct {
 	AbstractType `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// An optional map of property definitions for the Capability Type.
-	Properties map[string]PropertyDefinition
+	Properties map[string]PropertyDefinition `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// An optional map of attribute definitions for the Capability Type.
-	Attributes map[string]AttributeDefinition
+	Attributes map[string]AttributeDefinition `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 	// An optional list of one or more valid names of Node Types that are supported as valid sources of any relationship established to the declared Capability Type. If undefined, all Node Types are valid sources.
-	ValidSourceTypes []string
+	ValidSourceTypes []string `yaml:"valid_source_types,omitempty" json:"valid_source_types,omitempty"`
 
 	// capability types
 	// - endpoint
@@ -139,8 +139,38 @@ type CapabilityAssignment struct {
 	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// An optional map of attribute assignments for the Capability definition.
-	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+	Attributes map[string]interface{} `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 
 	// An optional integer that sets the number of occurrences. It defines the maximum number of allowed relationships to this capability. Must be within the range specified in the corresponding capability definition. If not defined, the orchestrator uses a suitable value from the range defined in the corresponding capability definition (e.g. the maximum in the range).
-	Occurences Range `yaml:"occurences,omitempty" json:"occurences,omitempty"`
+	Occurences int `yaml:"occurences,omitempty" json:"occurences,omitempty"`
 }
+
+func NewCapabilityAssignment() CapabilityAssignment {
+	return CapabilityAssignment{
+		Properties: make(map[string]interface{}),
+		Attributes: make(map[string]interface{}),
+	}
+}
+
+// func InitCapabilityAssignment(capabilityDefinition CapabilityDefinition, capabilityAssignment CapabilityAssignment) (CapabilityAssignment, error) {
+// 	var (
+// 		err        error
+// 		assignment CapabilityAssignment = NewCapabilityAssignment()
+// 	)
+
+// 	for propertyName, propertyContent := range capabilityDefinition.Properties {
+// 		assignment.Properties[propertyName], err = InitPropertyAssignment(propertyContent, capabilityAssignment.Properties[propertyName])
+// 		if err != nil {
+// 			return assignment, err
+// 		}
+// 	}
+
+// 	for attributeName, attributeContent := range capabilityDefinition.Attributes {
+// 		assignment.Attributes[attributeName], err = InitAttributeAssignment(attributeContent, capabilityAssignment.Attributes[attributeName])
+// 		if err != nil {
+// 			return assignment, err
+// 		}
+// 	}
+
+// 	return assignment, nil
+// }

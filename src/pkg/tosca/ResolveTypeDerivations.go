@@ -5,7 +5,7 @@ import (
 )
 
 // Resolve derivation for all types in provided serviceTemplate
-func (serviceTemplate ServiceTemplate) ResolveTypeDerivations() ServiceTemplate {
+func ResolveTypeDerivations(serviceTemplate ServiceTemplate) ServiceTemplate {
 
 	// ArtifactType
 	for typeName, typeDefinition := range serviceTemplate.ArtifactTypes {
@@ -58,7 +58,7 @@ func resolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, s
 	)
 
 	// If derivation is necessary AND not already done
-	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
+	if thisType.DerivedFrom != "" && !IsDerivedFrom(thisType.AbstractType, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving ArtifactType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
@@ -114,7 +114,7 @@ func resolveDataTypeDerivation(thisTypeName string, thisType DataType, serviceTe
 	)
 
 	// If derivation is necessary AND not already done AND not derived from a normativeType
-	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
+	if thisType.DerivedFrom != "" && !IsDerivedFrom(thisType.AbstractType, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving DataType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
@@ -182,7 +182,7 @@ func resolveCapabilityTypeDerivation(thisTypeName string, thisType CapabilityTyp
 	)
 
 	// If derivation is necessary AND not already done
-	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
+	if thisType.DerivedFrom != "" && !IsDerivedFrom(thisType.AbstractType, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving CapabilityType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
@@ -244,7 +244,7 @@ func resolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType,
 	)
 
 	// If derivation is necessary AND not already done
-	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
+	if thisType.DerivedFrom != "" && !IsDerivedFrom(thisType.AbstractType, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving InterfaceType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
@@ -308,7 +308,7 @@ func resolveRelationshipTypeDerivation(thisTypeName string, thisType Relationshi
 	)
 
 	// If derivation is necessary AND not already done
-	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
+	if thisType.DerivedFrom != "" && !IsDerivedFrom(thisType.AbstractType, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving RelationshipType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
@@ -381,7 +381,7 @@ func resolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTe
 	)
 
 	// If derivation is necessary AND not already done
-	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
+	if thisType.DerivedFrom != "" && !IsDerivedFrom(thisType.AbstractType, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving NodeType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
@@ -484,7 +484,7 @@ func resolveGroupTypeDerivation(thisTypeName string, thisType GroupType, service
 	)
 
 	// If derivation is necessary AND not already done
-	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
+	if thisType.DerivedFrom != "" && !IsDerivedFrom(thisType.AbstractType, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving GroupType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}
@@ -548,7 +548,7 @@ func resolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, servi
 	)
 
 	// If derivation is necessary AND not already done
-	if thisType.DerivedFrom != "" && !listContainsString(thisType.derivedFromAncestors, thisType.DerivedFrom) {
+	if thisType.DerivedFrom != "" && !IsDerivedFrom(thisType.AbstractType, thisType.DerivedFrom) {
 		if debug {
 			log.Println("INF Deriving PolicyType '" + thisTypeName + "' from parent '" + thisType.DerivedFrom + "'.")
 		}

@@ -109,7 +109,7 @@ type GroupDefinition struct {
 	Properties map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 
 	// An optional map of attribute value assignments for the group definition.
-	Attributes map[string]AttributeAssignment `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+	Attributes map[string]interface{} `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 
 	// The optional list of one or more node template names that are members of this group definition.
 	Members []string `yaml:"members,omitempty" json:"members,omitempty"`

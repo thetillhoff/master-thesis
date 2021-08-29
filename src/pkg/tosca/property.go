@@ -1,6 +1,9 @@
 package tosca
 
-import "log"
+import (
+	"errors"
+	"log"
+)
 
 type PropertyDefinition struct { // indicate desired state
 	Equallable `yaml:",omitempty" json:",omitempty"`
@@ -85,4 +88,21 @@ func (src PropertyFilterDefinition) Equal(dest PropertyFilterDefinition) bool {
 	log.Fatalln("ERR PropertyfilterDefinition.Equal not implemented.")
 
 	return true
+}
+
+func InitPropertyAssignment(propertyDefinition PropertyDefinition, propertyAssignment interface{}) (interface{}, error) {
+	var (
+		assignment interface{}
+	)
+	if propertyDefinition.DefaultValue != nil && propertyDefinition.FixedValue == nil {
+		assignment = propertyDefinition.DefaultValue
+	} else if propertyDefinition.DefaultValue == nil && propertyDefinition.FixedValue != nil {
+		assignment = propertyDefinition.FixedValue
+	} else if propertyDefinition.DefaultValue == nil && propertyDefinition.FixedValue == nil {
+		assignment = propertyAssignment
+	} else { // propertyDefinition.DefaultValue != nil && propertyDefinition.FixedValue != nil
+		return assignment, errors.New("propertyDefinition contains both mutual exclusive default_value and fixed_value")
+	}
+
+	return assignment, nil
 }

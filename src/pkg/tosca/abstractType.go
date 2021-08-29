@@ -23,3 +23,7 @@ type AbstractType struct {
 	// An optional description for the type.
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 }
+
+func IsDerivedFrom(thisType AbstractType, parent string) bool {
+	return listContainsString(thisType.derivedFromAncestors, parent)
+}

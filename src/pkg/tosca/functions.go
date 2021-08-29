@@ -1,5 +1,7 @@
 package tosca
 
+import "log"
+
 //
 // Intrinsic functions
 // The functions are supported within the TOSCA template for manipulation of template data.
@@ -27,15 +29,64 @@ package tosca
 //
 // <input_parameter_name>: The name of the parameter as defined in the inputs section of the service template.
 // <nested_input_paratmer_name_or_index_*>: Some TOSCA input parameters are complex (i.e., composed as nested structures).  These parameters are used to dereference into the names of these nested structures when needed. Some parameters represent list types. In these cases, an index may be provided to reference a specific entry in the list (as identified by the previous parameter) to return.
+func (topologyTemplate TopologyTemplate) GetInput(path []string) interface{} {
+	var (
+		value interface{}
+	)
 
-// The get_property function is used to retrieve property values between modelable entities defined in the same service template.
+	// Check minimal length of path
+	if len(path) < 1 {
+		log.Fatalln("ERR get_input requires at least one element (input name).")
+	} else if len(path) > 1 {
+		log.Fatalln("ERR get_input with multiple parameters is not implemented (yet).")
+	}
+
+	if input, ok := topologyTemplate.Inputs[path[0]]; ok {
+		value = input.Value
+	} else {
+		log.Fatalln("ERR No input with name '" + path[0] + "'.")
+	}
+
+	return value
+}
+
+// The get_property function is used to retrieve property values between modelable entities (e.g. NodeTemplate or RelationshipTemplate) defined in the same service template.
 //
 // get_property: [ <modelable_entity_name>, <optional_req_or_cap_name>, <property_name>, <nested_property_name_or_index_1>, ..., <nested_property_name_or_index_n> ]
 //
 // <modelable entity name> | SELF | SOURCE | TARGET | HOST: The mandatory name of a modelable entity (e.g., Node Template or Relationship Template name) as declared in the service template that contains the property definition the function will return the value from. See section B.1 for valid keywords.
-// <optional_req_or_cap_name>: The optional name of the requirement or capability name within the modelable entity (i.e., the <modelable_entity_name> which contains the property definition the function will return the value from. Note:  If the property definition is located in the modelable entity directly, then this parameter MAY be omitted.
+// <optional_req_or_cap_name>: The optional name of the requirement or capability name within the modelable entity (i.e., the <modelable_entity_name> which contains the property definition the function will return the value from. Note: If the property definition is located in the modelable entity directly, then this parameter MAY be omitted.
 // <property_name>: The name of the property definition the function will return the value from.
-// <nested_property_name_or_index_*>: Some TOSCA properties are complex (i.e., composed as nested structures).  These parameters are used to dereference into the names of these nested structures when needed. Some properties represent list types. In these cases, an index may be provided to reference a specific entry in the list (as identified by the previous parameter) to return.
+// <nested_property_name_or_index_*>: Some TOSCA properties are complex (i.e., composed as nested structures). These parameters are used to dereference into the names of these nested structures when needed. Some properties represent list types. In these cases, an index may be provided to reference a specific entry in the list (as identified by the previous parameter) to return.
+func (topologyTemplate TopologyTemplate) GetProperty(path []string) interface{} {
+	var (
+		value interface{}
+	)
+
+	// Check minimal length of path
+	if len(path) < 2 {
+		log.Fatalln("ERR get_property requires at least elements (entity name, property name).")
+	}
+
+	if nodeTemplate, ok := topologyTemplate.NodeTemplates[path[0]]; ok {
+		if nodeProperty, ok := nodeTemplate.Properties[path[1]]; ok {
+			return nodeProperty
+		} else {
+			log.Println("WRN NodeTemplate '" + path[0] + "' found, but property '" + path[1] + "' doesn't exist.")
+		}
+	}
+	if relationshipTemplate, ok := topologyTemplate.RelationshipTemplates[path[0]]; ok {
+		if relationshipProperty, ok := relationshipTemplate.Properties[path[1]]; ok {
+			return relationshipProperty
+		} else {
+			log.Println("WRN RelationshipTemplate '" + path[0] + "' found, but property '" + path[1] + "' doesn't exist.")
+		}
+	} else {
+		log.Fatalln("ERR No property with that path:", path)
+	}
+
+	return value
+}
 
 //
 // Attribute functions
