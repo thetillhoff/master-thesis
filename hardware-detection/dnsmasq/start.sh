@@ -6,5 +6,5 @@ sudo docker run \
   --net=host \
   --cap-add=NET_ADMIN \
   --rm -it \
-  -v $PWD/http:/http \
+  -v $PWD/isos:/isos \
   dnsmasq #bash

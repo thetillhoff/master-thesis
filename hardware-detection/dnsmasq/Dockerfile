@@ -32,33 +32,6 @@ RUN make bin-x86_64-efi/ipxe.efi && \
   make bin/undionly.kpxe && \
   mv bin/undionly.kpxe /home/
 
-##########
-FROM ubuntu:20.04 AS go-build-serve
-
-# install required software
-RUN apt-get update \
-  && apt-get install -y \
-  wget \
-  git \
-  && apt-get clean
-
-# install go
-RUN wget -q https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O /go.tar.gz && \
-    tar -zxf /go.tar.gz -C / && \
-    rm /go.tar.gz
-
-# copy src
-COPY serve.go /home/
-
-# set workdir
-WORKDIR /home
-
-# go get dependencies
-#RUN /go/bin/go mod tidy
-
-# startup command
-RUN /go/bin/go build -o serve
-
 
 ##########
 FROM ubuntu:20.04
@@ -77,7 +50,7 @@ RUN apt-get update \
 RUN mkdir -p /tftp /http
 
 # retrieve files from previous stages
-COPY --from=go-build-serve /home/serve /usr/local/bin/
+RUN wget https://github.com/thetillhoff/serve/releases/download/v0.1.1/serve_darwin_amd64 -O /usr/local/bin/serve && chmod +x /usr/local/bin/serve
 COPY --from=ipxe-build /home/ipxe.efi /tftp/
 COPY --from=ipxe-build /home/undionly.kpxe /tftp/
 
@@ -94,6 +67,10 @@ COPY ./dnsmasq.conf /etc/dnsmasq.conf
 EXPOSE 53/udp
 EXPOSE 69/udp
 EXPOSE 69/tcp
+
+# add default ipxe-boot-file
+RUN mkdir -p /http
+COPY ./default /http/default
 
 # add startup script file
 COPY ./container_init.sh /container_init.sh

@@ -32,7 +32,7 @@
 
 ## code (tosca)
 - [x] replace '"' with '"'
-- [ ] replace all <double spaces> with <tabs>
+- [?] replace all <double spaces> with <tabs>
 - [ ] 4.3.5.8 PropertyFilterDefinition is not implemented
 - [ ] where to place conditions? [4.6.7.6ff]
 - tosca spec [4.8.4] why the hell is this here and not in simple-profile?
@@ -56,6 +56,9 @@
 - `Equal` should consider constraints etc as well!
 - [ ] Size.Parse uses bytefmt which declares f.e. TB==TiB which is not true -> reimplement, but too much effort for MA
 - [x] Imports not resolved right now -> should be done, and resolving derivation should use this as well
+- [ ] InterfaceAssignment is never used?
+- [ ] Are Assignments the same as "storing a value according to definition"? This would result in making all of them interfaces...
+- [ ] As stated in spec 4.4.1, 64-bit precision is recommended for all values
 
 ## issues in tosca spec
 - 4.3.5.6.3.3 contains indentation error
@@ -67,6 +70,11 @@
 - 4.5.5.2 inconsistent type of "properties" and "attributes", only for requirement mappings these are lists, else maps
 - 5.2.1 yaml-snippet contains indentation error
 - 5.3.1.3 missing output name
+- 4.4.2 get_property is defined with "[entity_name, optional_req_or_cap_name, property_name, nested_property_name_or_index]"
+  It is not possible to detect in a sane way whether optional_req_or_cap_name or nested_property_name_or_index is set.
+  Therefore it is assumed, that optional_req_or_cap_name is NEVER set.
+<!-- - 3.8.3.1 and 3.8.3.2 contain conflicting information about the content of the field 'interfaces': Is it interface_definitions or interface_assignments? -->
+- There are quite many assumptions to make when working with nodeTemplates (same goes for relationshipTempaltes) - mostly related with how properties etc are retrieved from nodeType and relationshipType
 
 
 <!-- ## code (simple profile)
@@ -100,6 +108,7 @@
 - there was one occurence where a constraint was larger_or_equal than 0.1 MB or something like that. Why no 0B?
   example at 5.9.10.1
 - sometimes the map[string]* forces for name finding, but its sometimes unnecessary (as it has a description). While it allows for reference elsewhere, it should be described clearly where this is possible and whats the use-case is.
+- 5.8.5 Text is copy-paste error
 
 ## code (csar)
 - [ ] Resolving OtherDefinitions should:
@@ -109,6 +118,35 @@
   "Profile" keyword is not supported (yet).
   Sufficient for MA, but important to note somewhere.
 
+## code tosca_orchestrator
+- [ ] inputs should also be providable via .yaml file. Multiple possible (merge with override). Command-line input must also override those values.
+- [-] use opa for policy/... checking (requirements, capabilities, filters, ...)
+  https://www.openpolicyagent.org/docs/latest/#example
+  Won't do, since tosca has its own requirements, capabilities etc. opa would simply introduce a new layer of complexity
+
+
 ## goal:
 - grow infrastructure with minimal manual effort
 - deploy/restore fully automated
+
+## code cli 
+- init command generates definitions
+- minify removes unused definitions
+- check whether all used components have corresponding plugins available (and download them)
+- `(--)list-inputs` should list the inputs of a CSAR package, with examples
+  inputs are provided at runtime OR via file, help flag shows a list with available entries like
+  `ram_size=<bytesize> # f.e. 4 GB`
+  - defaults can be specified in tosca files
+  - allow variable-files as well (.env files) - create a minimum file via cli-command?
+
+## other
+- contact tosca devs; questions:
+  - why no hardware?
+  - why no state?
+  - why properties and attributes and types and templates and instances?
+    Isn't it simpler to create templates with properties (with defaults) and instantiate those and extend the predefined properties?
+    That way, whenever a new value is set, all verifications (type, range, etc) can be applied, instead of a whole lot of deriving and resolving and then still doing the same.
+
+## next:
+- create "ipmi"-scripts.
+- create debian live iso / ubuntu live iso / auto-install iso

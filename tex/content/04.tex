@@ -21,5 +21,17 @@ considerations:
 - ipv6 not 100 percent necessary, but would be good
 - easy to learn
 - easy to adapt (to counterpart-interface updates) -> plug-in system?
-
+- tosca-orchestrator:
+  - 4.3ff of http://docs.oasis-open.org/tosca/TOSCA-Instance-Model/v1.0/csd01/TOSCA-Instance-Model-v1.0-csd01.html#_Toc500843787
+    "orchestrators manage the state of nodes and transitions them from state to state. This notion of state is somewhat artificial in that the orchestrator assumes a stable state is reached after an operation executes [...] without error"
+    "an error results in an undefined state" (no automatic rollback defined in tosca)
+    "orchestration states are only valid during orchestration. [...] the orchestrator or the imperative workflow [...] must decide the current state of all nodes in the topology.
+    "[...] event stream can be maintained for the life of a deployment [...]"
+    "As nodes are transitioned through their states, a subset of attributes and relationships may be defined. [...] This requires that in general TOSCA implies semantics such that not all attributes would be available in a given state."
+    "Nodes are only visible when they have a state defined (i.e. the orchestrator is dealing with their lifecycle)"
+    "node attributes are only defined for the stable states"
+    "node relationships are always navigable when the source and target node exists"
+    "[...] state is never updated outside an orchestration. [...] no way to propagate state changes from the node to the orchestrator and nodes don't have a state attribute."
+      -> no state file!
+    "Nodes can update their attributes with no specific guarantees in terms of precision or accuracy"
 
