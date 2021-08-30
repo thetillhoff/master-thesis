@@ -50,7 +50,7 @@ RUN apt-get update \
 RUN mkdir -p /tftp /http
 
 # retrieve files from previous stages
-RUN wget https://github.com/thetillhoff/serve/releases/download/v0.1.1/serve_darwin_amd64 -O /usr/local/bin/serve && chmod +x /usr/local/bin/serve
+RUN wget https://github.com/thetillhoff/serve/releases/download/v0.1.1/serve_linux_amd64 -O /usr/local/bin/serve && chmod +x /usr/local/bin/serve
 COPY --from=ipxe-build /home/ipxe.efi /tftp/
 COPY --from=ipxe-build /home/undionly.kpxe /tftp/
 
@@ -74,8 +74,8 @@ COPY ./default /http/default
 
 # add startup script file
 COPY ./container_init.sh /container_init.sh
+RUN chmod +x /container_init.sh
 
-ENV SUBNET=192.168.1.0
 ENV ISOSRC=https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/debian-live-11.0.0-amd64-standard.iso
 # available options for DHCP: on, proxy
 ENV DHCP=proxy
