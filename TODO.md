@@ -124,6 +124,39 @@
   https://www.openpolicyagent.org/docs/latest/#example
   Won't do, since tosca has its own requirements, capabilities etc. opa would simply introduce a new layer of complexity
 
+## notes from prof
+Level 0:
+  App: Webshop
+
+Level 1:
+  Physical: Compute Type x1
+  Admin:    SSH
+  Software: Webshop v2.1
+  Scale:    Europe
+  Provider: Private
+
+Level 2 (IaS):
+  Physical (Compute Type x1)
+    Location
+      Room: Central
+      Power: USV
+    Compute
+      CPU: 4 Cores
+      Memory: 16GB
+    Network (Standard)
+      Speed: 1G
+      Loadbalancer: Yes
+    Storage
+      Disk: 1TB SSD
+  Software
+    Code: Generic-webshop v1
+    Deploy: Docker
+    Database: Postgres
+    Auth: Webtoken
+    Userdatabase: Kerberos
+
+-> "Mehrdimensionales Systemmodell"?
+
 
 ## goal:
 - grow infrastructure with minimal manual effort
