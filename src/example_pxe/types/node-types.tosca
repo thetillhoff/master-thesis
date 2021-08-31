@@ -1,0 +1,34 @@
+node_types:
+  pxe_server:
+    derived_from: tosca.nodes.Compute
+    attributes:
+      networks:
+        - network_name: pxe_enabled_network
+    capabilities: # what will be provided for others
+      pxe_cap:
+        type: pxe_enabler # see file capability-types.tosca
+        # content will be filled at runtime?
+
+  dhcp_endpoint:
+    derived_from: tosca.capabilities.Root
+    properties:
+      protocol:
+        type: udp #default is tcp, typeof <string>
+      network_name: <string> #default is PRIVATE
+      ports:
+        dhcp:
+          protocol: udp
+          target: 67
+        #- 67 #udp, server input
+        #- 68 #udp, client input
+
+  tftp_endpoint:
+    derived_from: tosca.capabilities.Root
+    properties:
+      protocol:
+        type: tftp
+      network_name: { get_attribute: [ dhcp, networks, network_name ] } # typeof <string>, default is PRIVATE
+      ports:
+        dhcp:
+          protocol: udp
+          target: 69
