@@ -429,20 +429,20 @@ topology_template:
         # get from outside? Get from constraint?
         num_cpus: cpus # Implied "PUSH"
         # get from some node in the topology…
-        num_cpus: [ <node>, <cap>, <property> ]
+        #num_cpus: [ <node>, <cap>, <property> ]
         # 1) Running
         architecture:
           # a) Explicit
           value: { get_property: [some_service, architecture] }
           # b) implicit
-          value: [ some_service, <req | cap name>, <property name> architecture ]
-          default: "amd"
+          #value: [ some_service, <req | cap name>, <property name> architecture ]
+          #default: "amd"
           # c) INPUT mapping?
           #???
         # 2) Catalog (Matching)
-        architecture:
-          contraints:
-            equals: "x86"
+        #architecture:
+          #contraints:
+            #equals: "x86"
       capabilities:
         bar: [ some_service, bar ]
         some_capability: mytypes.mycapabilities.MyCapabilityTypeName # Simple notation, no properties need to be refined
