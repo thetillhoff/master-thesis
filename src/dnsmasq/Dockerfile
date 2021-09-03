@@ -38,8 +38,8 @@ FROM ubuntu:20.04
 
 # install required software
 RUN apt-get update \
-  && apt upgrade -y \
-  && apt install -y \
+  && apt-get upgrade -y \
+  && apt-get install -y \
   wget \
   net-tools \
   dnsmasq \
@@ -50,7 +50,7 @@ RUN apt-get update \
 RUN mkdir -p /tftp /http
 
 # retrieve files from previous stages
-RUN wget https://github.com/thetillhoff/serve/releases/download/v0.1.1/serve_linux_amd64 -O /usr/local/bin/serve && chmod +x /usr/local/bin/serve
+RUN wget -q https://github.com/thetillhoff/serve/releases/download/v0.1.1/serve_linux_amd64 -O /usr/local/bin/serve && chmod +x /usr/local/bin/serve
 COPY --from=ipxe-build /home/ipxe.efi /tftp/
 COPY --from=ipxe-build /home/undionly.kpxe /tftp/
 

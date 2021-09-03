@@ -1,6 +1,4 @@
-package dhcp_and_tftp
-
-import "github.com/thetillhoff/eat/pkg/docker"
+package docker
 
 var (
 	debug bool = false // Output more verbose when true
@@ -8,6 +6,4 @@ var (
 
 func Debug() {
 	debug = true
-
-	docker.Debug()
 }

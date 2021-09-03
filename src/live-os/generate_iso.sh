@@ -37,7 +37,7 @@ rm ${UNSQUASHEDFS}/chroot.sh
 rm ${UNSQUASHEDFS}/etc/resolv.conf
 
 # Repacking squashfs (and overwrite the previous one)
-mksquashfs ${UNSQUASHEDFS}/ ${EX_ISO}/live/filesystem.squashfs -comp xz
+mksquashfs ${UNSQUASHEDFS}/ ${EX_ISO}/live/filesystem.squashfs -comp xz -noappend
 
 # Editing isolinux configuration (boot menu for bios)
 #   The only change is for timeout; no timeout -> 1s timeout (units of 1/10s)

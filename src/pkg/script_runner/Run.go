@@ -1,8 +1,11 @@
 package script_runner
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"os/exec"
+	"reflect"
 )
 
 // var (
@@ -12,11 +15,30 @@ import (
 
 // Takes shell command, executes it and returns output as string
 func RunLinuxCommand(command string) string {
+	var (
+		output string = ""
+	)
+	fmt.Println("Command:", command)
 	cmd := exec.Command("/bin/sh", "-c", command)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Fatalln("ERR Error while running command:", err)
+
+	stdout, _ := cmd.StdoutPipe()
+	cmd.Start()
+
+	scanOut := bufio.NewScanner(stdout)
+	scanOut.Split(bufio.ScanWords)
+	for scanOut.Scan() {
+		m := scanOut.Text()
+		output = output + m
 	}
+	err := cmd.Wait()
+	if err != nil {
+		log.Fatalln("ERR command failed:", command, reflect.TypeOf(err), err)
+	}
+
+	// output, err := cmd.CombinedOutput()
+	// if err != nil {
+	// 	log.Fatalln("ERR Error while running command:", err, output)
+	// }
 
 	return string(output)
 }

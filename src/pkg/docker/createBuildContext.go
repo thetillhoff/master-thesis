@@ -1,4 +1,4 @@
-package dhcp_and_tftp
+package docker
 
 import (
 	"archive/tar"
@@ -9,12 +9,14 @@ import (
 	"path/filepath"
 )
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-// Creates buildcontext-tar-file and returns its path
+// Input folder-path, return file-path
 //
 // Deleting it after the build is up to the caller
-func createBuildContext(buildPath string) string {
+func createBuildContext(dirPath string) string {
+	var (
+		letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	)
+
 	// Creating tempfileName
 	b := make([]rune, 16) // random string of length 16
 	for i := range b {
@@ -32,7 +34,7 @@ func createBuildContext(buildPath string) string {
 	// Fill tar-file with content
 	tarWriter := tar.NewWriter(file)
 	defer tarWriter.Close()
-	filepath.Walk(buildPath, func(file string, fileInfo os.FileInfo, err error) error {
+	filepath.Walk(dirPath, func(file string, fileInfo os.FileInfo, err error) error {
 		// return on any error
 		if err != nil {
 			return err

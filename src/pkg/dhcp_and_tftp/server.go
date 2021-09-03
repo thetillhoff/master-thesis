@@ -1,19 +1,16 @@
 package dhcp_and_tftp
 
 import (
-	"bufio"
 	"context"
-	"encoding/json"
 	"log"
 	"os"
 	"time"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/strslice"
-	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/thetillhoff/eat/pkg/docker"
 )
 
 var (
@@ -31,89 +28,20 @@ var (
 // Additionally, add another package for a dedicated tftp and http server for PXE-boot.
 func Start() {
 	var (
-		err        error
-		respBuild  types.ImageBuildResponse
-		respCreate container.ContainerCreateCreatedBody
-
-		scanner *bufio.Scanner
+		pwd string
+		err error
 	)
 
 	log.Println("INF Starting dhcp and tftp server...")
 
-	// Ensure the docker container is stopped after this app is stopped.
-	registerCleanup()
+	// docker.BuildImage(buildSrc, imageName, true) // already done during init
 
-	// Create docker client
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		log.Fatalln("ERR Couldn't create docker client:", err)
-	}
-
-	// TODO:
-	// Only create build context and build image, when image doesn't yet exist.
-	// Add parameter for force build
-
-	// TODO:
-	// When a container with said image is already running, stop and remove it first.
-
-	// Creating build context
-	log.Println("INF Creating build context...")
-	buildContextFilePath := createBuildContext(buildSrc)
-	buildContextFile, err := os.Open(buildContextFilePath)
-	if err != nil {
-		log.Println("ERR Couldn't open buildcontext at '"+buildContextFilePath+"':", err)
-	}
-
-	// Build container image
-	respBuild, err = cli.ImageBuild(
-		ctx,
-		buildContextFile,
-		types.ImageBuildOptions{
-			Dockerfile: "Dockerfile",
-			Tags:       []string{imageName},
-			// NoCache:    true,
-			Remove: true,
-			// BuildArgs: make(map[string]*string),
-		})
-	if err != nil {
-		log.Fatalln("ERR Couldn't create container image:", err)
-	}
-	buildContextFile.Close()
-	os.Remove(buildContextFilePath)
-	defer respBuild.Body.Close()
-
-	// Output is json stream; Print it in readable way
-	scanner = bufio.NewScanner(respBuild.Body)
-	for scanner.Scan() {
-		line := scanner.Text()
-		data := map[string]interface{}{}
-		_ = json.Unmarshal([]byte(line), &data) // Don't care about errors during unmarshal (trusting docker)
-		if stream, ok := data["stream"]; ok {
-			if parsedLine, ok := stream.(string); ok {
-				log.Print(parsedLine) // No Println here, since the unmarshalled json already contains newlines
-			}
-		}
-	}
-	if err = scanner.Err(); err != nil {
-		log.Fatalln("ERR There was an error while creating the container image:", err)
-	}
-
-	pwd, err := os.Getwd()
+	pwd, err = os.Getwd()
 	if err != nil {
 		log.Fatalln("ERR Couldn't retrieve working directory:", err)
 	}
 
-	// Create Container
-	// Expose ports, set privileged, enable NET_ADMIN, delete after stop, mount ./isos to /http/isos in container
-	respCreate, err = cli.ContainerCreate(ctx, &container.Config{
-		Image: imageName,
-		// Cmd:          strslice.StrSlice{"sleep", "60"},
-		Tty:          true,
-		AttachStdout: true,
-		AttachStderr: true,
-		// AttachStdin:  true,
-		// OpenStdin:    true,
-	}, &container.HostConfig{
+	docker.StartWithAutoStop(imageName, container.HostConfig{
 		PortBindings: nat.PortMap{
 			nat.Port("53/udp"): []nat.PortBinding{{HostIP: bindIp, HostPort: "53"}},
 			nat.Port("69/udp"): []nat.PortBinding{{HostIP: bindIp, HostPort: "69"}},
@@ -133,66 +61,20 @@ func Start() {
 				Target: "/http/isos",
 			},
 		},
-	}, nil, nil, "")
-	if err != nil {
-		log.Fatalln("ERR Couldn't create docker container:", err)
-	}
+	})
 
-	// Store container id
-	containerID = respCreate.ID
+	// TODO:
+	// Only create build context and build image, when image doesn't yet exist.
+	// Add parameter for force build
 
-	// Start previously created container
-	if err = cli.ContainerStart(ctx, containerID, types.ContainerStartOptions{}); err != nil {
-		log.Fatalln(err)
-	}
+	// TODO:
+	// When a container with said image is already running, stop and remove it first.
 
-	log.Println("INF Container started. ID:", containerID)
-
-	// log.Println("INF Waiting for container to finish.")
-	// // Both cases (err and status) mean the container is finished.
-	// statusCh, errCh := cli.ContainerWait(ctx, containerID, container.WaitConditionNotRunning)
-	// select {
-	// case err := <-errCh:
-	// 	if err != nil {
-	// 		log.Println("ERR Waiting for container to finish failed:", err)
-	// 	}
-	// case status := <-statusCh:
-	// 	log.Println("INF statuscode:", status)
-	// }
 }
 
-// Stop container
+// Stop dhcp
 func Stop() {
-	var (
-		err        error
-		containers []types.Container
-	)
-
 	log.Println("INF Stopping dhcp and tftp server...")
 
-	// Create docker client
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		log.Fatalln("ERR Couldn't create docker client:", err)
-	}
-
-	containers, err = cli.ContainerList(ctx, types.ContainerListOptions{})
-	if err != nil {
-		log.Fatalln("ERR Couldn't retrieve list of containers:", err)
-	}
-
-	for _, container := range containers {
-		if container.ID == containerID {
-			// Stop Container
-			// Due to autoremove set at ContainerCreate, removal is done automatically
-			err = cli.ContainerStop(ctx, containerID, &timeout)
-			if err != nil {
-				log.Fatalln("ERR Couldn't stop docker container:", err)
-			}
-			break
-		}
-	}
-	if debug {
-		log.Println("INF Container already stopped")
-	}
+	docker.Stop(containerID)
 }

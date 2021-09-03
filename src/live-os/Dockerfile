@@ -1,8 +1,8 @@
 FROM ubuntu:20.04
 
-RUN apt update \
-  && apt upgrade -y \
-  && apt install -y \
+RUN apt-get update \
+  && apt-get upgrade -y \
+  && apt-get install -y \
   wget \
   xorriso \
   cpio \
@@ -10,7 +10,7 @@ RUN apt update \
   dpkg-dev \
   syslinux-utils \
   isolinux \
-  && apt clean
+  && apt-get clean
 
 COPY generate_iso.sh /root/generate_iso.sh
 
