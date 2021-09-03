@@ -23,37 +23,48 @@
   - application deployment
 - when is everything done? When the exeutable exits? Or when a message is displayed?
 - retrieve cluster access information, test application deployment
-- tear-down
+(- tear-down)
 
 ## concrete workflow
 
-- Explain tosca, show the hardware requirement of the demo-webserver, where it requires 4 gb (or more, depends on host capabilities)
-- show empty vm list in hypervisor
-- manually create some vms (configured to netboot) - two with 2GB ram, two with 4GB ram (or double that)
+Assumptions:
+- No preexisting active DHCP server
+- No preexisting DNS server
+
+<!-- - Explain tosca, show the hardware requirement of the demo-webserver, where it requires 4 gb (or more, depends on host capabilities) -->
+- manually create some vms (configured to netboot) to simulate new hardware - two with 2GB ram, two with 4GB ram (or double that)
 - run software on host, which runs PXE on the network and sends/simulates wake-on-lan to vms - MACs are inputted via tosca input params.
-  - requires semi-customizable PXE with either DHCP or proxyDHCP
-  - requires wol function
-- By default a live-iso is provided via PXE, which allows for hardware detection.
-  - The live iso runs a webserver, and writes/updates some information-files, which are available via said webserver
-  - The iso also contains a public key as authorized ssh-access; The couterpart private key lies only at the software.
-    - requires generating ssh-key
-    - requires generating/editing live-iso (add param for preexisting public-key-path)
+  - [x] requires semi-customizable PXE with DHCP (or proxyDHCP)
+  - [x] requires wol function (and/or simulated wol for vms)
+- By default a live-iso ("service-OS") is provided via PXE, which allows for hardware detection. This live-iso:
+  - [x] ... runs a webserver, and writes/updates some information-files, which are available via said webserver
+  - ... also contains a public key as authorized ssh-access; The couterpart private key lies only at the software.
+    - [ ] requires ssh-key (-path) as input to software, which is checked for existance before generation is started
+    - [WIP] requires generating/editing live-iso
+      (add param for preexisting public-key-path)
   - software can now choose fitting host -> important to display the MAC of all possible nodes, and the selected node.
+- select fitting host
+  - [WIP] requires retrieving ip for service-os (arp or dhcp)
+  - [ ] requires matching of requirements against existing hardware
 - EITHER/OR
   - - ssh into all booted hosts and shut them down
     - for only the selected host: wol it again with new boot parameters;
-    - so the base OS will be installed and configure the host. Configuration can happen via SSH, or prescripted in the base OS.
-  - - just shutdown all hosts except the selected host
-    - ssh into it and configure it (live-os can install packages etc.)
+    - this time the base OS will be installed. Further configuration can happen via SSH, or prescripted in the base OS.
+  - - [ ] just shutdown all hosts except the selected host
+    - [ ] ssh into it and configure it (live-os can install packages etc.)
 - Configuration consists of:
-  - Install a/the webserver
-  - Provide index.html
-  - Start the webserver
+  - [ ] Install and start a/the webserver
+  - [ ] Provide index.html
   OR/AND
-  - Install a k8s cluster
-  OR/AND
-  - Install a DBMS on two nodes (cluster)
-  - Setup a database
-  - Install a webserver on one node
-  - Install wordpress on webserver, use HA-database
+  - [ ] Install a DBMS on two nodes (for cluster)
+  - [ ] Setup a ha-database
+  - [ ] Install a webserver on one node
+  - [ ] Install wordpress on webserver, use previous database
+  OR Install a k8s cluster
 - Enjoy the deployed website.
+
+
+-> dhcp leases instead of arp
+-> srv not recommended, directly check whether desired state is reached
+-> check whether approach works for linux and windows, but only linux in demo
+-> define requirement per system like netboot, wol and show statistics

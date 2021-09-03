@@ -179,7 +179,4 @@ Level 2 (IaS):
   - why properties and attributes and types and templates and instances?
     Isn't it simpler to create templates with properties (with defaults) and instantiate those and extend the predefined properties?
     That way, whenever a new value is set, all verifications (type, range, etc) can be applied, instead of a whole lot of deriving and resolving and then still doing the same.
-
-## next:
-- create "ipmi"-scripts.
-- create debian live iso / ubuntu live iso / auto-install iso
+- when it doesn't matter whether a machine is physical or virtual, it is referred to as 'machine', else 'phyiscal machine' or 'virtual machine'.
