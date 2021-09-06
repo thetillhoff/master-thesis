@@ -6,3 +6,4 @@
 /tex/main.log
 
 **/*.iso
+**/dnsmasq/leases
