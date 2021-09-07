@@ -31,10 +31,10 @@ type DelegateWorkflowActivityDefinition struct {
 	// [mandatory] Defines the name of the delegate workflow and optional input assignments.
 	//
 	// This activity requires the target to be provided by the orchestrator (no-op node or relationship).
-	Delegate string `yaml:"delegate" json:"delegate"`
+	Delegate *string `yaml:"delegate" json:"delegate"`
 
 	// The name of the delegate workflow. Mandatory in the extended notation.
-	Workflow string `yaml:"workflow,omitempty" json:"workflow,omitempty"`
+	Workflow *string `yaml:"workflow,omitempty" json:"workflow,omitempty"`
 
 	// The optional map of input parameter assignments for the delegate workflow.
 	Inputs map[string]ParameterAssignment `yaml:"inputs,omitempty" json:"inputs,omitempty"`
@@ -50,7 +50,7 @@ type SetStateActivityDefinition struct {
 	// new_node_state: represents the state that will be affected to the node once the activity is performed.
 
 	// Value of the node state.
-	SetState string `yaml:"set_state,omitempty" json:"set_state,omitempty"`
+	SetState *string `yaml:"set_state,omitempty" json:"set_state,omitempty"`
 }
 
 // This activity is used to call an operation on the target node. Operation input assignments can be optionally provided.
@@ -72,12 +72,12 @@ type CallOperationActivityDefinition struct {
 	// Defines the opration call. The operation name uses the <interface_name>.<operation_name> notation.
 	//
 	// Optionally, assignments for the operation inputs can also be provided. If provided, they will override for this operation call the operation inputs assignment in the node template.
-	CallOperation string `yaml:"call_operation,omitempty" json:"call_operation,omitempty"`
+	CallOperation *string `yaml:"call_operation,omitempty" json:"call_operation,omitempty"`
 
 	// The name of the operation to call, using the <interface_name>.<operation_name> notation.
 	//
 	// Mandatory in the extended notation.
-	Operation string `yaml:"operation,omitempty" json:"operation,omitempty"`
+	Operation *string `yaml:"operation,omitempty" json:"operation,omitempty"`
 
 	// The optional map of input parameter assignments for the called operation. Any provided input assignments will override the operation input assignment in the target node template for this operation call.
 	Inputs map[string]ParameterAssignment `yaml:"inputs,omitempty" json:"inputs,omitempty"`
@@ -100,10 +100,10 @@ type InlineWorkflowActivityDefinition struct {
 	// parameter_assignments: represents the optional map of parameter assignments for passing parameters as inputs to this workflow delegation.
 
 	// [mandatory] The definition includes the name of a workflow to be inlined and optional workflow input assignments.
-	Inline string `yaml:"inline" json:"inline"`
+	Inline *string `yaml:"inline" json:"inline"`
 
 	// The name of the inlined workflow. Mandatory in the extended notation.
-	Workflow string `yaml:"workflow,omitempty" json:"workflow,omitempty"`
+	Workflow *string `yaml:"workflow,omitempty" json:"workflow,omitempty"`
 
 	// The optional map of input parameter assignments for the inlined workflow.
 	Inputs map[string]ParameterAssignment `yaml:"inputs,omitempty" json:"inputs,omitempty"`

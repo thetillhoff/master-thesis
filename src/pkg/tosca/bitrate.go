@@ -6,7 +6,7 @@ import (
 
 type Bitrate struct {
 	DataType
-	Value uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is bps
+	Value *uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is bps
 
 	// units: (don't forget toLower)
 	// bps
@@ -35,8 +35,8 @@ func ParseBitrate(arg interface{}) (uint64, error) {
 }
 
 func (value Bitrate) Equal(arg Bitrate) bool {
-	return value.Value == arg.Value
+	return *value.Value == *arg.Value
 }
 func (value Bitrate) GreaterThan(arg Bitrate) bool {
-	return value.Value > arg.Value
+	return *value.Value > *arg.Value
 }

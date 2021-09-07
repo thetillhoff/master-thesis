@@ -26,10 +26,10 @@ type SubstitutionMapping struct {
 	// interfaces: represents the <optional> map of interfaces mappings.
 
 	// [mandatory] The mandatory name of the Node Type the Topology Template is providing an implementation for.
-	NodeType string `yaml:"node_type" json:"node_type"`
+	NodeType *string `yaml:"node_type" json:"node_type"`
 
 	// The optional filter that further constrains the abstract node templates for which this topology template can provide an implementation.
-	SubstitutionFilter NodeFilter `yaml:"substitution_filter,omitempty" json:"substitution_filter,omitempty"`
+	SubstitutionFilter *NodeFilter `yaml:"substitution_filter,omitempty" json:"substitution_filter,omitempty"`
 
 	// The optional map of properties mapping allowing to map properties of the node_type to inputs of the topology template.
 	Properties map[string]PropertyMapping `yaml:"properties,omitempty" json:"properties,omitempty"`

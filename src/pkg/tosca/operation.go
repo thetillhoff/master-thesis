@@ -3,10 +3,10 @@ package tosca
 type OperationDefinition struct {
 
 	// The optional description string for the associated operation.
-	Description string `yaml:"description,omitempty" json:"description,omitempty"`
+	Description *string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// The optional definition of the operation implementation. May not be used in an interface type definition (i.e. where an operation is initially defined), but only during refinements.
-	Implementation ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
+	Implementation *ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
 
 	// The optional map of parameter definitions for operation input values.
 	Inputs map[string]ParameterDefinition `yaml:"inputs,omitempty" json:"inputs,omitempty"`
@@ -31,7 +31,7 @@ type OperationAssignment struct {
 	//   <parameter_mapping_assignments>
 
 	// The optional definition of the operation implementation. Overrides implementation provided at operation definition.
-	Implementation ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
+	Implementation *ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
 
 	// The optional map of parameter value assignments for assigning values to operation inputs.
 	Inputs map[string]ParameterAssignment `yaml:"inputs,omitempty" json:"inputs,omitempty"`
@@ -44,11 +44,11 @@ type OperationAssignment struct {
 func (operationAssignment *OperationAssignment) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var (
-		implementation ImplementationDefinition
+		implementation *ImplementationDefinition
 		err            error
 
 		multilineOperationAssignment struct { // Basically the same as OperationAssignment, but without a custom unmarshaller.
-			Implementation ImplementationDefinition              `yaml:"implementation,omitempty" json:"implementation,omitempty"`
+			Implementation *ImplementationDefinition             `yaml:"implementation,omitempty" json:"implementation,omitempty"`
 			Inputs         map[string]ParameterAssignment        `yaml:"inputs,omitempty" json:"inputs,omitempty"`
 			Outputs        map[string]ParameterMappingAssignment `yaml:"outputs,omitempty" json:"outputs,omitempty"`
 		}
@@ -75,8 +75,8 @@ func (operationAssignment *OperationAssignment) UnmarshalYAML(unmarshal func(int
 
 func NewOperationAssignment() OperationAssignment {
 	return OperationAssignment{
-		Inputs:  make(map[string]ParameterAssignment),
-		Outputs: make(map[string]ParameterMappingAssignment),
+		Inputs:  map[string]ParameterAssignment{},
+		Outputs: map[string]ParameterMappingAssignment{},
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 type Frequency struct {
 	DataType
 
-	Value uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is Hz.
+	Value *uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is Hz.
 
 	// units: (don't forget toLower)
 	// hz
@@ -17,10 +17,10 @@ type Frequency struct {
 }
 
 func (value Frequency) Equal(arg Frequency) bool {
-	return value.Value == arg.Value
+	return *value.Value == *arg.Value
 }
 func (value Frequency) GreaterThan(arg Frequency) bool {
-	return value.Value > arg.Value
+	return *value.Value > *arg.Value
 }
 
 func ParseFrequency(arg interface{}) (uint64, error) {

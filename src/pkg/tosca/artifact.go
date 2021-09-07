@@ -23,7 +23,7 @@ type ArtifactType struct {
 	// 	   <property_definitions>
 
 	// The optional mime type property for the Artifact Type.
-	MimeType string `yaml:"mime_type,omitempty" json:"mime_type,omitempty"`
+	MimeType *string `yaml:"mime_type,omitempty" json:"mime_type,omitempty"`
 
 	// The optional file extension property for the Artifact Type.
 	FileExt []string `yaml:"file_ext,omitempty" json:"file_ext,omitempty"`
@@ -34,7 +34,7 @@ type ArtifactType struct {
 
 func NewArtifactType() ArtifactType {
 	return ArtifactType{
-		Properties: make(map[string]PropertyDefinition),
+		Properties: map[string]PropertyDefinition{},
 	}
 }
 

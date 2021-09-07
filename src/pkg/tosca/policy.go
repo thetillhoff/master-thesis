@@ -44,8 +44,8 @@ type PolicyType struct {
 
 func NewPolicyType() PolicyType {
 	return PolicyType{
-		Properties: make(map[string]PropertyDefinition),
-		Triggers:   make(map[string]TriggerDefinition),
+		Properties: map[string]PropertyDefinition{},
+		Triggers:   map[string]TriggerDefinition{},
 	}
 }
 

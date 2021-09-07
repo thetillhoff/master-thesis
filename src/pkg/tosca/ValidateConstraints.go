@@ -153,7 +153,7 @@ func (dt DataType) ValidateConstraints(value interface{}) error {
 			case OperatorPattern:
 				if typedValue, ok := value.(String); ok {
 					if typedArg, ok := value.(string); ok {
-						typedValue.Pattern(typedArg)
+						typedValue.Pattern(&typedArg)
 					} else {
 						return errors.New("invalid arg")
 					}

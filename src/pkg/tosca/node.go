@@ -16,7 +16,7 @@ type NodeType struct {
 	Properties   map[string]PropertyDefinition   `yaml:"properties,omitempty" json:"properties,omitempty"`
 	Attributes   map[string]AttributeDefinition  `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 	Capabilities map[string]CapabilityDefinition `yaml:"capabilities,omitempty" json:"capabilities,omitempty"`
-	Requirements []RequirementDefinition         `yaml:"requirements,omitempty" json:"requirements,omitempty"` // TODO should be resolved in sequence
+	Requirements []RequirementDefinition        `yaml:"requirements,omitempty" json:"requirements,omitempty"` // TODO should be resolved in sequence
 	Interfaces   map[string]InterfaceDefinition  `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`
 	Artifacts    map[string]ArtifactDefinition   `yaml:"artifacts,omitempty" json:"artifacts,omitempty"`
 
@@ -53,11 +53,11 @@ type NodeType struct {
 
 func NewNodeType() NodeType {
 	return NodeType{
-		Properties:   make(map[string]PropertyDefinition),
-		Attributes:   make(map[string]AttributeDefinition),
-		Capabilities: make(map[string]CapabilityDefinition),
-		Interfaces:   make(map[string]InterfaceDefinition),
-		Artifacts:    make(map[string]ArtifactDefinition),
+		Properties:   map[string]PropertyDefinition{},
+		Attributes:   map[string]AttributeDefinition{},
+		Capabilities: map[string]CapabilityDefinition{},
+		Interfaces:   map[string]InterfaceDefinition{},
+		Artifacts:    map[string]ArtifactDefinition{},
 	}
 }
 

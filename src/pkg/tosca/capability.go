@@ -33,8 +33,8 @@ type CapabilityType struct {
 
 func NewCapabilityType() CapabilityType {
 	return CapabilityType{
-		Properties: make(map[string]PropertyDefinition),
-		Attributes: make(map[string]AttributeDefinition),
+		Properties: map[string]PropertyDefinition{},
+		Attributes: map[string]AttributeDefinition{},
 	}
 }
 
@@ -76,10 +76,10 @@ type CapabilityDefinition struct {
 	//   occurrences: <range_of_occurrences>
 
 	// [mandatory] The mandatory name of the Capability Type this capability definition is based upon. MUST be derived from node type definition OR its ancestors.
-	CapabilityType string `yaml:"type" json:"type"`
+	CapabilityType *string `yaml:"type" json:"type"`
 
 	// The optional description of the Capability definition.
-	Description string `yaml:"description,omitempty" json:"description,omitempty"`
+	Description *string `yaml:"description,omitempty" json:"description,omitempty"`
 	// An optional map of property refinements for the Capability definition. The referred properties must have been defined in the Capability Type definition referred by the type keyword. New properties may not be added.
 
 	Properties map[string]PropertyDefinition `yaml:"properties,omitempty" json:"properties,omitempty"`
@@ -91,23 +91,23 @@ type CapabilityDefinition struct {
 	ValidSourceTypes []string `yaml:"valid_source_types,omitempty" json:"valid_source_types,omitempty"`
 	// The optional minimum and maximum of occurrences for the capability. The occurrence represents the maximum number of relationships that are allowed by the Capability. If not defined the implied default is [1,UNBOUNDED] (which means that an exported Capability should allow at least one relationship to be formed with it and maximum a 	UNBOUNDED number of relationships). MUST be within range of parent node type definition.
 
-	Occurences Range `yaml:"occurences,omitempty" json:"occurences,omitempty"`
+	Occurences *Range `yaml:"occurences,omitempty" json:"occurences,omitempty"`
 }
 
 // Custom unmarshaller, since both single-line and multi-line grammar have to be supported
 func (capabilityDefinition *CapabilityDefinition) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var (
-		capabilityType string
+		capabilityType *string
 		err            error
 
 		multilineCapabilityDefinition struct { // Basically the same as CapabilityDefinition, but without a custom unmarshaller.
-			CapabilityType   string                         `yaml:"type,omitempty" json:"type,omitempty"`
-			Description      string                         `yaml:"description,omitempty" json:"description,omitempty"`
+			CapabilityType   *string                        `yaml:"type,omitempty" json:"type,omitempty"`
+			Description      *string                        `yaml:"description,omitempty" json:"description,omitempty"`
 			Properties       map[string]PropertyDefinition  `yaml:"properties,omitempty" json:"properties,omitempty"`
 			Attributes       map[string]AttributeDefinition `yaml:"attributes,omitempty" json:"attributes,omitempty"`
-			ValidSourceTypes []string                       `yaml:"valid_source_types,omitempty" json:"valid_source_types,omitempty"`
-			Occurences       Range                          `yaml:"occurences,omitempty" json:"occurences,omitempty"`
+			ValidSourceTypes []string                      `yaml:"valid_source_types,omitempty" json:"valid_source_types,omitempty"`
+			Occurences       *Range                         `yaml:"occurences,omitempty" json:"occurences,omitempty"`
 		}
 	)
 

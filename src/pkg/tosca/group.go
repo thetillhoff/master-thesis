@@ -51,8 +51,8 @@ type GroupType struct {
 
 func NewGroupType() GroupType {
 	return GroupType{
-		Properties: make(map[string]PropertyDefinition),
-		Attributes: make(map[string]AttributeDefinition),
+		Properties: map[string]PropertyDefinition{},
+		Attributes: map[string]AttributeDefinition{},
 	}
 }
 

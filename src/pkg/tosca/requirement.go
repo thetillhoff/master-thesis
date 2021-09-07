@@ -4,32 +4,75 @@ type RequirementDefinition struct {
 	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
 	// The optional description of the Requirement definition.
-	Description string `yaml:"description,omitempty" json:"description,omitempty"`
+	Description *string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// [mandatory] The mandatory keyname used to provide either the: 'symbolic name of a Capability definition' within a target Node Type that can fulfill the requirement. 'name of a Capability Type' that the TOSCA orchestrator will use to select a type-compatible target node to fulfill the requirement at runtime.
-	Capability string `yaml:"capability" json:"capability"`
+	Capability *string `yaml:"capability" json:"capability"`
 
 	// [conditional] The optional keyname used to provide the name of a valid Node Type that contains the capability definition that can be used to fulfill the requirement.	If a symbolic name of a Capability definition has been used for the capability keyname, then the node keyname is mandatory.
-	Node string `yaml:"node,omitempty" json:"node,omitempty"`
+	Node *string `yaml:"node,omitempty" json:"node,omitempty"`
 
 	// The optional keyname used to provide the name of a valid Relationship Type to construct a relationship when fulfilling the requirement.
-	Relationship string `yaml:"relationship,omitempty" json:"relationship,omitempty"`
+	Relationship *string `yaml:"relationship,omitempty" json:"relationship,omitempty"`
 
 	// The optional filter definition that TOSCA orchestrators will use to select a type-compatible target node that can fulfill the associated abstract requirement at runtime.
-	NodeFilter NodeFilter `yaml:"node_filter,omitempty" json:"node_filter,omitempty"`
+	NodeFilter *NodeFilter `yaml:"node_filter,omitempty" json:"node_filter,omitempty"`
 
 	// The optional minimum and maximum occurrences for the requirement. If this key is not specified, the implied default of [1,1] will be used.
 	//
 	// Note: the keyword UNBOUNDED is also supported to represent any positive integer.
-	Occurences Range `yaml:"occurences,omitempty" json:"occurences,omitempty"`
+	Occurences *Range `yaml:"occurences,omitempty" json:"occurences,omitempty"`
 
 	// Sometimes additional parameters need to be passed to the relationship (perhaps for configuration). Therefore, interface refinements can be declared (e.g. changing implementation definition or declaring additional parameter definitions to be used as inputs/outputs).
 
 	// The optional keyname used to provide the name of the Relationship Type as part of the relationship keyname definition.
-	RelationshipType string `yaml:"type,omitempty" json:"type,omitempty"`
+	RelationshipType *string `yaml:"type,omitempty" json:"type,omitempty"`
 
 	// The optional keyname used to reference declared interface definitions on the corresponding Relationship Type for refinement.
 	Interfaces map[string]InterfaceDefinition `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`
+}
+
+// Custom unmarshaller, since both single-line and multi-line grammar have to be supported
+func (requirementDefinition *RequirementDefinition) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var (
+		capability *string
+		err        error
+
+		multilineRequirementDefinition struct { // Basically the same as RequirementDefinition, but without a custom unmarshaller.
+			Description      *string                         `yaml:"description,omitempty" json:"description,omitempty"`
+			Capability       *string                         `yaml:"capability" json:"capability"`
+			Node             *string                         `yaml:"node,omitempty" json:"node,omitempty"`
+			Relationship     *string                         `yaml:"relationship,omitempty" json:"relationship,omitempty"`
+			NodeFilter       *NodeFilter                     `yaml:"node_filter,omitempty" json:"node_filter,omitempty"`
+			Occurences       *Range                          `yaml:"occurences,omitempty" json:"occurences,omitempty"`
+			RelationshipType *string                         `yaml:"type,omitempty" json:"type,omitempty"`
+			Interfaces       map[string]InterfaceDefinition `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`
+		}
+	)
+
+	// Try single-line grammar
+	err = unmarshal(&capability)
+	if err == nil {
+		requirementDefinition.Capability = capability
+		return nil
+	}
+
+	// Try multi-line grammar
+	err = unmarshal(&multilineRequirementDefinition)
+	if err == nil {
+		requirementDefinition.Description = multilineRequirementDefinition.Description
+		requirementDefinition.Capability = multilineRequirementDefinition.Capability
+		requirementDefinition.Node = multilineRequirementDefinition.Node
+		requirementDefinition.Relationship = multilineRequirementDefinition.Relationship
+		requirementDefinition.NodeFilter = multilineRequirementDefinition.NodeFilter
+		requirementDefinition.Occurences = multilineRequirementDefinition.Occurences
+		requirementDefinition.RelationshipType = multilineRequirementDefinition.RelationshipType
+		requirementDefinition.Interfaces = multilineRequirementDefinition.Interfaces
+		return nil
+	}
+
+	return err
 }
 
 // func (src RequirementDefinition) Equal(dest RequirementDefinition) bool {

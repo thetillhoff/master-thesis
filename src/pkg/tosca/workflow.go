@@ -28,7 +28,7 @@ type WorkflowDefinition struct { // grammar is incomplete in docs [4.7.1.2]
 	// attribute_mappings: represents the optional map of of attribute_mappings that consists of named output values returned by operation implementations (i.e. artifacts) and associated mappings that specify the attribute into which this output value must be stored.
 
 	// The optional description for the workflow definition.
-	Description string `yaml:"description,omitempty" json:"description,omitempty"`
+	Description *string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// Defines a section used to declare additional metadata information.
 	Metadata map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`
@@ -43,7 +43,7 @@ type WorkflowDefinition struct { // grammar is incomplete in docs [4.7.1.2]
 	Steps map[string]StepDefinition `yaml:"steps,omitempty" json:"steps,omitempty"`
 
 	// The optional definition of an external workflow definition. This keyname is mutually exclusive with the steps keyname above.
-	Implementation ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
+	Implementation *ImplementationDefinition `yaml:"implementation,omitempty" json:"implementation,omitempty"`
 
 	// The optional map of attribute mappings that specify workflow  output values and their mappings onto attributes of a node or relationship defined in the topology.
 	Outputs map[string]AttributeMapping `yaml:"outputs,omitempty" json:"outputs,omitempty"`
@@ -63,10 +63,10 @@ type PreconditionDefinition struct {
 	// list_of_condition_clause_definition: represents the list of condition clauses to be evaluated. The value of the resulting condition is evaluated as an AND clause between the different elements.
 
 	// [mandatory] The target of the precondition (this can be a node template name, a group name)
-	Target string `yaml:"target" json:"target"`
+	Target *string `yaml:"target" json:"target"`
 
 	// The optional name of a requirement of the target in case the precondition has to be processed on a relationship rather than a node or group. Note that this is applicable only if the target is a node.
-	TargetRelationship string `yaml:"target_relationship,omitempty" json:"target_relationship,omitempty"`
+	TargetRelationship *string `yaml:"target_relationship,omitempty" json:"target_relationship,omitempty"`
 
 	// A list of workflow condition clause definitions. Assertion between elements of the condition are evaluated as an AND condition.
 	Condition []ConditionClauseDefinition `yaml:"condition,omitempty" json:"condition,omitempty"`
@@ -98,10 +98,10 @@ type StepDefinition struct {
 	// target_step_name: represents the name of another step of the workflow.
 
 	// [mandatory] The target of the step (this can be a node template name, a group name)
-	Target string `yaml:"target" json:"target"`
+	Target *string `yaml:"target" json:"target"`
 
 	// The optional name of a requirement of the target in case the step refers to a relationship rather than a node or group. Note that this is applicable only if the target is a node.
-	TargetRelationship string `yaml:"target_relationship,omitempty" json:"target_relationship,omitempty"`
+	TargetRelationship *string `yaml:"target_relationship,omitempty" json:"target_relationship,omitempty"`
 
 	// This element is mandatory only for relationships and groups target.
 	//
@@ -110,7 +110,7 @@ type StepDefinition struct {
 	// If target is a group operation_host is optional.
 	// If not specified the operation will be triggered on every node of the group.
 	// If specified the valid_value is a node_type or the name of a node template.
-	OperationHost string `yaml:"operation_host,omitempty" json:"operation_host,omitempty"`
+	OperationHost *string `yaml:"operation_host,omitempty" json:"operation_host,omitempty"`
 
 	// Filter is a map of attribute name, list of constraint clause that allows to provide a filtering logic.
 	Filter []map[Operator]interface{} `yaml:"filter,omitempty" json:"filter,omitempty"`

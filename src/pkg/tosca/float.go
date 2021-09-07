@@ -4,17 +4,17 @@ import "errors"
 
 type Float struct {
 	DataType `yaml:",inline,omitempty" json:",inline,omitempty"`
-	Value    float32 `yaml:",inline,omitempty" json:",inline,omitempty"`
+	Value    *float32 `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
 func (value Float) Equal(arg Equallable) bool {
 	if typedArg, ok := arg.(Float); ok {
-		return value.Value == typedArg.Value
+		return *value.Value == *typedArg.Value
 	}
 	return false // if they are not the same type, they can't be equal ;)
 }
 func (value Float) GreaterThan(arg Float) bool {
-	return value.Value > arg.Value
+	return *value.Value > *arg.Value
 }
 
 func ParseFloat(arg interface{}) (float32, error) {

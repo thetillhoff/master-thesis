@@ -22,6 +22,7 @@ package tosca
 //
 // An "incoming" parameter definition may define an attribute mapping of the parameter value to an attribute of a node. Optionally, it may inherit the data type of the attribute it is mapped to, rather than have an explicit data type defined for it.
 type ParameterDefinition struct {
+	PropertyDefinition `yaml:",inline,omitempty" json:",inline,omitempty"`
 
 	// grammar
 	// <parameter_name>:
@@ -52,13 +53,13 @@ type ParameterDefinition struct {
 	// The data type of the parameter.
 	//
 	// Note: This keyname is mandatory for a TOSCA Property definition but is NOT mandatory for a TOSCA Parameter definition.
-	DataType string `yaml:"type,omitempty" json:"type,omitempty"`
+	// DataType string `yaml:"type,omitempty" json:"type,omitempty"`
 
 	// The type-compatible value to assign to the parameter. Parameter values may be provided as the result from the evaluation of an expression or a function. May only be defined for outgoing parameters. Mutually exclusive with the "mapping" keyname.
-	Value interface{} `yaml:"value,omitempty" json:"value,omitempty"`
+	// Value interface{} `yaml:"value,omitempty" json:"value,omitempty"`
 
 	// A mapping that specifies the node or relationship attribute into which the returned output value must be stored. May only be defined for incoming parameters. Mutually exclusive with the "value" keyname.
-	Mapping AttributeSelectionFormat `yaml:"mapping,omitempty" json:"mapping,omitempty"`
+	Mapping *AttributeSelectionFormat `yaml:"mapping,omitempty" json:"mapping,omitempty"`
 }
 
 // Parameters that have a (fixed) value defined during their definition or during a subsequent refinement may not be assigned (as their value is already set).

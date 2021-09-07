@@ -5,7 +5,7 @@ import "code.cloudfoundry.org/bytefmt"
 type Size struct {
 	EquallableTypeRoot `yaml:",omitempty" json:",omitempty"`
 
-	Value uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is byte
+	Value *uint64 `yaml:",inline,omitempty" json:",inline,omitempty"` // Unit is byte
 
 	// units: (don't forget toLower)
 	// b
@@ -22,19 +22,19 @@ type Size struct {
 
 }
 
-func (value Size) Equal(arg Size) bool {
-	return value.Value == arg.Value
+func (value Size) Equal(arg *Size) bool {
+	return *value.Value == *arg.Value
 }
-func (value Size) GreaterThan(arg Size) bool {
-	return value.Value > arg.Value
+func (value Size) GreaterThan(arg *Size) bool {
+	return *value.Value > *arg.Value
 }
 
-func ParseSize(arg interface{}) (Size, error) {
+func ParseSize(arg string) (Size, error) {
 	var (
 		value uint64
 		err   error
 	)
 
-	value, err = bytefmt.ToBytes(arg.(string)) // TODO make type assertion extra step, with extra error check
-	return Size{Value: value}, err
+	value, err = bytefmt.ToBytes(arg) // TODO make type assertion extra step, with extra error check
+	return Size{Value: &value}, err
 }

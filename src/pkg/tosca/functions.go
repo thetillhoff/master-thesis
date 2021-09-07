@@ -41,7 +41,7 @@ func (topologyTemplate TopologyTemplate) GetInput(path []string) interface{} {
 		log.Fatalln("ERR get_input with multiple parameters is not implemented (yet).")
 	}
 
-	if input, ok := topologyTemplate.Inputs[path[0]]; ok {
+	if input, ok := (topologyTemplate.Inputs)[path[0]]; ok {
 		value = input.Value
 	} else {
 		log.Fatalln("ERR No input with name '" + path[0] + "'.")
@@ -68,14 +68,14 @@ func (topologyTemplate TopologyTemplate) GetProperty(path []string) interface{} 
 		log.Fatalln("ERR get_property requires at least elements (entity name, property name).")
 	}
 
-	if nodeTemplate, ok := topologyTemplate.NodeTemplates[path[0]]; ok {
+	if nodeTemplate, ok := (topologyTemplate.NodeTemplates)[path[0]]; ok {
 		if nodeProperty, ok := nodeTemplate.Properties[path[1]]; ok {
 			return nodeProperty
 		} else {
 			log.Println("WRN NodeTemplate '" + path[0] + "' found, but property '" + path[1] + "' doesn't exist.")
 		}
 	}
-	if relationshipTemplate, ok := topologyTemplate.RelationshipTemplates[path[0]]; ok {
+	if relationshipTemplate, ok := (topologyTemplate.RelationshipTemplates)[path[0]]; ok {
 		if relationshipProperty, ok := relationshipTemplate.Properties[path[1]]; ok {
 			return relationshipProperty
 		} else {

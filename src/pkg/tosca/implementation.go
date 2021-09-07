@@ -28,26 +28,26 @@ type ImplementationDefinition struct {
 	//   timeout: 120
 
 	// The optional implementation artifact (i.e., the primary script file within a TOSCA CSAR file).
-	Primary ArtifactDefinition `yaml:"primary,omitempty" json:"primary,omitempty"`
+	Primary *ArtifactDefinition `yaml:"primary,omitempty" json:"primary,omitempty"`
 
 	// The optional list of one or more dependent or secondary implementation artifacts which are referenced by the primary implementation artifact (e.g., a library the script installs or a secondary script).
 	Dependencies []ArtifactDefinition `yaml:"dependencies,omitempty" json:"dependencies,omitempty"`
 
 	// Timeout value in seconds. Has no meaning and should not be used within a notification implementation definition.
-	Timeout int `yaml:"timeout,omitempty" json:"timeout,omitempty"`
+	Timeout *int `yaml:"timeout,omitempty" json:"timeout,omitempty"`
 }
 
 // Custom unmarshaller, since both single-line and multi-line grammar have to be supported
 func (implementationDefinition *ImplementationDefinition) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var (
-		primary ArtifactDefinition
+		primary *ArtifactDefinition
 		err     error
 
 		multilineImplementationDefinition struct { // Basically the same as ImplementationDefinition, but without a custom unmarshaller.
-			Primary      ArtifactDefinition   `yaml:"primary,omitempty" json:"primary,omitempty"`
+			Primary      *ArtifactDefinition   `yaml:"primary,omitempty" json:"primary,omitempty"`
 			Dependencies []ArtifactDefinition `yaml:"dependencies,omitempty" json:"dependencies,omitempty"`
-			Timeout      int                  `yaml:"timeout,omitempty" json:"timeout,omitempty"`
+			Timeout      *int                  `yaml:"timeout,omitempty" json:"timeout,omitempty"`
 		}
 	)
 

@@ -23,9 +23,9 @@ type InterfaceType struct {
 
 func NewInterfaceType() InterfaceType {
 	return InterfaceType{
-		Inputs:        make(map[string]ParameterDefinition),
-		Operations:    make(map[string]OperationDefinition),
-		Notifications: make(map[string]NotificationDefinition),
+		Inputs:        map[string]ParameterDefinition{},
+		Operations:    map[string]OperationDefinition{},
+		Notifications: map[string]NotificationDefinition{},
 	}
 }
 

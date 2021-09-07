@@ -35,17 +35,17 @@ type DataType struct {
 
 	// [conditional] For data types that derive from the TOSCA map data type, the optional schema definition for the keys used to identify entries in properties of this data type. If not specified, the key_schema defaults to string.
 	// For data types that do not derive from the TOSCA map data type, the key_schema is not allowed.
-	KeySchema SchemaDefinition `yaml:"key_schema,omitempty" json:"key_schema,omitempty"`
+	KeySchema *SchemaDefinition `yaml:"key_schema,omitempty" json:"key_schema,omitempty"`
 
 	// [conditional] For data types that derive from the TOSCA map or list data types, the mandatory schema definition for the entries in properties of this data type.
 	// For data types that do not derive from the TOSCA list or map data type, the entry_schema is not allowed.
-	Entryschema SchemaDefinition `yaml:"entry_schema,omitempty" json:"entry_schema,omitempty"`
+	Entryschema *SchemaDefinition `yaml:"entry_schema,omitempty" json:"entry_schema,omitempty"`
 }
 
 func NewDataType() DataType {
 	return DataType{
-		Constraints: make([]map[Operator]interface{}, 0),
-		Properties:  make(map[string]PropertyDefinition),
+		Constraints: []map[Operator]interface{}{},
+		Properties:  map[string]PropertyDefinition{},
 	}
 }
 

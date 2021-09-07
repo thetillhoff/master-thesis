@@ -9,42 +9,42 @@ func ResolveTypeDerivations(serviceTemplate ServiceTemplate) ServiceTemplate {
 
 	// ArtifactType
 	for typeName, typeDefinition := range serviceTemplate.ArtifactTypes {
-		serviceTemplate.ArtifactTypes[typeName] = resolveArtifactTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		(serviceTemplate.ArtifactTypes)[typeName] = resolveArtifactTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// DataType
 	for typeName, typeDefinition := range serviceTemplate.DataTypes {
-		serviceTemplate.DataTypes[typeName] = resolveDataTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		(serviceTemplate.DataTypes)[typeName] = resolveDataTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// CapabilityType
 	for typeName, typeDefinition := range serviceTemplate.CapabilityTypes {
-		serviceTemplate.CapabilityTypes[typeName] = resolveCapabilityTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		(serviceTemplate.CapabilityTypes)[typeName] = resolveCapabilityTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// InterfaceType
 	for typeName, typeDefinition := range serviceTemplate.InterfaceTypes {
-		serviceTemplate.InterfaceTypes[typeName] = resolveInterfaceTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		(serviceTemplate.InterfaceTypes)[typeName] = resolveInterfaceTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// RelationshipType
 	for typeName, typeDefinition := range serviceTemplate.RelationshipTypes {
-		serviceTemplate.RelationshipTypes[typeName] = resolveRelationshipTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		(serviceTemplate.RelationshipTypes)[typeName] = resolveRelationshipTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// NodeType
 	for typeName, typeDefinition := range serviceTemplate.NodeTypes {
-		serviceTemplate.NodeTypes[typeName] = resolveNodeTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		(serviceTemplate.NodeTypes)[typeName] = resolveNodeTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// GroupType
 	for typeName, typeDefinition := range serviceTemplate.GroupTypes {
-		serviceTemplate.GroupTypes[typeName] = resolveGroupTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		(serviceTemplate.GroupTypes)[typeName] = resolveGroupTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	// PolicyType
 	for typeName, typeDefinition := range serviceTemplate.PolicyTypes {
-		serviceTemplate.PolicyTypes[typeName] = resolvePolicyTypeDerivation(typeName, typeDefinition, serviceTemplate)
+		(serviceTemplate.PolicyTypes)[typeName] = resolvePolicyTypeDerivation(typeName, typeDefinition, serviceTemplate)
 	}
 
 	return serviceTemplate
@@ -64,12 +64,12 @@ func resolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, s
 		}
 
 		// check whether parent exists, if not: fail
-		if _, ok := serviceTemplate.ArtifactTypes[thisType.DerivedFrom]; !ok {
+		if _, ok := (serviceTemplate.ArtifactTypes)[thisType.DerivedFrom]; !ok {
 			log.Fatalln("ERR No ArtifactType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
 		}
 
 		// retrieve parent type by name with serviceTemplate.ArtifactTypes[type.derivedFrom]
-		parent = serviceTemplate.ArtifactTypes[thisType.DerivedFrom]
+		parent = (serviceTemplate.ArtifactTypes)[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
 		parent = resolveArtifactTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
@@ -84,11 +84,11 @@ func resolveArtifactTypeDerivation(thisTypeName string, thisType ArtifactType, s
 
 		// First, derive the parent Properties
 		for key, value := range parent.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 		// Then, add/overwrite with child Properties
 		for key, value := range thisType.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
@@ -124,12 +124,12 @@ func resolveDataTypeDerivation(thisTypeName string, thisType DataType, serviceTe
 			return thisType
 		} else {
 			// check whether parent exists, if not: fail
-			if _, ok := serviceTemplate.DataTypes[thisType.DerivedFrom]; !ok {
+			if _, ok := (serviceTemplate.DataTypes)[thisType.DerivedFrom]; !ok {
 				log.Fatalln("ERR No DataType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
 			}
 
 			// retrieve parent type by name with serviceTemplate.DataTypes[type.derivedFrom]
-			parent = serviceTemplate.DataTypes[thisType.DerivedFrom]
+			parent = (serviceTemplate.DataTypes)[thisType.DerivedFrom]
 
 			// run same derivation for parent (recursion), which returns fully derived parent
 			parent = resolveDataTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
@@ -144,11 +144,11 @@ func resolveDataTypeDerivation(thisTypeName string, thisType DataType, serviceTe
 
 		// First, derive the parent Properties
 		for key, value := range parent.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 		// Then, add/overwrite with child Properties
 		for key, value := range thisType.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 
 		if thisType.KeySchema.Equals(emptySchema) { // If empty in <src>
@@ -188,12 +188,12 @@ func resolveCapabilityTypeDerivation(thisTypeName string, thisType CapabilityTyp
 		}
 
 		// check whether parent exists, if not: fail
-		if _, ok := serviceTemplate.CapabilityTypes[thisType.DerivedFrom]; !ok {
+		if _, ok := (serviceTemplate.CapabilityTypes)[thisType.DerivedFrom]; !ok {
 			log.Fatalln("ERR No CapabilityType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
 		}
 
 		// retrieve parent type by name with serviceTemplate.CapabilityTypes[type.derivedFrom]
-		parent = serviceTemplate.CapabilityTypes[thisType.DerivedFrom]
+		parent = (serviceTemplate.CapabilityTypes)[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
 		parent = resolveCapabilityTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
@@ -202,20 +202,20 @@ func resolveCapabilityTypeDerivation(thisTypeName string, thisType CapabilityTyp
 
 		// First, derive the parent Properties
 		for key, value := range parent.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 		// Then, add/overwrite with child Properties
 		for key, value := range thisType.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 
 		// First, derive the parent Attributes
 		for key, value := range parent.Attributes {
-			newType.Attributes[key] = value
+			(newType.Attributes)[key] = value
 		}
 		// Then, add/overwrite with child Attributes
 		for key, value := range thisType.Attributes {
-			newType.Attributes[key] = value
+			(newType.Attributes)[key] = value
 		}
 
 		// if valid_source_types is defined in the parent type, each element in this list must either be in the parent type list or derived from an element in the parent type list; if valid_source_types is not defined in the parent type then no restrictions are applied.
@@ -250,12 +250,12 @@ func resolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType,
 		}
 
 		// check whether parent exists, if not: fail
-		if _, ok := serviceTemplate.InterfaceTypes[thisType.DerivedFrom]; !ok {
+		if _, ok := (serviceTemplate.InterfaceTypes)[thisType.DerivedFrom]; !ok {
 			log.Fatalln("ERR No InterfaceType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
 		}
 
 		// retrieve parent type by name with serviceTemplate.InterfaceTypes[type.derivedFrom]
-		parent = serviceTemplate.InterfaceTypes[thisType.DerivedFrom]
+		parent = (serviceTemplate.InterfaceTypes)[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
 		parent = resolveInterfaceTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
@@ -264,29 +264,29 @@ func resolveInterfaceTypeDerivation(thisTypeName string, thisType InterfaceType,
 
 		// First, derive the parent Inputs
 		for key, value := range parent.Inputs {
-			newType.Inputs[key] = value
+			(newType.Inputs)[key] = value
 		}
 		// Then, add/overwrite with child Inputs
 		for key, value := range thisType.Inputs {
-			newType.Inputs[key] = value
+			(newType.Inputs)[key] = value
 		}
 
 		// First, derive the parent Operations
 		for key, value := range parent.Operations {
-			newType.Operations[key] = value
+			(newType.Operations)[key] = value
 		}
 		// Then, add/overwrite with child Operations
 		for key, value := range thisType.Operations {
-			newType.Operations[key] = value
+			(newType.Operations)[key] = value
 		}
 
 		// First, derive the parent Notifications
 		for key, value := range parent.Notifications {
-			newType.Notifications[key] = value
+			(newType.Notifications)[key] = value
 		}
 		// Then, add/overwrite with child Notifications
 		for key, value := range thisType.Notifications {
-			newType.Notifications[key] = value
+			(newType.Notifications)[key] = value
 		}
 
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
@@ -314,12 +314,12 @@ func resolveRelationshipTypeDerivation(thisTypeName string, thisType Relationshi
 		}
 
 		// check whether parent exists, if not: fail
-		if _, ok := serviceTemplate.RelationshipTypes[thisType.DerivedFrom]; !ok {
+		if _, ok := (serviceTemplate.RelationshipTypes)[thisType.DerivedFrom]; !ok {
 			log.Fatalln("ERR No RelationshipType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
 		}
 
 		// retrieve parent type by name with serviceTemplate.RelationshipTypes[type.derivedFrom]
-		parent = serviceTemplate.RelationshipTypes[thisType.DerivedFrom]
+		parent = (serviceTemplate.RelationshipTypes)[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
 		parent = resolveRelationshipTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
@@ -328,29 +328,29 @@ func resolveRelationshipTypeDerivation(thisTypeName string, thisType Relationshi
 
 		// First, derive the parent Properties
 		for key, value := range parent.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 		// Then, add/overwrite with child Properties
 		for key, value := range thisType.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 
 		// First, derive the parent Attributes
 		for key, value := range parent.Attributes {
-			newType.Attributes[key] = value
+			(newType.Attributes)[key] = value
 		}
 		// Then, add/overwrite with child Attributes
 		for key, value := range thisType.Attributes {
-			newType.Attributes[key] = value
+			(newType.Attributes)[key] = value
 		}
 
 		// First, derive the parent Interfaces
 		for key, value := range parent.Interfaces {
-			newType.Interfaces[key] = value
+			(newType.Interfaces)[key] = value
 		}
 		// Then, add/overwrite with child Interfaces
 		for key, value := range thisType.Interfaces {
-			newType.Interfaces[key] = value
+			(newType.Interfaces)[key] = value
 		}
 
 		// if valid_target_types is defined in the parent type, each element in this list must either be in the parent type list or derived from an element in the parent type list; if valid_target_types is not defined in the parent type then no restrictions are applied.
@@ -387,12 +387,12 @@ func resolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTe
 		}
 
 		// check whether parent exists, if not: fail
-		if _, ok := serviceTemplate.NodeTypes[thisType.DerivedFrom]; !ok {
+		if _, ok := (serviceTemplate.NodeTypes)[thisType.DerivedFrom]; !ok {
 			log.Fatalln("ERR No NodeType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
 		}
 
 		// retrieve parent type by name with serviceTemplate.NodeTypes[type.derivedFrom]
-		parent = serviceTemplate.NodeTypes[thisType.DerivedFrom]
+		parent = (serviceTemplate.NodeTypes)[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
 		parent = resolveNodeTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
@@ -401,14 +401,14 @@ func resolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTe
 
 		// First, derive the parent Properties
 		for key, value := range parent.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 			if debug {
 				log.Println("INF parent property key:", key)
 			}
 		}
 		// Then, add/overwrite with child Properties
 		for key, value := range thisType.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 			if debug {
 				log.Println("INF child property key:", key)
 			}
@@ -416,20 +416,20 @@ func resolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTe
 
 		// First, derive the parent Attributes
 		for key, value := range parent.Attributes {
-			newType.Attributes[key] = value
+			(newType.Attributes)[key] = value
 		}
 		// Then, add/overwrite with child Attributes
 		for key, value := range thisType.Attributes {
-			newType.Attributes[key] = value
+			(newType.Attributes)[key] = value
 		}
 
 		// First, derive the parent Capabilities
 		for key, value := range parent.Capabilities {
-			newType.Capabilities[key] = value
+			(newType.Capabilities)[key] = value
 		}
 		// Then, add/overwrite with child Capabilities
 		for key, value := range thisType.Capabilities {
-			newType.Capabilities[key] = value
+			(newType.Capabilities)[key] = value
 		}
 
 		// First, derive the parent Requirements
@@ -449,20 +449,20 @@ func resolveNodeTypeDerivation(thisTypeName string, thisType NodeType, serviceTe
 
 		// First, derive the parent Interfaces
 		for key, value := range parent.Interfaces {
-			newType.Interfaces[key] = value
+			(newType.Interfaces)[key] = value
 		}
 		// Then, add/overwrite with child Interfaces
 		for key, value := range thisType.Interfaces {
-			newType.Interfaces[key] = value
+			(newType.Interfaces)[key] = value
 		}
 
 		// First, derive the parent Artifacts
 		for key, value := range parent.Artifacts {
-			newType.Artifacts[key] = value
+			(newType.Artifacts)[key] = value
 		}
 		// Then, add/overwrite with child Artifacts
 		for key, value := range thisType.Artifacts {
-			newType.Artifacts[key] = value
+			(newType.Artifacts)[key] = value
 		}
 
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.
@@ -490,12 +490,12 @@ func resolveGroupTypeDerivation(thisTypeName string, thisType GroupType, service
 		}
 
 		// check whether parent exists, if not: fail
-		if _, ok := serviceTemplate.GroupTypes[thisType.DerivedFrom]; !ok {
+		if _, ok := (serviceTemplate.GroupTypes)[thisType.DerivedFrom]; !ok {
 			log.Fatalln("ERR No GroupType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
 		}
 
 		// retrieve parent type by name with serviceTemplate.GroupTypes[type.derivedFrom]
-		parent = serviceTemplate.GroupTypes[thisType.DerivedFrom]
+		parent = (serviceTemplate.GroupTypes)[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
 		parent = resolveGroupTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
@@ -504,20 +504,20 @@ func resolveGroupTypeDerivation(thisTypeName string, thisType GroupType, service
 
 		// First, derive the parent Properties
 		for key, value := range parent.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 		// Then, add/overwrite with child Properties
 		for key, value := range thisType.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 
 		// First, derive the parent Attributes
 		for key, value := range parent.Attributes {
-			newType.Attributes[key] = value
+			(newType.Attributes)[key] = value
 		}
 		// Then, add/overwrite with child Attributes
 		for key, value := range thisType.Attributes {
-			newType.Attributes[key] = value
+			(newType.Attributes)[key] = value
 		}
 
 		// if the members keyname is defined in the parent type, each element in this list must either be in the parent type list or derived from an element in the parent type list; if the members keyname is not defined in the parent type then no restrictions are applied to the definition.
@@ -554,12 +554,12 @@ func resolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, servi
 		}
 
 		// check whether parent exists, if not: fail
-		if _, ok := serviceTemplate.PolicyTypes[thisType.DerivedFrom]; !ok {
+		if _, ok := (serviceTemplate.PolicyTypes)[thisType.DerivedFrom]; !ok {
 			log.Fatalln("ERR No PolicyType '" + thisType.DerivedFrom + "' in ServiceTemplate (parent of '" + thisTypeName + "').")
 		}
 
 		// retrieve parent type by name with serviceTemplate.PolicyTypes[type.derivedFrom]
-		parent = serviceTemplate.PolicyTypes[thisType.DerivedFrom]
+		parent = (serviceTemplate.PolicyTypes)[thisType.DerivedFrom]
 
 		// run same derivation for parent (recursion), which returns fully derived parent
 		parent = resolvePolicyTypeDerivation(thisType.DerivedFrom, parent, serviceTemplate)
@@ -568,11 +568,11 @@ func resolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, servi
 
 		// First, derive the parent Properties
 		for key, value := range parent.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 		// Then, add/overwrite with child Properties
 		for key, value := range thisType.Properties {
-			newType.Properties[key] = value
+			(newType.Properties)[key] = value
 		}
 
 		// if the targets keyname is defined in the parent type, each element in this list must either be in the parent type list or derived from an element in the parent type list; if the targets keyname is not defined in the parent type then no restrictions are applied to this definition.
@@ -586,11 +586,11 @@ func resolvePolicyTypeDerivation(thisTypeName string, thisType PolicyType, servi
 
 		// First, derive the parent Triggers
 		for key, value := range parent.Triggers {
-			newType.Triggers[key] = value
+			(newType.Triggers)[key] = value
 		}
 		// Then, add/overwrite with child Triggers
 		for key, value := range thisType.Triggers {
-			newType.Triggers[key] = value
+			(newType.Triggers)[key] = value
 		}
 
 		// Add derivedFrom to derivedFromAncestors AND append parent.derivedFromAncestors to it.

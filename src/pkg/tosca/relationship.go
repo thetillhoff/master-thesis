@@ -17,15 +17,15 @@ type RelationshipType struct {
 	Properties       map[string]PropertyDefinition  `yaml:"properties,omitempty" json:"properties,omitempty"`                 // An optional map of property definitions for the Relationship Type.
 	Attributes       map[string]AttributeDefinition `yaml:"attributes,omitempty" json:"attributes,omitempty"`                 // An optional map of attribute definitions for the Relationship Type.
 	Interfaces       map[string]InterfaceDefinition `yaml:"interfaces,omitempty" json:"interfaces,omitempty"`                 // An optional map of interface definitions supported by the Relationship Type.
-	ValidTargetTypes []string                       `yaml:"valid_target_types,omitempty" json:"valid_target_types,omitempty"` // An optional list of one or more names of Capability Types that are valid targets for this relationship. If undefined, all Capability Types are valid target targets.
+	ValidTargetTypes []string                      `yaml:"valid_target_types,omitempty" json:"valid_target_types,omitempty"` // An optional list of one or more names of Capability Types that are valid targets for this relationship. If undefined, all Capability Types are valid target targets.
 
 }
 
 func NewRelationshipType() RelationshipType {
 	return RelationshipType{
-		Properties: make(map[string]PropertyDefinition),
-		Attributes: make(map[string]AttributeDefinition),
-		Interfaces: make(map[string]InterfaceDefinition),
+		Properties: map[string]PropertyDefinition{},
+		Attributes: map[string]AttributeDefinition{},
+		Interfaces: map[string]InterfaceDefinition{},
 	}
 }
 
