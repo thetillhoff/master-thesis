@@ -9,7 +9,7 @@ import (
 func AddOutputsOfTopologyTemplate(topologyTemplate tosca.TopologyTemplate) tosca.TopologyTemplate {
 
 	for outputName, output := range topologyTemplate.Outputs {
-		if mapping, ok := output.Value.(map[string]interface{}); ok {
+		if mapping, ok := (output.Value).(map[string]interface{}); ok {
 			if len(mapping) > 1 {
 				log.Fatalln("ERR Output '" + outputName + "' contains more than one main function")
 			}
@@ -36,7 +36,7 @@ func AddOutputsOfTopologyTemplate(topologyTemplate tosca.TopologyTemplate) tosca
 		} else {
 			log.Fatalln("ERR Output '" + outputName + "' is invalid. Not of type map[string].")
 		}
-		topologyTemplate.Outputs[outputName] = output
+		(topologyTemplate.Outputs)[outputName] = output
 		if debug {
 			log.Println("INF Output '" + outputName + "' filled.")
 		}

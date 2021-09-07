@@ -7,5 +7,5 @@ import (
 
 func DeriveServiceTemplate(archive csar.CSAR) tosca.ServiceTemplate {
 	// TODO
-	return tosca.ServiceTemplate{}
+	return *archive.ServiceTemplate
 }

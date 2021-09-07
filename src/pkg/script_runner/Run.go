@@ -28,12 +28,14 @@ func RunLinuxCommand(command string) string {
 	scanOut.Split(bufio.ScanWords)
 	for scanOut.Scan() {
 		m := scanOut.Text()
-		output = output + m
+		output = output + m + " " // Spaces have to be added manuallyss
 	}
 	err := cmd.Wait()
 	if err != nil {
 		log.Fatalln("ERR command failed:", command, reflect.TypeOf(err), err)
 	}
+
+	fmt.Println("Output:", string(output))
 
 	// output, err := cmd.CombinedOutput()
 	// if err != nil {

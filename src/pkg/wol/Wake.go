@@ -13,6 +13,7 @@ import (
 )
 
 func Wake(macAddress string) {
+	// TODO This should check whether the host is already reachable (f.e. with ping)
 	if isVM(macAddress) {
 		wakeVM(macAddress)
 	} else {
@@ -93,6 +94,6 @@ func wakeVM(macAddress string) {
 // Checks local hypervisor whether there is a vm with provided mac-address
 func isVM(macAddress string) bool {
 	// TODO: This should check whether the local hypervisor has a vm with provided mac and return true if yes, else otherwise.
-	//       Since the poc is meant to use vms, this is not necessary.
+	//       Since the poc is meant to use vms, this is not an explicit requirement.
 	return true
 }
