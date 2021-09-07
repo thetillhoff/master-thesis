@@ -8,11 +8,16 @@ import (
 )
 
 // Start container with provided imagename and hostconfig, returns containerID
-func Start(imageName string, hostconfig container.HostConfig) string {
+func Start(imageName string, hostconfig *container.HostConfig, env ...string) string {
 	var (
 		err  error
 		resp container.ContainerCreateCreatedBody
 	)
+
+	// If not initialized
+	if cli == nil {
+		Init() // Initialize
+	}
 
 	log.Println("INF Running container for image '" + imageName + "'.")
 
@@ -31,7 +36,8 @@ func Start(imageName string, hostconfig container.HostConfig) string {
 		AttachStderr: true,
 		// AttachStdin:  true,
 		// OpenStdin:    true,
-	}, &hostconfig,
+		Env: env,
+	}, hostconfig,
 		nil, nil, "")
 	if err != nil {
 		log.Fatalln("ERR Couldn't create docker container:", err)

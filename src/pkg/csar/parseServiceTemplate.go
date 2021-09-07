@@ -43,28 +43,28 @@ func parseServiceTemplate(relativePath string, otherDefinitionsFilepaths string)
 	}
 
 	// Initialize maps even if empty
-	if len(serviceTemplate.ArtifactTypes) == 0 {
+	if serviceTemplate.ArtifactTypes == nil {
 		serviceTemplate.ArtifactTypes = make(map[string]tosca.ArtifactType)
 	}
-	if len(serviceTemplate.DataTypes) == 0 {
+	if serviceTemplate.DataTypes == nil {
 		serviceTemplate.DataTypes = make(map[string]tosca.DataType)
 	}
-	if len(serviceTemplate.CapabilityTypes) == 0 {
+	if serviceTemplate.CapabilityTypes == nil {
 		serviceTemplate.CapabilityTypes = make(map[string]tosca.CapabilityType)
 	}
-	if len(serviceTemplate.InterfaceTypes) == 0 {
+	if serviceTemplate.InterfaceTypes == nil {
 		serviceTemplate.InterfaceTypes = make(map[string]tosca.InterfaceType)
 	}
-	if len(serviceTemplate.RelationshipTypes) == 0 {
+	if serviceTemplate.RelationshipTypes == nil {
 		serviceTemplate.RelationshipTypes = make(map[string]tosca.RelationshipType)
 	}
-	if len(serviceTemplate.NodeTypes) == 0 {
+	if serviceTemplate.NodeTypes == nil {
 		serviceTemplate.NodeTypes = make(map[string]tosca.NodeType)
 	}
-	if len(serviceTemplate.GroupTypes) == 0 {
+	if serviceTemplate.GroupTypes == nil {
 		serviceTemplate.GroupTypes = make(map[string]tosca.GroupType)
 	}
-	if len(serviceTemplate.PolicyTypes) == 0 {
+	if serviceTemplate.PolicyTypes == nil {
 		serviceTemplate.PolicyTypes = make(map[string]tosca.PolicyType)
 	}
 

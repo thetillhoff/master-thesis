@@ -1,9 +1,9 @@
-package dhcp_and_tftp
+package hardware_inspection
 
 import (
-	"context"
 	"log"
 	"os"
+	"path"
 	"time"
 
 	"github.com/docker/docker/api/types/container"
@@ -17,10 +17,10 @@ var (
 	buildSrc    string = "dnsmasq/"
 	imageName   string = "dnsmasq" // TODO: This could include the dockerRegistry-user-id so it can be pushed & pulled -> reduce build time.
 	containerID string
-	bindIp      string        = "0.0.0.0"
+	BindIp      string        = "0.0.0.0"
 	timeout     time.Duration = 1 * time.Second
-
-	ctx context.Context = context.Background()
+	leasePath   string        = "leases"
+	liveIsoPath string        = "debian-live-11.0.0-custom.iso"
 )
 
 // Start dnsmasq in container
@@ -28,25 +28,36 @@ var (
 // Additionally, add another package for a dedicated tftp and http server for PXE-boot.
 func Start() {
 	var (
-		pwd string
 		err error
+		pwd string
 	)
 
 	log.Println("INF Starting dhcp and tftp server...")
-
-	// docker.BuildImage(buildSrc, imageName, true) // already done during init
 
 	pwd, err = os.Getwd()
 	if err != nil {
 		log.Fatalln("ERR Couldn't retrieve working directory:", err)
 	}
 
-	docker.StartWithAutoStop(imageName, container.HostConfig{
+	// Setting correct path for leaseFile
+	leasePath = path.Join(pwd, buildSrc, leasePath)
+
+	if err := os.Truncate(leasePath, 0); err != nil {
+		log.Fatalln("ERR Couldn't remove contents of leaseFile;", err)
+	}
+
+	// docker.BuildImage(buildSrc, imageName, true) // already done during init
+
+	if debug {
+		log.Println("INF live-os-iso-path:", liveIsoPath)
+	}
+
+	containerID = docker.StartWithAutoStop(imageName, &container.HostConfig{
 		PortBindings: nat.PortMap{
-			nat.Port("53/udp"): []nat.PortBinding{{HostIP: bindIp, HostPort: "53"}},
-			nat.Port("69/udp"): []nat.PortBinding{{HostIP: bindIp, HostPort: "69"}},
-			nat.Port("69/tcp"): []nat.PortBinding{{HostIP: bindIp, HostPort: "69"}},
-			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: bindIp, HostPort: "80"}},
+			nat.Port("53/udp"): []nat.PortBinding{{HostIP: BindIp, HostPort: "53"}},
+			nat.Port("69/udp"): []nat.PortBinding{{HostIP: BindIp, HostPort: "69"}},
+			nat.Port("69/tcp"): []nat.PortBinding{{HostIP: BindIp, HostPort: "69"}},
+			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: BindIp, HostPort: "80"}},
 		},
 		Privileged: true,
 		CapAdd: strslice.StrSlice{
@@ -60,8 +71,17 @@ func Start() {
 				Source: pwd + "/dnsmasq/isos",
 				Target: "/http/isos",
 			},
+			{
+				Type:   mount.TypeBind,
+				Source: pwd + "/dnsmasq/leases",
+				Target: "/var/lib/misc/dnsmasq.leases",
+			},
 		},
-	})
+	},
+		"DHCP=on",
+		"BINDIP="+BindIp,
+		"ISOSRC="+liveIsoPath,
+	)
 
 	// TODO:
 	// Only create build context and build image, when image doesn't yet exist.

@@ -10,12 +10,12 @@ import (
 	"github.com/docker/docker/api/types/container"
 )
 
-func StartWithAutoStop(imageName string, hostconfig container.HostConfig) string {
+func StartWithAutoStop(imageName string, hostconfig *container.HostConfig, env ...string) string {
 	var (
 		containerID string
 	)
 
-	containerID = Start(imageName, hostconfig)
+	containerID = Start(imageName, hostconfig, env...)
 
 	// Taken from https://stackoverflow.com/questions/11268943/is-it-possible-to-capture-a-ctrlc-signal-and-run-a-cleanup-function-in-a-defe
 	// Make sure cleanup is also called on unnormal exits (strg-c)

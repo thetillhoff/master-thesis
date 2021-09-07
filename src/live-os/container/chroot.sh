@@ -27,3 +27,6 @@ WantedBy=default.target
 
 # manually enabling systemd service
 ln -s /etc/systemd/system/autostart.service /etc/systemd/system/multi-user.target.wants/autostart.service
+
+# Set custom hostname
+hostnamectl set-hostname live-os

@@ -4,6 +4,8 @@ import (
 	"log"
 	"path"
 	"strings"
+
+	"github.com/thetillhoff/eat/pkg/tosca"
 )
 
 var (
@@ -18,7 +20,7 @@ var (
 func LoadFromPath(csarPath string) CSAR {
 	var (
 		elementPath string
-		archive     CSAR
+		archive     *CSAR
 	)
 
 	csarPath = path.Clean(csarPath) // Cleaning for further usage
@@ -39,13 +41,14 @@ func LoadFromPath(csarPath string) CSAR {
 	}
 
 	if archiveContents["TOSCA.meta"] != "" { // If metadata is located at root of CSAR
-		archive = unmarshalMetadata(archiveContents["TOSCA.meta"])
-		archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
+		*archive = unmarshalMetadata(archiveContents["TOSCA.meta"])
+		*archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
 	} else if archiveContents["TOSCA-Metadata/TOSCA.meta"] != "" { // If metadata is located in dedicated metadata subdirectory
-		archive = unmarshalMetadata(archiveContents["TOSCA-Metadata/TOSCA.meta"])
-		archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
+		*archive = unmarshalMetadata(archiveContents["TOSCA-Metadata/TOSCA.meta"])
+		*archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
 	} else { // If only one yaml-file exists at root of CSAR assume metadata is embedded in that file
-		archive.EntryDefinition = "" // Initialize
+		archive = NewCSAR()
+		archive.EntryDefinition = new(string) // Initialize
 
 		if len(archiveContents) == 0 {
 			log.Fatalln("ERR CSAR doesn't contain files.")
@@ -59,7 +62,7 @@ func LoadFromPath(csarPath string) CSAR {
 				if debug {
 					log.Println("INF Entry-file detected at '" + elementPath + "'.")
 				}
-				if archive.EntryDefinition != "" { // If another EntryDefinition was already detected == If another yaml-file exists at root of CSAR
+				if *archive.EntryDefinition != "" { // If another EntryDefinition was already detected == If another yaml-file exists at root of CSAR
 					log.Println("ERR Invalid CSAR file. No dedicated metadata and ambiguous entry-files detected.")
 					if debug {
 						// Print additional debug information
@@ -72,26 +75,29 @@ func LoadFromPath(csarPath string) CSAR {
 				}
 
 				// Recognize file as the CSAR Entry-Definitions file
-				archive.EntryDefinition = elementPath
+				*archive.EntryDefinition = elementPath
 
-				archive.OtherDefinitions = ""
+				archive.OtherDefinitions = new(string) // Initialize
 
 				// Parse Entry-Definitions yaml-file
 				// otherDefinitionsFilepaths: Stays empty; "Note that in a CSAR without TOSCA-metadata it is not possible to unambiguously include definitions for substitution templates as we can have only one topology template defined in a yaml file."
-				archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
+				archive.ServiceTemplate = &tosca.ServiceTemplate{}
+				*archive.ServiceTemplate = loadServiceTemplate(archive.EntryDefinition, archive.OtherDefinitions)
 
 				// Try to parse metadata out of entry-file.
 				archive.CsarVersion = translateToscaDefinitionsVersion(archive.ServiceTemplate.ToscaDefinitionsVersion)
-				archive.CreatedBy = archive.ServiceTemplate.Metadata["template_author"] // Not specified in docs, but seems intuitive
+				archive.CreatedBy = new(string)
+				*archive.CreatedBy = (archive.ServiceTemplate.Metadata)["template_author"] // Not specified in docs, but seems intuitive
 			}
+			// continue // While this could speed up the detection process, it might not detect duplicate entry files.
 		}
 
-		if archive.EntryDefinition == "" { // if no yaml-file was detected at root of CSAR the CSAR is invalid
+		if *archive.EntryDefinition == "" { // if no yaml-file was detected at root of CSAR the CSAR is invalid
 			log.Fatalln("ERR Invalid CSAR file. No dedicated metadata and no entry-file detected.")
 		}
 	}
 
 	// archive = archive.createSingleServiceTemplate()
 
-	return archive
+	return *archive
 }

@@ -59,6 +59,7 @@
 - [ ] InterfaceAssignment is never used?
 - [ ] Are Assignments the same as "storing a value according to definition"? This would result in making all of them interfaces...
 - [ ] As stated in spec 4.4.1, 64-bit precision is recommended for all values
+- [ ] It would be great to work with pointers instead of direct variables (at least at some points). This would later enable checking against nil.
 
 ## issues in tosca spec
 - 4.3.5.6.3.3 contains indentation error

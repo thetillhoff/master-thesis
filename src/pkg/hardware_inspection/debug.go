@@ -1,4 +1,4 @@
-package dhcp_and_tftp
+package hardware_inspection
 
 import "github.com/thetillhoff/eat/pkg/docker"
 

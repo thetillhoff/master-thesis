@@ -37,15 +37,22 @@ var installCmd = &cobra.Command{
 
 eat install some-csar-file.zip
 eat install some-csar-file.zip --input DOMAIN=example.tld`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			csarPath string = args[0]
 			archive  csar.CSAR
-			inputs   []string
 			err      error
+			inputs   []string
+			bindIp   string
 		)
 
 		inputs, err = cmd.PersistentFlags().GetStringSlice("input")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		bindIp, err = cmd.PersistentFlags().GetString("bind-ip")
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -58,6 +65,7 @@ eat install some-csar-file.zip --input DOMAIN=example.tld`,
 			log.Println("INF debug:", debug)
 			log.Println("INF csarPath:", csarPath)
 			log.Println("INF inputs:", inputs)
+			log.Println("INF bindIp:", bindIp)
 		}
 
 		archive = csar.LoadFromPath(csarPath)
@@ -71,7 +79,7 @@ eat install some-csar-file.zip --input DOMAIN=example.tld`,
 		// 	x.ValidateConstraints() // <- missing value to validate
 		// }
 
-		toscaorchestrator.Install(archive, inputs)
+		toscaorchestrator.Install(archive, inputs, bindIp)
 	},
 }
 
@@ -85,6 +93,8 @@ func init() {
 	// installCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	installCmd.PersistentFlags().StringSliceP("input", "i", []string{}, "Define inputs for CSAR's TopologyTemplate, f.e. '-i port=443'. Multiple inputs are possible.")
+
+	installCmd.PersistentFlags().String("bind-ip", "0.0.0.0", "Define the bind-ip for the dhcp-, tftp- and http-server, f.e. '--bind-ip=0.0.0.0'.")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

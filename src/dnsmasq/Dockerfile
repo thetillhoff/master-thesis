@@ -79,6 +79,8 @@ RUN chmod +x /container_init.sh
 ENV ISOSRC=https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/debian-live-11.0.0-amd64-standard.iso
 # available options for DHCP: on, proxy
 ENV DHCP=proxy
+# default bindip
+ENV BINDIP=0.0.0.0
 
 # startup command
 CMD /container_init.sh

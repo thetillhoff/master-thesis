@@ -51,37 +51,42 @@ eat init`,
 		var containerPath string = "live-os"
 
 		docker.Init()
-		docker.BuildImage(containerPath, "live-os-builder", true)
 
-		pwd, err := os.Getwd()
-		if err != nil {
-			log.Fatalln("ERR Couldn't retrieve working directory:", err)
-		}
-		sourcePath := path.Join(pwd, containerPath, "/container")
+		// Only create the iso if it doesn't exist already
+		if _, err := os.Stat("dnsmasq/isos/debian-live-11.0.0-custom.iso"); os.IsNotExist(err) {
+			docker.BuildImage(containerPath, "live-os-builder", true)
 
-		containerID := docker.StartWithAutoStop("live-os-builder", container.HostConfig{
-			AutoRemove: true,
-			Mounts: []mount.Mount{
-				{
-					Type:   mount.TypeBind,
-					Source: sourcePath,
-					Target: "/container",
+			pwd, err := os.Getwd()
+			if err != nil {
+				log.Fatalln("ERR Couldn't retrieve working directory:", err)
+			}
+			sourcePath := path.Join(pwd, containerPath, "/container")
+
+			containerID := docker.StartWithAutoStop("live-os-builder", &container.HostConfig{
+				AutoRemove: true,
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: sourcePath,
+						Target: "/container",
+					},
 				},
-			},
-		})
-		docker.Wait(containerID)
+			})
+			docker.Wait(containerID)
 
-		log.Println("SUC Created live-os iso-file at '" + sourcePath + "'.")
+			log.Println("SUC Created live-os iso-file at '" + sourcePath + "'.")
 
-		// mv live-os/custom.iso dnsmasq/isos/
-		err = os.Rename(path.Join(sourcePath, "debian-live-11.0.0-custom.iso"), "dnsmasq/isos/debian-live-11.0.0-custom.iso")
-		if err != nil {
-			log.Fatal(err)
+			// mv live-os/custom.iso dnsmasq/isos/
+			err = os.Rename(path.Join(sourcePath, "debian-live-11.0.0-custom.iso"), "dnsmasq/isos/debian-live-11.0.0-custom.iso")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
-		// TODO
-		// Build dnsmasq container image
-		docker.BuildImage("dnsmasq", "dnsmasq", true)
+		// Build dnsmasq container image (without cache)
+		// TODO check if container image exists. Needs research on how the docker cli detects changes in the docker context
+		// Maybe using cache is sufficient
+		docker.BuildImage("dnsmasq", "dnsmasq", false) // Last parameter is noCache
 		log.Println("SUC Created dnsmasq container image.")
 	},
 }
@@ -94,6 +99,8 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// initCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	initCmd.PersistentFlags().String("bind-ip", "0.0.0.0", "Define the bind-ip for the dhcp-, tftp- and http-server, f.e. '--bind-ip=0.0.0.0'.")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

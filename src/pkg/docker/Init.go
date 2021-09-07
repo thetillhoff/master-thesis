@@ -9,7 +9,7 @@ import (
 
 var (
 	cli *client.Client
-	ctx context.Context
+	ctx context.Context = context.Background()
 )
 
 func Init() {
@@ -26,8 +26,8 @@ func Init() {
 		}
 	}
 
-	// Only if not already initialized
-	if ctx == nil {
-		ctx = context.Background()
-	}
+	// // Only if not already initialized
+	// if ctx == nil {
+	// 	ctx = context.Background()
+	// }
 }
