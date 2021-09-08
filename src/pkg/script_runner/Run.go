@@ -6,6 +6,7 @@ import (
 	"log"
 	"os/exec"
 	"reflect"
+	"strings"
 )
 
 // var (
@@ -42,7 +43,7 @@ func RunLinuxCommand(command string) string {
 	// 	log.Fatalln("ERR Error while running command:", err, output)
 	// }
 
-	return string(output)
+	return strings.TrimSpace(string(output))
 }
 
 // Takes path to shell script, executes it and returns output as string

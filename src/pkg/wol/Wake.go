@@ -77,7 +77,8 @@ func wakeVM(macAddress string) {
 			log.Print(output)
 		}
 	case "linux":
-		output = script_runner.RunLinuxCommand("echo waking up linux-vm with mac '" + macAddress + "'.")
+		vmName := getVMs()[macAddress]
+		output = script_runner.RunLinuxCommand("sudo virsh start " + vmName) // TODO remove sudo as soon as "groups" works without error
 		if debug && output != "" {
 			log.Println("INF Output from wol-vm-command:")
 			log.Print(output)

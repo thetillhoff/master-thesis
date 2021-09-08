@@ -11,6 +11,8 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+// ssh -i live-os/container/ssh/id_rsa 192.168.122.168 -l user -o UserKnownHostsFile=/dev/null
+
 func RunCommandOnHost(ipAddress string, command string) string {
 
 	// Start new ssh connection with private key.

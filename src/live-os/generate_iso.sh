@@ -28,6 +28,9 @@ mount -o bind /dev/pts ${UNSQUASHEDFS}/dev/pts
 
 # Edit live system
 chroot ${UNSQUASHEDFS} /chroot.sh # for manual edits run `chroot ${UNSQUASHEDFS}` and later on `exit`
+# Add public key for ssh login
+mkdir -p ${UNSQUASHEDFS}/home/user/.ssh/
+cp /container/ssh/id_rsa.pub ${UNSQUASHEDFS}/home/user/.ssh/authorized_keys
 # TODO install open-ssh as well?
 #bash # for debugging; have shell open for manual changes, after `exit`, this script continues
 

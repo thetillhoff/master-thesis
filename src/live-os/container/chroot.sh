@@ -4,7 +4,7 @@
 apt update
 apt upgrade -y
 apt autoremove -y
-apt install -y lighttpd
+apt install -y lighttpd openssh-server
 apt clean
 
 # creating autostart script
@@ -29,4 +29,4 @@ WantedBy=default.target
 ln -s /etc/systemd/system/autostart.service /etc/systemd/system/multi-user.target.wants/autostart.service
 
 # Set custom hostname
-hostnamectl set-hostname live-os
+# hostnamectl set-hostname live-os # Doesn't work during chroot, since it's not booted with systemd
