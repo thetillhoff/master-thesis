@@ -4,7 +4,6 @@ relationship_types:
   hosted_on: # defined in simple profile, but "copied here" so the import is not necessary
     valid_target_types: [ phyiscalComputeCapability, virtualComputeCapability ] # This is different from the simple profile spec, but necessary nevertheless.
 
-
 interfaces: # just interfaces or is it child of something?
   lifecycle.Standard:
     create:
@@ -35,12 +34,12 @@ node_types:
       # assuming no remote hypervisor is used
       vm_name: string # or vm_id
 
-# create, configure, start workflows
+# TODO: add create, configure, start workflows
 
   abstractComputeNode:
     requirements: # either physicalComputeNode or virtualComputeNode have to be defined, but not both
-      physicalComputeCapability: #
-      virtualComputeCapability: #
+      - physicalComputeCapability: TODO physical compute capability
+      - virtualComputeCapability: TODO virtual compute capability
     properties: # either hostname or ip has to be defined (or both)
       hostname: string
       ip: string
@@ -77,3 +76,10 @@ node_types:
       create: # manual
       destroy: # manual
       detect: # manual
+
+topology_template:
+  inputs:
+    macAddresses:
+      type: string
+      description: Simple string typed parameter definition with no constraints.
+      required: true
