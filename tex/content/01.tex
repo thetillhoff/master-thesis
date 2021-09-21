@@ -4,18 +4,41 @@
 
 \chapter{Introduction}
 
-- 3-4 pages
-- why is the thesis relevant, what is the problem/task
-  - context
-  - scientific importance / motivation / relevance
-  - goal, at least one research question
-- not too technical
-- introduce to structure of thesis (which chapters are to be expected)
+% - 3-4 pages
+% - why is the thesis relevant, what is the problem/task
+%   - context
+%   - scientific importance / motivation / relevance
+%   - goal, at least one research question
+% - not too technical
+% - introduce to structure of thesis (which chapters are to be expected)
 
----
+% ---
 
-motivation == vision
-... it started with a vision from star treck ...
+% motivation == vision
+% ... it started with a vision from star treck ...
 
 
 %TODO Describe and explain usage of \textquote{Machines} vs \textquote{server} in this paper.
+
+% story
+Todays distributed applications don't scale in the range of tens or hundreds of nodes but in tens of thousands [\hl{Distributed Systems - Concepts and Design George Coulouris}, \hl{Cluster Computing White Paper Mark Baker}, \url{https://cloud.google.com/blog/products/containers-kubernetes/google-kubernetes-engine-clusters-can-have-up-to-15000-nodes}]. In order to be as fast and efficient as possible, the number of nodes has to automatically scale up and down based on their usage. The conditions are simple (f.e. \textquote{add a node when all nodes have reached 80 percent cpu load}) but the frequency for triggers is high. to simplify management of nodes for both the cluster software and administrations, each node should also be set up the same way. A perfect use-case for automation.
+\newline
+The process of software-defining infrastructure is called \gls{iacacr}. Using software development tools to manage infrastructure has many more advantages like version-control, collaboration, reviews, automated tests and continuous deployment. The accompanying combination of development and operations called DevOps opened a complete new field in computer science [\hl{BA, chapter 2}]. To be able to increase the amount of components than can be software-defined, the underlying hardware needs to support it. As an example, processors have a fixed architecture, while with FPGA chips it is configurable.
+\newline
+Such hardware features are exposed via a corresponding \gls{apiacr}. Some hardware properties cannot be changed via software, for example how many physical machines exist in a certain environment. A partial solution for such cases are abstraction layers like virtualization.
+\newline
+But virtualization only provides an \gls{apiacr} on a single host; In order to be scalable and in order to be able to distribute new workloads in the most efficient way (f.e. putting a new \gls{vmacr} on the hypervisor with the lowest load), an orchestrating software is needed. Examples for such software are VMware's vSphere, Red Hat's OpenShift but also Google's Kubernetes.
+\newline
+These tools are capable of automatic live-migrations of workloads in order to distribute load more equally, and provide \gls{apiacr}s for their features. 
+\newline
+Another category for such orchestrators are public cloud providers like Amazon's Web Services, Microsoft's Azure and Googles Cloud Platform. They as well provide \gls{apiacr}s for their features.
+\newline
+While these \gls{apiacr}-providers allow their users to have a simplified view on provisioning, they just shift the effort of managing the underlying hardware from application developers to the provider software. It is now in the area of responsiblity of the developer team of the latter to manage the underlying hardware (i.e. adding new physical machines to the cluster).
+\newline
+This approach has three main issues: For one, application developers have a hard time switching between or even mixing those providers, since their \gls{apiacr}s are very different. Second, these orchestrators all do mostly the same thing, but with different efficiency and flexibility. Third, each one of them has one initial requirement: Someone has to do the initial bootstrapping, i.e. somehow set up the orchestrator. Again, this does not solve the hardware management problem, but shifts it to a different problem which (hopefully) requires less effort to solve.
+\newline
+This thesis aims at three fundamental questions: Can bare-metal machines be deployed on-demand like virtual workloads on providers. Is it possible to do so without the requirement of an always-on operator, thus removing the initial bootstrapping effort. And last but not least, how can hardware constraints be mirrored in \gls{iacacr} languages.
+\hl{TODO should these be with dots or question marks? Should this be a numbered/unnumbered list?}
+\newline
+The paper at hand first explains how workload provisioning historically evolved and introduce terms required to understand the topic. Then it describes the current state of the art of \gls{iacacr} and provisioning in order to identify issues and where compatiblity makes the most sense. Afterwards different languages to describe \gls{iacacr} will be compared and the most fitting one selected.
+Before the architecture of an example tool can be discussed, the final constraints and goals for it will be determined. A final discussion analyses the results and answer the initial questions.
