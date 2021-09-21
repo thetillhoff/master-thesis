@@ -25,6 +25,9 @@
   Check qualification of implementation at https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html#_Toc26969414
   Also check conformance targets at https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html#_Toc26969508
 
+## tex
+- replace "f.e." with "for example"
+- replace "\&" with "and"
 
 ## general code
 - "Orchestrators MUST" are not yet implemented. Example in 5.3.8.4 of simple-profile spec

@@ -1,51 +1,56 @@
 \chapter{Related work}
 
-- 7-22 pages
-- core element of the thesis, as it shows I'm able to write scientifically.
-- explain what other researchers have found on the topic.
-  - existing approaches (current state of the art, theories, literatur (seperated by subtopic))
-  - other scientific contributions to solve the task
-- explain gap in literature, that the thesis is trying to fill.
-  - new method
-  - new data
-  - new application
+% - 7-22 pages
+% - core element of the thesis, as it shows I'm able to write scientifically.
+% - explain what other researchers have found on the topic.
+%   - existing approaches (current state of the art, theories, literatur (seperated by subtopic))
+%   - other scientific contributions to solve the task
+% - explain gap in literature, that the thesis is trying to fill.
+%   - new method
+%   - new data
+%   - new application
 
 %%%%% start writing here
 
-%TODO chapter introduction
-
+Several tools, frameworks and even whole ecosystems have evolved around \gls{iacacr}. This chapter is focused on finding the most common, determining their use-cases and identifying their issues.
+Additionally, a simple reference infrastructure will be introduced, which must be deployable with the respective tool.
+%TODO Should the reference infrastructure not be at the top of this chapter? Or at least before the comparison?
 
 \section{Current state of the art of Infrastructure-as-Code and related trends} %TODO could also be in 02-background
-google trends: %https://trends.google.com/trends/explore?q=%2Fg%2F11c3w4k9rx
-related topics, worldwide:
-- AWS
-- Terraform
-- DevOps
-- Jenkins
-- cloud computing
-- azure
-- automation
-- Ansible
--> in usa:
-- cicd
-- yaml
-- plugin
-- compliance
-- pipeline
--> 5y old worldwide:
-- git
-- agile software development
-- policy
-- hashicorp
-- serverless
----
-similar queries:
-- terraform
-- aws
+The interest in \gls{iacacr} has been increasing on a steady level over the last years [\url{https://trends.google.com/trends/explore?date=today%205-y&q=%2Fg%2F11c3w4k9rx}].
+\newline
+
+% story
+
+% which tools and dsls are state-of-the-art, what is their domain -> comparison
+
+% current state of iac etc
+% - what is a common workflow? Which tools are the most prominent for it / subtasks
+% - what is a common environment (cloud, bare-metal, ...)
+% - what are the leading providers/backends
+% - What about bare-metal?
+% provisioning tools
+% - why are them important for this thesis?
+% - what do they do and how to they do it
+% - configuration mgmt tools like ansible - where do they fit in here?
+% comparison of DSLs
+% - How to compare
+% - Cloudformation
+% - Heat
+% - Terraform
+% - Tosca/cloudify
+% - Tosca/simple-profile
+% example reference infrastructure
+% issues
+% - TODO why tosca, not terraform, even though it seems to become state-of-the-art
+
+% what I have
+% list of iac tools
 
 
-- k8s
-- multi-tenancy
+
+
+% TODO "multi-tenancy" ?
 
 
 \section{Provisioning tools}
@@ -59,596 +64,584 @@ tools/frameworks
   - verify-HW; verify a node is accessible with HPMI (could be combined with flashing nodes' firmware)
 - ...
 
-- Why DSL and not general purpose language?
-  - smaller and well-defined / less complex
-  - seperates infrastructure code from other code
-  - domain-specific, so easier to work with for experts and customers
-
 - default passwords for IPMI/BMC were vendor-specific (calvin...) but due to new US law they must be random:
   senate bill no 327, chapter 886 - add title 1.87.26 to part 4 of division 3 of civil code, relating to information privacy
 
 \section{Comparison of existing Domain-Specific-Languages}
-DSL == modeling language [A Domain Specific Language to Generate Web Applications]
 
-IaC == by definition 'as code' and therefore text-based DSL
+One of the most prominent tools is Terraform by HashiCorp [\url{https://trends.google.com/trends/explore?q=%2Fg%2F11c3w4k9rx}]. When it was introduced in 2014, it was primarily focused on \gls{awsacr}, but it evolved to support multiple providers. It uses HCL \url{https://www.terraform.io/} as \gls{dslacr} and is highly plugin-based [\url{https://registry.terraform.io/browse/providers}].
+\newline
 
----------------------------------------------------------------------------------------------------------------------------------------------------------
-```yaml
-CloudFormation: % https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/updating.stacks.walkthrough.html
-  approach:
-    - declarative
-    - JSON and YAML
-    - typed (AWS::ProductIdentifier::ResourceType, f.e. AWS::EC2::SecurityGroup) - how does the typing system work: field "type" for all components
-    - create "stack update" (execution path), save it in s3-buck or anywhere, then run it. no direct api access?
-    - state is retrieved "live"
-  hidden-dependencies:
-    - AWS only
-  structure:
-    - mappings: % conditional mappings
-      - ... % f.e. different ami images per region and architecture; a lot like a switch statement
-    - metadata: ... % can exist on all levels, contains f.e. information about visual representation
-    - outputs: % viewable on the management console etc.
-      - ... % f.e. Access-URL for an application after installation
-    - parameters:
-      - <variablename>:
-        - Default: ...
-        - Description: ...
-        - Type: ...
-        - minlength, maxlength, regex pattern for strings, ...
-        - Constraintdescription
-    - resources: % only resources are required
-      - WebServer: % valid resource type
-        - type: AWS::EC2::Instance
-        - properties:
-          - UserData: ... % valid values for this resource type
-          - KeyName:
-            Ref: <variablename> % can reference to parameters
-  validation / error reporting:
-    - custom schema validation (?)
-    - only checks if parent language is well-formatted (json,yaml)
-    - additional tools
-      - python cfn-lint as plugin for IDEs or static analysis tool
-      - ruby cfn-nag for static analysis, aimed at security
-      - python taskcat for making a testrun with a template -> integration tests
-    - dry-run possible
-  aspecty-to-learn:
-    - "Fn::..." in JSON, "!..." in YAML -> custom functions like Join, GetAtt
-    - JSON or YAML is required, the graphical designer does only the rawest of work
-      alternatively: use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
-    - AWS products, their naming and how each components attributes are named
-  tooling/ecosystem:
-    - integrated in aws-cli
-    - "designer": https://eu-central-1.console.aws.amazon.com/cloudformation/designer/home?region=eu-central-1
-    - any text-editor for JSON/YAML, or use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
-    - git pre-commit validation with "cfn\_nag" (https://github.com/stelligent/cfn\_nag) and "taskcat" (https://github.com/aws-quickstart/taskcat)
-  optimizations:
-    - parallel resource creation/updating/deletion, can be controlled with "DependsOn" attribute
-  extensibility:
-    - https://aws.amazon.com/cloudformation/features/: There is a CloudFormation Registry, where third-party sources can provide a template for their app
-  guarantees:
-    - cost calculator: https://calculator.aws/
-    - no guarantee updates work (f.e. insufficient permissions, account quota limit); automatic roll-back on failure
-  reusability of components:
-    - there is the cloudformation registry where apps can be published
-    - "Ref" can reference to other components
-    - nesting of "stacks" is possible
-  Visibility:
-    - predefined structure, splitting into different files possible
-  Viscosity:
-    - updates of the DSL are made by aws
-    - updates to your apps have to be made manually
-    - updates have to be validated manually
-  Consistency:
-    - (probably) pretty high, as developed by one team and being an official product by amazon.
-  notes:
-    - fails if dependend component is neither defined nor already existing
-    - state-monitoring: events; but those are not saying much (only time, type of the event origin (alarm, stack,...), logical ID (custom name), physical ID (instance id), status (f.e. CREATE\_COMPLETE, CREATE\_IN\_PROGRESS), Reason (User initiated))
-    - costs:
-      - AWS::*, Alexa::* and Custom::* are free
-      - 3rd party providers cost stuff
-    - "Naming resources restricts the reusability of templates and results in naming conflict when an update causes a resource to be replaces" [https://aws.amazon.com/cloudformation/faqs/] -> naming is not possible for all components
----
-Heat:
-  approach:
-    - declarative
-    - compatible to AWS CloudFormation
-    - OpenStack-native REST API, CloudFormation-compatible Query-API
-    - either cli or api directly
-    - YAML
-    - python app
-    - heat cli accesses heat-api, which sends API-requests via RPC to heat-engine, which does the heavy lifting
-    - python-heatclient lib (== api)
-  hidden-dependencies:
-  structure:
-    - parameters % input parameters, typed
-        image\_type:
-          type: string % every parameter is typed
-          label: Image Type
-          description: Type of instance (flavor) to be used
-          default: m1.small % optional default value
-          %hidden: true % optional attribute to hide secrets from users who request information about the deployed stack
-          constraints:
-            - allowed\_values: [ m1.medium, m1.large, m1.xlarge ]
-              description: Value must be one of m1.medium, m1.large or m1.xlarge.
-            %- allowed\_pattern: "[a-zA-Z0-9.]+"
-          %immutable: true % defines whether the param is updatable
-    - resources % typed, f.e. OS::NOVA::Server
-        my\_instance:
-          type: OS::Nova::Server
-          properties:
-            key\_name: ...
-            image: ...
-            flavor: { get\_param: image\_type }
-          %metadata
-          %depends\_on
-          %update\_policy
-          %deletion\_policy
-          %external\_id
-          %condition
-    - outputs
-        instance\_ip:
-          description: The IP address of the deployed instance
-          value: { get\_addr: [my\_instance, first\_address] } % alternative: get\_file: URL/path and get\_param or get\_resource (like named port)
-          %condition % conditional output is supported
-    %- conditions % declaration of conditions
-    %- parameter\_groups % a declaration of input parameter groups and order
-  validation/error-reporting:
-    - heat template-validate: used to validate a template, with inserting templated values and ignoring specific errors -> feels like dry-run
-  aspects to learn:
-    - YAML
-    - HOT structure, types, functions and how each components attributes are named
-  tooling/ecosystem:
-    - cli
-    - python-lib
-  optimizations: % none?
-  extensibility:
-    - there is NO app catalog (\url{http://lists.openstack.org/pipermail/openstack-operators/2017-July/013965.html}) for heat templates
-  guarantees: % none?
-  reusability of components:
-    - works with cloudformation stuff, and is closely related to it
-  visibility:
-    - see cloudformation
-  viscosity:
-    - see cloudformation (?)
-  consistency:
-    - similar to cloudformation, but with openstack types
-  notes:
-    - imitates AWS Cloudformation on several occasions (types, structures, wording (f.e. stack))
-    - there is a openstack REST-API AND a CFN-API
-    - cli-command names are confusing
-    - "heat" makes the clouds rise
----
-Terraform:
-  approach:
-    - declarative
-    - plugins; allow for different providers
-    - dependencies possible
-    - state of real infrastructure in "state file" == source of truth; remote state backend feature; file is refreshed on every "terraform apply"
-    - terraform cloud to prevent race conditions
-    - init command downloads and installs required provider plugins
-    - creates execution plan
-    - own format (HCL), but JSON is also supported
-    - architecture
-      - core does state mgmt, constructs resource graph and discovers and communicates with plugins via rpc
-      - plugins are binaries as well and are invoked via rpc
-      - plugins should initialize included libraries to make api calls, authenticate and define resources that map to services and run commands/scripts
-      - terraform init checks configuration files to determine which plugins are necessary (and saves current version of plugin until init is ran again)
-      - providers are downloaded from tf-registry, but network- or file-system-mirror can be configured
-      - if no provider is set, local lookups are done by default as well (both global and current dir)
-      - dev overrides possible, without failsafes
-  hidden-dependencies:
-    - HCL requirement just adds another layer, and migration between clouds is still a lot of manual work
-    - cloud-specific cli (like aws-cli)
-    - terraform init downloads additional modules (but internet connection is already required for most providers)
-    - sometimes requires the cloud-specific cli as well
-  structure:
-    - main.tf ; contains:
-      - terraform configuration/settings (provider, f.e. aws-cli)
-      - provider-specific configuration like region, profile
-      - resources -> 'resource "<type>" "<name>" {...}' -> id == <type>.<name>
-    - variables.tf ; contains
-      - input variables (typed, via param), used with 'var.<variablename>'
-    - outputs.tf ; contains which values should be output when apply is ran
-  validation/error-reporting:
-    - `terraform fmt`: format configuration
-    - `terraform validate`: validate configuration
-  aspects to learn:
-    - HCL (complete "language", similar but still different to JSON) -> alternatively, JSON can be used as well
-    - provider-specific resources and their attributes
-  tooling/ecosystem:
-    - terraform cli
-    - terraform registry for 3rd party
-  optimizations:
-    - parallel execution of actions whenever possible (can even be limited)
-  extensibility:
-    - plug-ins / external modules
-  guarantees:
-    - none - no rollback when in state-migration and facing an error (https://news.ycombinator.com/item?id=19472485)
-  reusability of components:
-    - providers, plug-ins & modules
-  visibility:
-    - all *.tf files are considered and read, so it is possible to split as much as you want - in the same directory
-    - components in subfolders should be made tf-modules
-      - at least one module; called root-module in the main dir
-      - modules can be called multiple times
-      - modules can have input variables, which can be passed from the caller (used with 'module.<modulealias>.<variabelname>')
-      - modules are defined by source-uri, which might be a relative dir-path, http, git, registry, s3-bucket ...
-    - visibility depends on module-structure
-  viscosity:
-    - updates in all directions seem to be quite easy or at least the tooling is there - for debugging as well
-  consistency:
-    - providers and modules are developed by different people, so they tend to be inconsistent.
-    - overall structure is predefined
-  notes:
-    - track resources with state
-    - resusable components == modules
-    - tells when resources are updated and when they are replaced and on the latter which attribute causes the replacement
-    - Problem with statefile; changed region after deployment, then went for destroy -> terraform didnt find the deployment and deleted it from the statefile after resetting the value, making it undeletable. Manually restoring the statefile was necessary to be able to destroy the deployment.
-    - purpose of the statefile:
-      - mapping between non-named resources to generated name
-      - how should terraform know to delete a resource (and dependencies and their destruction order) when its not in the config file any more?
-      - for larger infrastructure, querying everything for each action is too much overhead and might become a problem with rate limits
-      - statefile is only useful for single-user usage, for teams a remote-state-backend is used like tf-cloud, consul, aws-s3, azure blob, gcp storage, alibaba cloud etc
-        - latest state present, resource locking == state locking, so no corruption during writing
-      - local state contains plain initial passwords, remote state might be encrypted
-      - only tf-internal use recommended, use json flag for output commands
-    - multiple environments/workspaces sometimes supported; dev, prod, local etc.
-    - wants every external file to be translated to own file-format, f.e. dockerfile \url{https://learn.hashicorp.com/tutorials/terraform/docker-build?in=terraform/docker-get-started}
----
-Tosca/cloudify:
-  approach:
-    - webapp, manager with REST-API, accessed via webgui and/or cli
-    - manager, database and messaging queue -> either hosted on one box (vm/container) or clustered (all services on all nodes or each service on different node)
-      - manager:
-        - event-stream processing
-        - secured requests
-        - metric/logs/events queueing
-        - aggregation and analysis
-        - task execution/queueing, can be automated based on live streams of events or aggregated data
-        - interaction with cloudify agents
-    - has optional agents installable via ssh/winrm or f.e cloud-init or plugin (temporary download link for the install script) or agent preinstalled in image or no agent at all
-      - execute orchestration operations locally
-      - collect metrics and report them to manager
-    - blueprints == app-description
-      deployment == instance of app (but with its own scaling etc)
-  hidden-dependencies:
-    - dedicated manager-server, global for complete infrastructure is needed (partial access is done via permissions...)
-  structure:
-    - how to actually write components and templates is hard to find in the docs -> https://docs.cloudify.co/latest/developer/writing_plugins/creating-your-own-plugin/#writing-plugin-operations
-  validation/error-reporting:
-    - ide linting & type validation
-  aspects to learn:
-    - YAML
-    - TOSCA/cloudify standard
-  tooling/ecosystem:
-    - ide-autocompletion
-    - examples for aws, terraform, azure, gcp and openstack, but all with predefined code (since its hard to create that)
-  optimizations:
-    - parallelism, resource graph
-  extensibility:
-    - plugins can be extended, and written by yourself, blueprints
-  guarantees: none?
-  reusability of components:
-    - plugins
-    - blueprints
-  visibility:
-    - depends on structure of project
-  viscosity:
-    - updates don't seem to considered properly somehow
-  consistency:
-    - completely different for different providers, even the api-call is completely different
-  notes:
-    - see notes.md
----
-Tosca/simple-profile:
-  approach:
-    - YAML
-    - namespaced imports (of type definitions) possible
-      prefixes:
-      - tosca: from tosca-definitions
-      - <none>: try to find in tosca namespace first, then lookup in current file (tosca.nodes.Compute == Compute)
-      - <namespaced-import>: imported file, alias for namespace defined there
-    - types, automated type-matching (same name for instances of different types -> tosca automatically matches correct type)
-    - property types:
-      - string (default)
-      - integer
-      - float
-      - boolean
-      - timestamp
-      - null
-    - other types:
-      - range [lower, upper|UNBOUNDED] -> can be used for template values, like port-numbers etc ("constraints")
-      - list [ elem1, elem2, ...] == yaml-list (isnt this normal yaml stuff?) f.e.
-        something:
-          type: list
-          entry_schema:
-            description: ...
-            type: <sometype>
-            [constraints]: ..<list>..
-      - map: normal key-value pair, shorthanded with {}
-      - scalar-unit: <scalar> <unit> % whitespace between is allowed but not required, case-insensitive
-        types:
-        - scalar-unit.size == 1 B, ..., 2 TiB
-        - scalar-unit.time == 1d, 2h, ..., 3ns
-        - scalar-unit.frequency == 1Hz, ..., 5GHz
-        - scalar-unit.bitrate == 1bps, ..., 2GBps, 3TiBps
-      - node-states:
-        - initial: not created, only defined in template
-        - creating -> created
-        - configuring -> configured
-        - starting -> started
-        - stopping -> configured
-        - deleting -> not longer tracked
-        - error
-      - relationship-states: % -> would require additional states?
-        - initial: relationship is not yet created, only exists in template
-      - special directives:
-        - substitute: mark node template as abstract, orchestrator must substitue with appropriate template
-        - select: mark node template as abstract, orchestrator must select a node of this type from its inventory (based on defined constraints ("node_filter"))
-      - network-names: % used in tosca.capabilities.Endpoint capability type
-        - PRIVATE
-        - PUBLIC
-    - reusable modeling definitions:
-      - description: <string>
-      - metadata: <map>
-      - constraint: [<operators>] % usable on integer, float, timestamp, string, version and scalar-unit % "schema" is special
-      - <property-filter-definition>, f.e. % see structure
-        node_filter:
-          properties:
-            - <something>
-          capabilities: % first checked whether cap is a symbolic name and second if it is a type name
-            - <something>
-      - repository: defined by [ description, url, credential ], but only url is required
-      - <artifact_name>: defined by [ type, file, [deploy_path,checksum,...]] % could contain simple txt-files or disk image with checksum (example in spec at 3.6.7.3)
-      - imports: [uris] % see prefixes and namespaces
-      - <property_name>: [ type, description, required, default, status (supported), constraints, key_schema, entry_schema, external-schema, metadata ]
-      - <attribute_name> [ type, description, default, status, key_schema, entry_schema ]
-      - output_name: [ [SELF|SOURCE|TARGET], attribute_name, ...] % named output
-      - operation implementation, <operation_name>: [ primary (f.e. if primary script in scar file), dependencies (other operations), operation_host ([SELF|HOST|SOURCE|TARGET|ORCHESTRATOR]), timeout] 
-      - operation, <operation_name>: [ description, implementation (<operation implementation>), inputs, outputs ] % execute script or command
-      - (similar to operations) notification, <notification_name>: [ description, implementation, outputs ]
-      - interface: [ inputs, operations, notifications ]
-      % form here onwards, only the typenames are listed
-      - event filter
-      - trigger definition
-      - activity
-      - set state of node by activity
-      - call operation activity
-      - inline workflow
-      - assertion
-      - condition clause (and, or, not, assert)
-      - workflow precondition
-      - workflow step
-      % type-specific definitions:
-      - entity type schema
-      - capability
-      - requirement
-      - artifact
-      - interface type
-      - data type % f.e. phone number
-      - capability type
-      - requirement type
-      - relationship type
-      - group type
-      - policy type
-      % template-specific definitions
-      - capability assignment
-      - requirement assignment
-      % node template
-      % relationship template
-      % group definition
-  hidden-dependencies:
-  structure: % how tosca works https://docs.oasis-open.org/tosca/TOSCA/v2.0/csd03/TOSCA-v2.0-csd03.html#_Toc56506180
-    - my_node_template
-        requirements:
-        - host:
-            node_filter:
-              capabilities:
-              - host:
-                  properties:
-                  - num_cpus: { in_range: [1,4] }
-                  - mem_size: {greater_or_equal: 512MB }
-  validation/error-reporting:
-  aspects to learn:
-    - YAML (since v2)
-    - tosca % there is tosca v1 and v2, but v2 seems to be a copy of v1 so far... but it feels a bit more concise/readable in its structure | v1 == xml, 2v == yaml
-    - tosca simple profile % actually, this is the more important standard, tosca itself is about more abstract stuff
-    - one-time setup of "everything-as-a-service", then only the derived types etc are required to learn
-  tooling/ecosystem:
-    - winery, vinothek -> docker image not working
-    - (cloudify)
-  optimizations:
-    - none?
-  extensibility:
-    - very flexible, as the standard can be extended a lot
-  guarantees:
-    - none?
-  reusability of components:
-    - type definitions can be reused
-    - template definitions can be reused
-    - csar application archive format
-  visibility:
-    - definitions, types, plans, etc feel hard to distinguish
-  viscosity:
-    - definitions have version-fields
-    - updatability seems great so far.
-  consistency:
-    - really great
-  notes:
-    - where does yaml-schema fit in? this seems to define its own meta-schema?
-    - cloudify and alien4cloud used tosca before spec reached final state: https://gitter.im/ystia/yorc?at=5e3b29bfbfe65274eae0f3d0
----
-% really strange documentations:
-ystia / yorc : only for compute, disk, vpc and public ip (but on many providers like aws, gcp, openstack, ...) & k8s
-alien4cloud : many providers like openstack, slurm, hosts pool, gcp, aws, k8s
----
-there are two types so far:
-- cli, where the dsl is "not perfect" (cloudformation, heat)
-  - hcl vs yaml https://xkcd.com/927/
-    - (?) hcl to json is hard, yaml to json is easy
-    - hcl is optimized for terraform and other hashicorp products
-    - hcl tooling isn't good (even basic linting doesnt exist/work)
-- "perfect dsl" without cli tools and undefined everything as a service (tosca)
-potential main goals:
-- implement cli tool for tosca(-extension) (and design corresponding everything-as-a-service reference definitions)
-  - init command generates definitions
-  - minify removes unused definitions
-- implement tosca parser for terraform/hcl
-additional goals possible:
-- implement one or two reference providers (direct)
-- 
----
-implementation details:
-- grpc as rpc between modules / for plugin-architecture, requires server and clients to be running in parallel - how to start on demand?
-  - ssl/tls by default
-  - grpc-web might enable gui-stuff
-- statefile? namespacing for performance?
-```
----------------------------------------------------------------------------------------------------------------------------------------------------------
+% --------------------------------------------------------------------------
+% ```yaml
+% CloudFormation: % https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/updating.stacks.walkthrough.html
+%   approach:
+%     - declarative
+%     - JSON and YAML
+%     - typed (AWS::ProductIdentifier::ResourceType, f.e. AWS::EC2::SecurityGroup) - how does the typing system work: field "type" for all components
+%     - create "stack update" (execution path), save it in s3-buck or anywhere, then run it. no direct api access?
+%     - state is retrieved "live"
+%   hidden-dependencies:
+%     - AWS only
+%   structure:
+%     - mappings: % conditional mappings
+%       - ... % f.e. different ami images per region and architecture; a lot like a switch statement
+%     - metadata: ... % can exist on all levels, contains f.e. information about visual representation
+%     - outputs: % viewable on the management console etc.
+%       - ... % f.e. Access-URL for an application after installation
+%     - parameters:
+%       - <variablename>:
+%         - Default: ...
+%         - Description: ...
+%         - Type: ...
+%         - minlength, maxlength, regex pattern for strings, ...
+%         - Constraintdescription
+%     - resources: % only resources are required
+%       - WebServer: % valid resource type
+%         - type: AWS::EC2::Instance
+%         - properties:
+%           - UserData: ... % valid values for this resource type
+%           - KeyName:
+%             Ref: <variablename> % can reference to parameters
+%   validation / error reporting:
+%     - custom schema validation (?)
+%     - only checks if parent language is well-formatted (json,yaml)
+%     - additional tools
+%       - python cfn-lint as plugin for IDEs or static analysis tool
+%       - ruby cfn-nag for static analysis, aimed at security
+%       - python taskcat for making a testrun with a template -> integration tests
+%     - dry-run possible
+%   aspecty-to-learn:
+%     - "Fn::..." in JSON, "!..." in YAML -> custom functions like Join, GetAtt
+%     - JSON or YAML is required, the graphical designer does only the rawest of work
+%       alternatively: use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
+%     - AWS products, their naming and how each components attributes are named
+%   tooling/ecosystem:
+%     - integrated in aws-cli
+%     - "designer": https://eu-central-1.console.aws.amazon.com/cloudformation/designer/home?region=eu-central-1
+%     - any text-editor for JSON/YAML, or use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
+%     - git pre-commit validation with "cfn\_nag" (https://github.com/stelligent/cfn\_nag) and "taskcat" (https://github.com/aws-quickstart/taskcat)
+%   optimizations:
+%     - parallel resource creation/updating/deletion, can be controlled with "DependsOn" attribute
+%   extensibility:
+%     - https://aws.amazon.com/cloudformation/features/: There is a CloudFormation Registry, where third-party sources can provide a template for their app
+%   guarantees:
+%     - cost calculator: https://calculator.aws/
+%     - no guarantee updates work (f.e. insufficient permissions, account quota limit); automatic roll-back on failure
+%   reusability of components:
+%     - there is the cloudformation registry where apps can be published
+%     - "Ref" can reference to other components
+%     - nesting of "stacks" is possible
+%   Visibility:
+%     - predefined structure, splitting into different files possible
+%   Viscosity:
+%     - updates of the DSL are made by aws
+%     - updates to your apps have to be made manually
+%     - updates have to be validated manually
+%   Consistency:
+%     - (probably) pretty high, as developed by one team and being an official product by amazon.
+%   notes:
+%     - fails if dependend component is neither defined nor already existing
+%     - state-monitoring: events; but those are not saying much (only time, type of the event origin (alarm, stack,...), logical ID (custom name), physical ID (instance id), status (f.e. CREATE\_COMPLETE, CREATE\_IN\_PROGRESS), Reason (User initiated))
+%     - costs:
+%       - AWS::*, Alexa::* and Custom::* are free
+%       - 3rd party providers cost stuff
+%     - "Naming resources restricts the reusability of templates and results in naming conflict when an update causes a resource to be replaces" [https://aws.amazon.com/cloudformation/faqs/] -> naming is not possible for all components
+% ---
+% Heat:
+%   approach:
+%     - declarative
+%     - compatible to AWS CloudFormation
+%     - OpenStack-native REST API, CloudFormation-compatible Query-API
+%     - either cli or api directly
+%     - YAML
+%     - python app
+%     - heat cli accesses heat-api, which sends API-requests via RPC to heat-engine, which does the heavy lifting
+%     - python-heatclient lib (== api)
+%   hidden-dependencies:
+%   structure:
+%     - parameters % input parameters, typed
+%         image\_type:
+%           type: string % every parameter is typed
+%           label: Image Type
+%           description: Type of instance (flavor) to be used
+%           default: m1.small % optional default value
+%           %hidden: true % optional attribute to hide secrets from users who request information about the deployed stack
+%           constraints:
+%             - allowed\_values: [ m1.medium, m1.large, m1.xlarge ]
+%               description: Value must be one of m1.medium, m1.large or m1.xlarge.
+%             %- allowed\_pattern: "[a-zA-Z0-9.]+"
+%           %immutable: true % defines whether the param is updatable
+%     - resources % typed, f.e. OS::NOVA::Server
+%         my\_instance:
+%           type: OS::Nova::Server
+%           properties:
+%             key\_name: ...
+%             image: ...
+%             flavor: { get\_param: image\_type }
+%           %metadata
+%           %depends\_on
+%           %update\_policy
+%           %deletion\_policy
+%           %external\_id
+%           %condition
+%     - outputs
+%         instance\_ip:
+%           description: The IP address of the deployed instance
+%           value: { get\_addr: [my\_instance, first\_address] } % alternative: get\_file: URL/path and get\_param or get\_resource (like named port)
+%           %condition % conditional output is supported
+%     %- conditions % declaration of conditions
+%     %- parameter\_groups % a declaration of input parameter groups and order
+%   validation/error-reporting:
+%     - heat template-validate: used to validate a template, with inserting templated values and ignoring specific errors -> feels like dry-run
+%   aspects to learn:
+%     - YAML
+%     - HOT structure, types, functions and how each components attributes are named
+%   tooling/ecosystem:
+%     - cli
+%     - python-lib
+%   optimizations: % none?
+%   extensibility:
+%     - there is NO app catalog (\url{http://lists.openstack.org/pipermail/openstack-operators/2017-July/013965.html}) for heat templates
+%   guarantees: % none?
+%   reusability of components:
+%     - works with cloudformation stuff, and is closely related to it
+%   visibility:
+%     - see cloudformation
+%   viscosity:
+%     - see cloudformation (?)
+%   consistency:
+%     - similar to cloudformation, but with openstack types
+%   notes:
+%     - imitates AWS Cloudformation on several occasions (types, structures, wording (f.e. stack))
+%     - there is a openstack REST-API AND a CFN-API
+%     - cli-command names are confusing
+%     - "heat" makes the clouds rise
+% ---
+% Terraform:
+%   approach:
+%     - declarative
+%     - plugins; allow for different providers
+%     - dependencies possible
+%     - state of real infrastructure in "state file" == source of truth; remote state backend feature; file is refreshed on every "terraform apply"
+%     - terraform cloud to prevent race conditions
+%     - init command downloads and installs required provider plugins
+%     - creates execution plan
+%     - own format (HCL), but JSON is also supported
+%     - architecture
+%       - core does state mgmt, constructs resource graph and discovers and communicates with plugins via rpc
+%       - plugins are binaries as well and are invoked via rpc
+%       - plugins should initialize included libraries to make api calls, authenticate and define resources that map to services and run commands/scripts
+%       - terraform init checks configuration files to determine which plugins are necessary (and saves current version of plugin until init is ran again)
+%       - providers are downloaded from tf-registry, but network- or file-system-mirror can be configured
+%       - if no provider is set, local lookups are done by default as well (both global and current dir)
+%       - dev overrides possible, without failsafes
+%   hidden-dependencies:
+%     - HCL requirement just adds another layer, and migration between clouds is still a lot of manual work
+%     - cloud-specific cli (like aws-cli)
+%     - terraform init downloads additional modules (but internet connection is already required for most providers)
+%     - sometimes requires the cloud-specific cli as well
+%   structure:
+%     - main.tf ; contains:
+%       - terraform configuration/settings (provider, f.e. aws-cli)
+%       - provider-specific configuration like region, profile
+%       - resources -> 'resource "<type>" "<name>" {...}' -> id == <type>.<name>
+%     - variables.tf ; contains
+%       - input variables (typed, via param), used with 'var.<variablename>'
+%     - outputs.tf ; contains which values should be output when apply is ran
+%   validation/error-reporting:
+%     - `terraform fmt`: format configuration
+%     - `terraform validate`: validate configuration
+%   aspects to learn:
+%     - HCL (complete "language", similar but still different to JSON) -> alternatively, JSON can be used as well
+%     - provider-specific resources and their attributes
+%   tooling/ecosystem:
+%     - terraform cli
+%     - terraform registry for 3rd party
+%   optimizations:
+%     - parallel execution of actions whenever possible (can even be limited)
+%   extensibility:
+%     - plug-ins / external modules
+%   guarantees:
+%     - none - no rollback when in state-migration and facing an error (https://news.ycombinator.com/item?id=19472485)
+%   reusability of components:
+%     - providers, plug-ins \& modules
+%   visibility:
+%     - all *.tf files are considered and read, so it is possible to split as much as you want - in the same directory
+%     - components in subfolders should be made tf-modules
+%       - at least one module; called root-module in the main dir
+%       - modules can be called multiple times
+%       - modules can have input variables, which can be passed from the caller (used with 'module.<modulealias>.<variabelname>')
+%       - modules are defined by source-uri, which might be a relative dir-path, http, git, registry, s3-bucket ...
+%     - visibility depends on module-structure
+%   viscosity:
+%     - updates in all directions seem to be quite easy or at least the tooling is there - for debugging as well
+%   consistency:
+%     - providers and modules are developed by different people, so they tend to be inconsistent.
+%     - overall structure is predefined
+%   notes:
+%     - track resources with state
+%     - resusable components == modules
+%     - tells when resources are updated and when they are replaced and on the latter which attribute causes the replacement
+%     - Problem with statefile; changed region after deployment, then went for destroy -> terraform didnt find the deployment and deleted it from the statefile after resetting the value, making it undeletable. Manually restoring the statefile was necessary to be able to destroy the deployment.
+%     - purpose of the statefile:
+%       - mapping between non-named resources to generated name
+%       - how should terraform know to delete a resource (and dependencies and their destruction order) when its not in the config file any more?
+%       - for larger infrastructure, querying everything for each action is too much overhead and might become a problem with rate limits
+%       - statefile is only useful for single-user usage, for teams a remote-state-backend is used like tf-cloud, consul, aws-s3, azure blob, gcp storage, alibaba cloud etc
+%         - latest state present, resource locking == state locking, so no corruption during writing
+%       - local state contains plain initial passwords, remote state might be encrypted
+%       - only tf-internal use recommended, use json flag for output commands
+%     - multiple environments/workspaces sometimes supported; dev, prod, local etc.
+%     - wants every external file to be translated to own file-format, f.e. dockerfile \url{https://learn.hashicorp.com/tutorials/terraform/docker-build?in=terraform/docker-get-started}
+% ---
+% Tosca/cloudify:
+%   approach:
+%     - webapp, manager with REST-API, accessed via webgui and/or cli
+%     - manager, database and messaging queue -> either hosted on one box (vm/container) or clustered (all services on all nodes or each service on different node)
+%       - manager:
+%         - event-stream processing
+%         - secured requests
+%         - metric/logs/events queueing
+%         - aggregation and analysis
+%         - task execution/queueing, can be automated based on live streams of events or aggregated data
+%         - interaction with cloudify agents
+%     - has optional agents installable via ssh/winrm or f.e cloud-init or plugin (temporary download link for the install script) or agent preinstalled in image or no agent at all
+%       - execute orchestration operations locally
+%       - collect metrics and report them to manager
+%     - blueprints == app-description
+%       deployment == instance of app (but with its own scaling etc)
+%   hidden-dependencies:
+%     - dedicated manager-server, global for complete infrastructure is needed (partial access is done via permissions...)
+%   structure:
+%     - how to actually write components and templates is hard to find in the docs -> \url{https://docs.cloudify.co/latest/developer/writing_plugins/creating-your-own-plugin/#writing-plugin-operations}
+%   validation/error-reporting:
+%     - ide linting \& type validation
+%   aspects to learn:
+%     - YAML
+%     - TOSCA/cloudify standard
+%   tooling/ecosystem:
+%     - ide-autocompletion
+%     - examples for aws, terraform, azure, gcp and openstack, but all with predefined code (since its hard to create that)
+%   optimizations:
+%     - parallelism, resource graph
+%   extensibility:
+%     - plugins can be extended, and written by yourself, blueprints
+%   guarantees: none?
+%   reusability of components:
+%     - plugins
+%     - blueprints
+%   visibility:
+%     - depends on structure of project
+%   viscosity:
+%     - updates don't seem to considered properly somehow
+%   consistency:
+%     - completely different for different providers, even the api-call is completely different
+%   notes:
+%     - see notes.md
+% ---
+% Tosca/simple-profile:
+%   approach:
+%     - YAML
+%     - namespaced imports (of type definitions) possible
+%       prefixes:
+%       - tosca: from tosca-definitions
+%       - <none>: try to find in tosca namespace first, then lookup in current file (tosca.nodes.Compute == Compute)
+%       - <namespaced-import>: imported file, alias for namespace defined there
+%     - types, automated type-matching (same name for instances of different types -> tosca automatically matches correct type)
+%     - property types:
+%       - string (default)
+%       - integer
+%       - float
+%       - boolean
+%       - timestamp
+%       - null
+%     - other types:
+%       - range [lower, upper|UNBOUNDED] -> can be used for template values, like port-numbers etc ("constraints")
+%       - list [ elem1, elem2, ...] == yaml-list (isnt this normal yaml stuff?) f.e.
+%         something:
+%           type: list
+%           entry_schema:
+%             description: ...
+%             type: <sometype>
+%             [constraints]: ..<list>..
+%       - map: normal key-value pair, shorthanded with {}
+%       - scalar-unit: <scalar> <unit> % whitespace between is allowed but not required, case-insensitive
+%         types:
+%         - scalar-unit.size == 1 B, ..., 2 TiB
+%         - scalar-unit.time == 1d, 2h, ..., 3ns
+%         - scalar-unit.frequency == 1Hz, ..., 5GHz
+%         - scalar-unit.bitrate == 1bps, ..., 2GBps, 3TiBps
+%       - node-states:
+%         - initial: not created, only defined in template
+%         - creating -> created
+%         - configuring -> configured
+%         - starting -> started
+%         - stopping -> configured
+%         - deleting -> not longer tracked
+%         - error
+%       - relationship-states: % -> would require additional states?
+%         - initial: relationship is not yet created, only exists in template
+%       - special directives:
+%         - substitute: mark node template as abstract, orchestrator must substitue with appropriate template
+%         - select: mark node template as abstract, orchestrator must select a node of this type from its inventory (based on defined constraints ("node_filter"))
+%       - network-names: % used in tosca.capabilities.Endpoint capability type
+%         - PRIVATE
+%         - PUBLIC
+%     - reusable modeling definitions:
+%       - description: <string>
+%       - metadata: <map>
+%       - constraint: [<operators>] % usable on integer, float, timestamp, string, version and scalar-unit % "schema" is special
+%       - <property-filter-definition>, f.e. % see structure
+%         node_filter:
+%           properties:
+%             - <something>
+%           capabilities: % first checked whether cap is a symbolic name and second if it is a type name
+%             - <something>
+%       - repository: defined by [ description, url, credential ], but only url is required
+%       - <artifact_name>: defined by [ type, file, [deploy_path,checksum,...]] % could contain simple txt-files or disk image with checksum (example in spec at 3.6.7.3)
+%       - imports: [uris] % see prefixes and namespaces
+%       - <property_name>: [ type, description, required, default, status (supported), constraints, key_schema, entry_schema, external-schema, metadata ]
+%       - <attribute_name> [ type, description, default, status, key_schema, entry_schema ]
+%       - output_name: [ [SELF|SOURCE|TARGET], attribute_name, ...] % named output
+%       - operation implementation, <operation_name>: [ primary (f.e. if primary script in scar file), dependencies (other operations), operation_host ([SELF|HOST|SOURCE|TARGET|ORCHESTRATOR]), timeout] 
+%       - operation, <operation_name>: [ description, implementation (<operation implementation>), inputs, outputs ] % execute script or command
+%       - (similar to operations) notification, <notification_name>: [ description, implementation, outputs ]
+%       - interface: [ inputs, operations, notifications ]
+%       % form here onwards, only the typenames are listed
+%       - event filter
+%       - trigger definition
+%       - activity
+%       - set state of node by activity
+%       - call operation activity
+%       - inline workflow
+%       - assertion
+%       - condition clause (and, or, not, assert)
+%       - workflow precondition
+%       - workflow step
+%       % type-specific definitions:
+%       - entity type schema
+%       - capability
+%       - requirement
+%       - artifact
+%       - interface type
+%       - data type % f.e. phone number
+%       - capability type
+%       - requirement type
+%       - relationship type
+%       - group type
+%       - policy type
+%       % template-specific definitions
+%       - capability assignment
+%       - requirement assignment
+%       % node template
+%       % relationship template
+%       % group definition
+%   hidden-dependencies:
+%   structure: % how tosca works https://docs.oasis-open.org/tosca/TOSCA/v2.0/csd03/TOSCA-v2.0-csd03.html#_Toc56506180
+%     - my_node_template
+%         requirements:
+%         - host:
+%             node_filter:
+%               capabilities:
+%               - host:
+%                   properties:
+%                   - num_cpus: { in_range: [1,4] }
+%                   - mem_size: {greater_or_equal: 512MB }
+%   validation/error-reporting:
+%   aspects to learn:
+%     - YAML (since v2)
+%     - tosca % there is tosca v1 and v2, but v2 seems to be a copy of v1 so far... but it feels a bit more concise/readable in its structure | v1 == xml, 2v == yaml
+%     - tosca simple profile % actually, this is the more important standard, tosca itself is about more abstract stuff
+%     - one-time setup of "everything-as-a-service", then only the derived types etc are required to learn
+%   tooling/ecosystem:
+%     - winery, vinothek -> docker image not working
+%     - (cloudify)
+%   optimizations:
+%     - none?
+%   extensibility:
+%     - very flexible, as the standard can be extended a lot
+%   guarantees:
+%     - none?
+%   reusability of components:
+%     - type definitions can be reused
+%     - template definitions can be reused
+%     - csar application archive format
+%   visibility:
+%     - definitions, types, plans, etc feel hard to distinguish
+%   viscosity:
+%     - definitions have version-fields
+%     - updatability seems great so far.
+%   consistency:
+%     - really great
+%   notes:
+%     - where does yaml-schema fit in? this seems to define its own meta-schema?
+%     - cloudify and alien4cloud used tosca before spec reached final state: https://gitter.im/ystia/yorc?at=5e3b29bfbfe65274eae0f3d0
+% ---
+% % really strange documentations:
+% ystia / yorc : only for compute, disk, vpc and public ip (but on many providers like aws, gcp, openstack, ...) \& k8s
+% alien4cloud : many providers like openstack, slurm, hosts pool, gcp, aws, k8s
+% ---
+% there are two types so far:
+% - cli, where the dsl is "not perfect" (cloudformation, heat)
+%   - hcl vs yaml https://xkcd.com/927/
+%     - (?) hcl to json is hard, yaml to json is easy
+%     - hcl is optimized for terraform and other hashicorp products
+%     - hcl tooling isn't good (even basic linting doesnt exist/work)
+% - "perfect dsl" without cli tools and undefined everything as a service (tosca)
+% potential main goals:
+% - implement cli tool for tosca(-extension) (and design corresponding everything-as-a-service reference definitions)
+%   - init command generates definitions
+%   - minify removes unused definitions
+% - implement tosca parser for terraform/hcl
+% additional goals possible:
+% - implement one or two reference providers (direct)
+% - 
+% ---
+% implementation details:
+% - grpc as rpc between modules / for plugin-architecture, requires server and clients to be running in parallel - how to start on demand?
+%   - ssl/tls by default
+%   - grpc-web might enable gui-stuff
+% - statefile? namespacing for performance?
+% ```
+% ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-%TODO how does deprovisioning work
-%TODO how are existing resources referenced
-%TODO how to handle secrets in outputs
-%TODO how to handle secrets in templates
-%TODO noecho in cloudformation still shows stuff in output, metadata etc -> how to provide a secure way not giving away credentials?
+% %TODO how does deprovisioning work
+% %TODO how are existing resources referenced
+% %TODO how to handle secrets in outputs
+% %TODO how to handle secrets in templates
+% %TODO noecho in cloudformation still shows stuff in output, metadata etc -> how to provide a secure way not giving away credentials?
 
-Languages to compare:
-- CloudFormation
-- Heat
-- Terraform
-- TOSCA/cloudify
-- TOSCA/Simple-Profile
+% model: formal representation of entities and relationships [Stachowiak, Allgemeine Modelltheorie]
+%   - abstraction: don't desribe all attributes, only the relevant ones
+%   - isomophism: statements for model entities hold for the real world
+%   - pragmatism: model is build to fulfill a purpose for set of users, during certain time, for certain activities
 
-model: formal representation of entities and relationships [Stachowiak, Allgemeine Modelltheorie]
-  - abstraction: don't desribe all attributes, only the relevant ones
-  - isomophism: statements for model entities hold for the real world
-  - pragmatism: model is build to fulfill a purpose for set of users, during certain time, for certain activities
+% modeling language is defined by:
+% - abstract syntax -> which elements exist in a model and how can they be combined
+% - concrete syntax -> how are the model elements and their relations expressed
+% - semantics -> what is the meaning of each model element
 
-modeling language is defined by:
-- abstract syntax -> which elements exist in a model and how can they be combined
-- concrete syntax -> how are the model elements and their relations expressed
-- semantics -> what is the meaning of each model element
+% approach:
+% - model-based (original goal is documentation, communication and analysis, model is secondary artefact)
+% - model-driven (model is used to generate code or being interpreted for extracting actions, model is primary artefact)
+%   - increased development speed via automated transformations
+%   - defined output, repeatable process
+%   - seperation of concerns using views
+%   - reuse of transformations
 
-approach:
-- model-based (original goal is documentation, communication and analysis, model is secondary artefact)
-- model-driven (model is used to generate code or being interpreted for extracting actions, model is primary artefact)
-  - increased development speed via automated transformations
-  - defined output, repeatable process
-  - seperation of concerns using views
-  - reuse of transformations
-
-aspects of mdsd workflow:
-- always:
-  - define modeling language (abstract and concrete syntax)
-  - tool support to define models
-  - persist models in files or dbs
-  - tranform models to text
-- often:
-  - transform model to model
-  - transform text to model
-  - analyze and interpret models
-  - automate workflows from single steps
+% aspects of mdsd workflow:
+% - always:
+%   - define modeling language (abstract and concrete syntax)
+%   - tool support to define models
+%   - persist models in files or dbs
+%   - tranform models to text
+% - often:
+%   - transform model to model
+%   - transform text to model
+%   - analyze and interpret models
+%   - automate workflows from single steps
 
 
-domain expert:
-- uses modeling language to create models
-technology experts:
-- creates modeling languages and transformations
+% domain expert:
+% - uses modeling language to create models
+% technology experts:
+% - creates modeling languages and transformations
 
-external dsl:
-- dedicated toolkit to create modeling language
-internal dsl:
-- customize existing programming or modeling language (usually textual)
-- idea: define an api in an ordinary programming language such that accessing this API looks like using specialized dsl
+% external dsl:
+% - dedicated toolkit to create modeling language
+% internal dsl:
+% - customize existing programming or modeling language (usually textual)
+% - idea: define an api in an ordinary programming language such that accessing this API looks like using specialized dsl
 
-metamodel: model of modeling language, defines
-- concepts that can be used to build model
-- their attributes
-- how they can be combined
-- their meaning (usually not though)
+% metamodel: model of modeling language, defines
+% - concepts that can be used to build model
+% - their attributes
+% - how they can be combined
+% - their meaning (usually not though)
 
-why meta models: allows to reuse technology for
-- storing models in files
-- storing models in dbs
-- creating a form-based editor
-- creating a graphical editor
-- generating code from models
-- transforming models into other models
-metamodel is used to describe abstract syntax, not concrete syntax!
+% why meta models: allows to reuse technology for
+% - storing models in files
+% - storing models in dbs
+% - creating a form-based editor
+% - creating a graphical editor
+% - generating code from models
+% - transforming models into other models
+% metamodel is used to describe abstract syntax, not concrete syntax!
 
-MOF Meta Object Facility: domain specific modeling language to describe metamodels
-contains
-- classes (meta-class)
-- properties/attributes (meta-...)
-- associations (meta-...)
-- generalisation (meta-...)
-- packages (meta-package)
-There is a meta-metamodell: mof described with mof
-original - model - metamodel - meta-metamodel
+% MOF Meta Object Facility: domain specific modeling language to describe metamodels
+% contains
+% - classes (meta-class)
+% - properties/attributes (meta-...)
+% - associations (meta-...)
+% - generalisation (meta-...)
+% - packages (meta-package)
+% There is a meta-metamodell: mof described with mof
+% original - model - metamodel - meta-metamodel
 
-types of concrete syntax:
-- diagram
-- text (programming language)
-- tables
-- trees and forms
-- XML
-- custom
-- combinations
+% types of concrete syntax:
+% - diagram
+% - text (programming language)
+% - tables
+% - trees and forms
+% - XML
+% - custom
+% - combinations
 
-why textual languages are popular for computer science:
-- easy to edit (cut, copy, paste)
-- easy to create parsers and reuse existing SE tools
-- accessible with console based tools
-- single input type; can be worked on with only using the keyboard
-- compare and merge
-- version control
-- no special tools needed (only simple text editor)
-- can be supported by IDEs
-bad:
-- complex dependencies hard to recognize
+% why textual languages are popular for computer science:
+% - easy to edit (cut, copy, paste)
+% - easy to create parsers and reuse existing SE tools
+% - accessible with console based tools
+% - single input type; can be worked on with only using the keyboard
+% - compare and merge
+% - version control
+% - no special tools needed (only simple text editor)
+% - can be supported by IDEs
+% bad:
+% - complex dependencies hard to recognize
 
-approaches:
-- parsing:
-  - concrete syntax primary artifact
-  - concrete syntax (text) is directly edited and converted (parsed) to an AST (model)
-- projection
-  - abstract syntax primary artifact
-  - AST (model) is rendered to concrete syntax (text), edit actions directly on AST (model) (AST=Abstract Syntax Tree)
+% approaches:
+% - parsing:
+%   - concrete syntax primary artifact
+%   - concrete syntax (text) is directly edited and converted (parsed) to an AST (model)
+% - projection
+%   - abstract syntax primary artifact
+%   - AST (model) is rendered to concrete syntax (text), edit actions directly on AST (model) (AST=Abstract Syntax Tree)
 
-what to compare:
-%http://www.cse.chalmers.se/~bergert/slides/guest\_lecture\_DSLs.pdf
-- abstract syntax: meta-model which defines parts/domain-concepts/model-elements and rules/validation of model
-- concrete syntax: representation of model (instances) f.e. in an editor
-- static semantics: evaluatable without executing/interpreting the model
-- dynamic semantics: what the model means or expresses
+% what to compare:
+% %http://www.cse.chalmers.se/~bergert/slides/guest\_lecture\_DSLs.pdf
+% - abstract syntax: meta-model which defines parts/domain-concepts/model-elements and rules/validation of model
+% - concrete syntax: representation of model (instances) f.e. in an editor
+% - static semantics: evaluatable without executing/interpreting the model
+% - dynamic semantics: what the model means or expresses
 
-what to compare them on:
-- kinds of DSLs: textual DSL, visual DSL, library in a programming language, configuration tool, wizard
-  - textual
-    - internal: library in an existing programming language
-    - exernal: seperate language
-  - visual
-    - configuration tool
-    - wizard
-- approach, f.e. templating, translation or term rewriting
-  - declarative, imperative
-- executability, hidden dependencies
-- optimizations; automatic hinting, execution optimization
-- extensibility -> quality
-- efficiency/lines-of-code -> quality
-- tooling (developing AND using) -> ecosystem
-- guarantees
-- reusability of components
-- error reporting -> error-proneness, progressive evaluation
-- aspects to learn / learning curve
-- viscosity; how hard is it to update stuff
-- visibility; how hard is it to find a certain part, is it clear where relations are
-- consistency
+% what to compare them on:
+% - kinds of DSLs: textual DSL, visual DSL, library in a programming language, configuration tool, wizard
+%   - textual
+%     - internal: library in an existing programming language
+%     - exernal: seperate language
+%   - visual
+%     - configuration tool
+%     - wizard
+% - approach, f.e. templating, translation or term rewriting
+%   - declarative, imperative
+% - executability, hidden dependencies
+% - optimizations; automatic hinting, execution optimization
+% - extensibility -> quality
+% - efficiency/lines-of-code -> quality
+% - tooling (developing AND using) -> ecosystem
+% - guarantees
+% - reusability of components
+% - error reporting -> error-proneness, progressive evaluation
+% - aspects to learn / learning curve
+% - viscosity; how hard is it to update stuff
+% - visibility; how hard is it to find a certain part, is it clear where relations are
+% - consistency
 
 
 [\url{https://www.opentosca.org/documents/Presentation\_TOSCA.pdf}]
 
-Two non-vendor-specifc standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \hl{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \hl{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be abandoned since then (at least neglected).
+Two non-vendor-specific standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \hl{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \hl{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be abandoned since then (at least neglected).
 \\
 Second, the \gls{toscaacr} standard was first published in 2013 by the \gls{oasisacr}. The latter is also responsible for well-known standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument, PKCS\#11, \gls{samlacr} and VirtIO so its name is well-known in the world of software. Additionally, its members are not only an overwhelming number of academic or governmental institutions but een more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, SAP and VMware [\url{https://www.oasis-open.org/committees/membership.php?wg\_abbrev=tosca, https://www.oasis-open.org/committees/tosca/obligation.php}]. The latest contribution was only one week before the time of writing, so its actively pursued and developed [\url{https://www.oasis-open.org/committees/documents.php?wg\_abbrev=tosca}].
 \\

@@ -1,15 +1,14 @@
 \chapter{Background}
 
-- 7-22 pages
-- research on history, "story" on the topic
-- introduce necessary science/engineering to understand approach.
-  - decide on what is commonly known and what not. -> %TODO supervisor should check on that
+% - 7-22 pages
+% - research on history, "story" on the topic
+% - introduce necessary science/engineering to understand approach.
+%   - decide on what is commonly known and what not. -> %TODO supervisor should check on that
 
----
+% ---
 
 %%%%% start writing here!
 
-%TODO chapter introduction
 Searching online for \gls{iacacr} quickly leads to the terms such as \textquote{snowflake}, \textquote{pet} or \textquote{cattle}. \url{https://dzone.com/articles/martin-fowler-snowflake}
 In this context, the former two are synonyms and refer to directly/manually managed (configured and maintained) machines. Typically, they are unique, can never be down and "hand fed" - it is not feasable to redeploy them. \url{http://cloudscaling.com/blog/cloud-computing/the-history-of-pets-vs-cattle/} The latter is used when referring to machines, that are never directly interacted with; All administrative interactions with them are automated.
 The approach of treating machines as cattle aims to unify and therefore reduce the administration effort for large amounts of servers. When operating on such larger scales, it is easier to maintain some kind of automation framework and unify the deployment of machines than to administrate each server manually. At the same time, cattle-machines are replacable by design, which is not the case for pet-machines.
@@ -137,7 +136,7 @@ Cloud computing is able to generate these high rates of revenue because they tak
 Apart from financial and developer efficiency, clouds have a long list of advantages and disadvantages [Domain-specific language for infrastructure as code]. %TODO Leave like this?
 \newline
 The high degree of automation and possibilities for scaling within a cloud made it possible to scale automatically. The time required to provision (and deprovision) new nodes plays an important role for autoscaling. This is where containers come in.
-%TODO Where to put the following part? Its a introduction between clouds and IaC...
+%TODO Where to put the following part? Its an introduction between clouds and IaC...
 %\newline
 %Since all cloud-providers have their own self-service portals, \gls{apiacr}s and in most cases different features, migration between providers for whatever reason are often very difficult and time consuming.
 
