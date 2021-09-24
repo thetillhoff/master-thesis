@@ -2,6 +2,7 @@ package tosca_orchestrator
 
 import (
 	"github.com/thetillhoff/eat/pkg/hardware_inspection"
+	"github.com/thetillhoff/eat/pkg/ssh"
 )
 
 var (
@@ -12,4 +13,5 @@ func Debug() {
 	debug = true
 
 	hardware_inspection.Debug()
+	ssh.Debug()
 }
