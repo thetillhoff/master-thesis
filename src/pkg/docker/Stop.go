@@ -24,7 +24,7 @@ func Stop(containerID string) {
 
 	containers, err = cli.ContainerList(ctx, types.ContainerListOptions{})
 	if err != nil {
-		log.Fatalln("ERR Couldn't retrieve list of containers:", err)
+		log.Fatalln("ERR Can't retrieve list of containers:", err)
 	}
 
 	for _, container := range containers {
@@ -33,7 +33,7 @@ func Stop(containerID string) {
 			// Due to autoremove set at ContainerCreate, removal is done automatically -> only stopping it is required
 			err = cli.ContainerStop(ctx, containerID, &Timeout)
 			if err != nil {
-				log.Fatalln("ERR Couldn't stop docker container:", err)
+				log.Fatalln("ERR Can't stop docker container:", err)
 			}
 			break
 		}

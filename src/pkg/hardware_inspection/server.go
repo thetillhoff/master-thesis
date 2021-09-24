@@ -36,14 +36,14 @@ func Start() {
 
 	pwd, err = os.Getwd()
 	if err != nil {
-		log.Fatalln("ERR Couldn't retrieve working directory:", err)
+		log.Fatalln("ERR Can't retrieve working directory:", err)
 	}
 
 	// Setting correct path for leaseFile
 	leasePath = path.Join(pwd, buildSrc, leasePath)
 
 	if err := os.Truncate(leasePath, 0); err != nil {
-		log.Fatalln("ERR Couldn't remove contents of leaseFile;", err)
+		log.Fatalln("ERR Can't remove contents of leaseFile;", err)
 	}
 
 	// docker.BuildImage(buildSrc, imageName, true) // already done during init

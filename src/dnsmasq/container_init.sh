@@ -28,7 +28,7 @@ if [ "${DHCP}" = "proxy" ]; then
   sed -i "s%dhcp-range=.*$%dhcp-range=${BINDIP},proxy%" /etc/dnsmasq.conf
 elif [ "${DHCP}" = "on" ]; then
   # active DHCP configuration requires lower and upper bound of range and lease-time
-  sed -i "s%dhcp-range=.*$%dhcp-range=$(echo ${BINDIP} | cut -d'.' -f1-3).2,$(echo ${BINDIP} | cut -d'.' -f1-3).254,2m%" /etc/dnsmasq.conf
+  sed -i "s%dhcp-range=.*$%dhcp-range=$(echo ${BINDIP} | cut -d'.' -f1-3).2,$(echo ${BINDIP} | cut -d'.' -f1-3).254,12h%" /etc/dnsmasq.conf
 else
   echo "Invalid value for \$DHCP: ${DHCP}."
   exit 1

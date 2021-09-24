@@ -30,6 +30,7 @@ import (
 	"github.com/docker/docker/api/types/mount"
 	"github.com/spf13/cobra"
 	"github.com/thetillhoff/eat/pkg/docker"
+	"github.com/thetillhoff/eat/pkg/ssh"
 )
 
 // initCmd represents the init command
@@ -48,40 +49,45 @@ eat init`,
 			log.Println("INF debug:", debug)
 		}
 
-		var containerPath string = "live-os"
+		// Check if ssh keys exist - create them if not
+		ssh.CheckKeys()
 
 		docker.Init()
 
-		// Only create the iso if it doesn't exist already
-		if _, err := os.Stat("dnsmasq/isos/debian-live-11.0.0-custom.iso"); os.IsNotExist(err) {
-			docker.BuildImage(containerPath, "live-os-builder", true)
+		// Instead of only creating the iso if it doesn't exist already, this forces building it and overwriting the previous one
+		// if _, err := os.Stat("dnsmasq/isos/debian-live-11.0.0-custom.iso"); os.IsNotExist(err) {
+		docker.BuildImage("live-os", "live-os-builder", true)
 
-			pwd, err := os.Getwd()
-			if err != nil {
-				log.Fatalln("ERR Couldn't retrieve working directory:", err)
-			}
-			sourcePath := path.Join(pwd, containerPath, "/container")
-
-			containerID := docker.StartWithAutoStop("live-os-builder", &container.HostConfig{
-				AutoRemove: true,
-				Mounts: []mount.Mount{
-					{
-						Type:   mount.TypeBind,
-						Source: sourcePath,
-						Target: "/container",
-					},
-				},
-			})
-			docker.Wait(containerID)
-
-			log.Println("SUC Created live-os iso-file at '" + sourcePath + "'.")
-
-			// mv live-os/custom.iso dnsmasq/isos/
-			err = os.Rename(path.Join(sourcePath, "debian-live-11.0.0-custom.iso"), "dnsmasq/isos/debian-live-11.0.0-custom.iso")
-			if err != nil {
-				log.Fatal(err)
-			}
+		pwd, err := os.Getwd()
+		if err != nil {
+			log.Fatalln("ERR Can't retrieve working directory:", err)
 		}
+
+		containerID := docker.StartWithAutoStop("live-os-builder", &container.HostConfig{
+			AutoRemove: true,
+			Mounts: []mount.Mount{
+				{
+					Type:   mount.TypeBind,
+					Source: pwd + "/live-os/container",
+					Target: "/container",
+				},
+				{
+					Type:   mount.TypeBind,
+					Source: pwd + "/id_rsa.pub",
+					Target: "/ssh/id_rsa.pub",
+				},
+			},
+		})
+		docker.Wait(containerID)
+
+		log.Println("SUC Created live-os iso-file at '" + pwd + "/live-os'.")
+
+		// mv live-os/custom.iso dnsmasq/isos/
+		err = os.Rename(path.Join(pwd+"/live-os/container", "debian-live-11.0.0-custom.iso"), "dnsmasq/isos/debian-live-11.0.0-custom.iso")
+		if err != nil {
+			log.Fatalln(err)
+		}
+		// }
 
 		// Build dnsmasq container image (without cache)
 		// TODO check if container image exists. Needs research on how the docker cli detects changes in the docker context

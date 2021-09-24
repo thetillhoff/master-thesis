@@ -27,7 +27,7 @@ func getMemInfo(ipAddress string) uint64 {
 	// Read full content of response
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln("ERR Couldn't read response body;", err)
+		log.Fatalln("ERR Can't read response body;", err)
 	}
 	resp.Body.Close()
 
@@ -39,7 +39,7 @@ func getMemInfo(ipAddress string) uint64 {
 	line = strings.ReplaceAll(line, " ", "")
 	memory, err = bytefmt.ToBytes(strings.Split(line, ":")[1])
 	if err != nil {
-		log.Fatalln("ERR Couldn't parse as tosca.size '"+strings.Split(line, ":")[1]+"';", err)
+		log.Fatalln("ERR Can't parse as tosca.size '"+strings.Split(line, ":")[1]+"';", err)
 	}
 
 	if debug {

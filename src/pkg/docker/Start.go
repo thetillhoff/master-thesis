@@ -23,7 +23,7 @@ func Start(imageName string, hostconfig *container.HostConfig, env ...string) st
 
 	// pwd, err := os.Getwd()
 	// if err != nil {
-	// 	log.Fatalln("ERR Couldn't retrieve working directory:", err)
+	// 	log.Fatalln("ERR Can't retrieve working directory:", err)
 	// }
 
 	// Create Container
@@ -34,13 +34,13 @@ func Start(imageName string, hostconfig *container.HostConfig, env ...string) st
 		Tty:          true,
 		AttachStdout: true,
 		AttachStderr: true,
-		// AttachStdin:  true,
-		// OpenStdin:    true,
-		Env: env,
+		AttachStdin:  debug, // This ensures input is possible when in debug mode
+		OpenStdin:    debug,
+		Env:          env,
 	}, hostconfig,
 		nil, nil, "")
 	if err != nil {
-		log.Fatalln("ERR Couldn't create docker container:", err)
+		log.Fatalln("ERR Can't create docker container:", err)
 	}
 
 	// Start previously created container

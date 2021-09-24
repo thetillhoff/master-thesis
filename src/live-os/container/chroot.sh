@@ -1,11 +1,11 @@
 #!/bin/sh
 
-# installing lighttpd
-apt update
-apt upgrade -y
-apt autoremove -y
-apt install -y lighttpd openssh-server
-apt clean
+# installing applications
+apt-get update
+apt-get upgrade -y
+apt-get install -y lighttpd openssh-server net-tools # net-tools contains netstat
+apt-get autoremove -y
+apt-get clean
 
 # creating autostart script
 echo """#!/bin/sh

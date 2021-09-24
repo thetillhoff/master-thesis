@@ -26,7 +26,7 @@ func getCpuInfo(ipAddress string) int {
 	// Read full content of response
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln("ERR Couldn't read response body;", err)
+		log.Fatalln("ERR Can't read response body;", err)
 	}
 	resp.Body.Close()
 
@@ -43,7 +43,7 @@ func getCpuInfo(ipAddress string) int {
 		if strings.HasPrefix(line, "cpucores:") {
 			cores, err = strconv.Atoi(strings.Split(line, ":")[1])
 			if err != nil {
-				log.Fatalln("ERR Couldn't parse cpu cores;", err)
+				log.Fatalln("ERR Can't parse cpu cores;", err)
 			}
 
 			break

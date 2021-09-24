@@ -23,19 +23,18 @@ unsquashfs -f -d ${UNSQUASHEDFS} ${EX_ISO}/live/filesystem.squashfs
 cp /etc/resolv.conf ${UNSQUASHEDFS}/etc/
 cp /container/chroot.sh ${UNSQUASHEDFS}/
 #mount -t proc -o bind /proc ${UNSQUASHEDFS}/proc
-mount -o bind /dev/pts ${UNSQUASHEDFS}/dev/pts
+#mount -o bind /dev/pts ${UNSQUASHEDFS}/dev/pts # <- always ends with permission denied
 #mount none -t devpts /dev/pts
 
 # Edit live system
 chroot ${UNSQUASHEDFS} /chroot.sh # for manual edits run `chroot ${UNSQUASHEDFS}` and later on `exit`
 # Add public key for ssh login
 mkdir -p ${UNSQUASHEDFS}/home/user/.ssh/
-cp /container/ssh/id_rsa.pub ${UNSQUASHEDFS}/home/user/.ssh/authorized_keys
-# TODO install open-ssh as well?
+cp /ssh/id_rsa.pub ${UNSQUASHEDFS}/home/user/.ssh/authorized_keys
 #bash # for debugging; have shell open for manual changes, after `exit`, this script continues
 
 # Finish editing live system
-umount "${UNSQUASHEDFS}/dev/pts"
+#umount "${UNSQUASHEDFS}/dev/pts"
 rm ${UNSQUASHEDFS}/chroot.sh
 rm ${UNSQUASHEDFS}/etc/resolv.conf
 

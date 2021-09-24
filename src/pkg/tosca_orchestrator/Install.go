@@ -46,7 +46,7 @@ func Install(archive csar.CSAR, inputs []string, bindIp string) {
 
 	// Parse macAddresses from Input and retrieve hardware information
 	if value, ok := archive.ServiceTemplate.TopologyTemplate.Inputs["macAddresses"].Value.(string); !ok {
-		log.Fatalln("ERR Couldn't parse input 'macAddresses' to slice")
+		log.Fatalln("ERR Can't parse input 'macAddresses' to slice")
 	} else {
 		macAddresses := strings.Split(value, ",")
 

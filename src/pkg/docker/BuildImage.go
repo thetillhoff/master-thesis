@@ -20,7 +20,7 @@ func BuildImage(contextPath string, imageName string, noCache bool) {
 	buildContextFilePath := createBuildContext(contextPath)
 	buildContextFile, err := os.Open(buildContextFilePath)
 	if err != nil {
-		log.Println("ERR Couldn't open buildcontext at '"+buildContextFilePath+"':", err)
+		log.Fatalln("ERR Can't open buildcontext at '"+buildContextFilePath+"':", err)
 	}
 
 	// Build container image
@@ -35,7 +35,7 @@ func BuildImage(contextPath string, imageName string, noCache bool) {
 			// BuildArgs: make(map[string]*string),
 		})
 	if err != nil {
-		log.Fatalln("ERR Couldn't create container image:", err)
+		log.Fatalln("ERR Can't create container image:", err)
 	}
 	buildContextFile.Close()
 	os.Remove(buildContextFilePath)

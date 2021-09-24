@@ -67,6 +67,8 @@ func wakeVM(macAddress string) {
 		output string
 	)
 
+	log.Println("INF Simulating wol...")
+
 	// Since this highly depends on the hypervisor, This needs to be split for windows (hyperV) and linux (kvm).
 	switch runtime.GOOS {
 	case "windows":

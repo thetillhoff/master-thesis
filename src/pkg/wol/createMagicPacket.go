@@ -27,7 +27,7 @@ func createMagicPacket(mac string) MagicPacket {
 
 	hardwareAddress, err := net.ParseMAC(mac)
 	if err != nil {
-		log.Fatalln("ERR Couldn't parse mac '"+mac+"';", err)
+		log.Fatalln("ERR Can't parse mac '"+mac+"';", err)
 	}
 
 	// Copy bytes from the returned HardwareAddr -> a fixed size MACAddress

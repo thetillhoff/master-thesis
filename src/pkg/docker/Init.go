@@ -22,7 +22,7 @@ func Init() {
 		// Create docker client
 		cli, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 		if err != nil {
-			log.Fatalln("ERR Couldn't create docker client:", err)
+			log.Fatalln("ERR Can't create docker client:", err)
 		}
 	}
 

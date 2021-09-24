@@ -70,7 +70,7 @@ func RunWindowsCommand(command string) string {
 	// // start a local powershell process
 	// shell, err = powershell.New(&back)
 	// if err != nil {
-	// 	log.Println("ERR Couldn't create powershell process:", err)
+	// 	log.Println("ERR Can't create powershell process:", err)
 	// }
 	// defer shell.Exit()
 
@@ -98,7 +98,7 @@ func RunWindowsScriptAt(scriptPath string) string {
 	// // start a local powershell process
 	// shell, err = powershell.New(&back)
 	// if err != nil {
-	// 	log.Println("ERR Couldn't create powershell process:", err)
+	// 	log.Println("ERR Can't create powershell process:", err)
 	// }
 	// defer shell.Exit()
 
