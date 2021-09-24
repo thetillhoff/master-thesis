@@ -3,8 +3,8 @@ package docker
 import (
 	"archive/tar"
 	"io"
+	"io/ioutil"
 	"log"
-	"math/rand"
 	"os"
 	"path/filepath"
 )
@@ -13,26 +13,17 @@ import (
 //
 // Deleting it after the build is up to the caller
 func createBuildContext(dirPath string) string {
-	var (
-		letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	)
 
-	// Creating tempfileName
-	b := make([]rune, 16) // random string of length 16
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	var tempFileName = "docker-" + string(b) + ".buildcontext"
-
-	// Create tar-file
-	file, err := os.Create(tempFileName)
+	// Creating tempfile
+	tempFile, err := ioutil.TempFile("", "docker-*.buildcontext")
 	if err != nil {
-		log.Println("ERR Couldn't create buildcontext file:", err)
+		log.Fatal(err)
 	}
-	defer file.Close()
+	defer tempFile.Close()
+	// defer os.Remove(file.Name()) -> up to the caller
 
 	// Fill tar-file with content
-	tarWriter := tar.NewWriter(file)
+	tarWriter := tar.NewWriter(tempFile)
 	defer tarWriter.Close()
 	filepath.Walk(dirPath, func(file string, fileInfo os.FileInfo, err error) error {
 		// return on any error
@@ -73,6 +64,10 @@ func createBuildContext(dirPath string) string {
 		return nil
 	})
 
+	if debug {
+		log.Println("INF Created buildContext at " + tempFile.Name())
+	}
+
 	// Return path to build-context-file
-	return tempFileName
+	return tempFile.Name()
 }
