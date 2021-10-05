@@ -16,61 +16,260 @@ Several tools, frameworks and even whole ecosystems have evolved around \gls{iac
 Additionally, a simple reference infrastructure will be introduced, which must be deployable with the respective tool.
 %TODO Should the reference infrastructure not be at the top of this chapter? Or at least before the comparison?
 
-\section{Current state of the art of Infrastructure-as-Code and related trends} %TODO could also be in 02-background
+% There are different parts of IaC that have reached different levels of majority.
+% - Automated provisioning of infrastructure
+% - 
+
+\section{State-of-the-art automated hardware provisioning} %TODO could also be in 02-background
 The interest in \gls{iacacr} has been increasing on a steady level over the last years [\url{https://trends.google.com/trends/explore?date=today%205-y&q=%2Fg%2F11c3w4k9rx}].
 \newline
+%TODO The part above and below don't fit together very well
+%How infrastructure is managed in modern organizations.
+%Boosted by the COVID-19 pandemic ...
+It is estimated that ninety percent of global enterprises will rely on hybrid cloud by 2022 [\url{https://www.idc.com/getdoc.jsp?containerId=prMETA46165020}].
+It is also estimated that on-premise workloads drop from 59 percent in 2019 to 38 percent in 2021 and workloads on public clouds grow from 23 percent to 35 percent [\url{https://www.thestreet.com/investing/public-clouds-are-bright-spot-as-information-technology-spending-eases}].
+\newline
+Instead of updating deployed instances, recreating them ensures all of them are equal [\hl{Can Infrastructure as Code apply to Bare Metal}]. This includes software and firmware upgrades.
+\newline
+Another reason is heterogeneity in systems: Even when using only a single vendor or even a single model, variations occur. Be it that newer models have upgraded firmwares or other \textquote{under-the-hand} changes [\hl{Can Infrastructure as Code apply to Bare Metal}].
+\newline
+It is better not to assume certain states, but check them instead. This way, whenever a state is unexpected, the automation can exclude this certain node and tell the responsible humans to check what's wrong. The only reliable source of truth for the current state is the current state itself - not some kind of cached or partial version of it [\hl{Can Infrastructure as Code apply to Bare Metal}].
+\newline
+So far, public cloud providers haven't exactly published how they are provisioning their bare-metal infrastructure.
+\newline
+But there are some hints, as some of those providers have an on-premises or edge product. The Microsoft Azure Stack HCI cluster is such a case. The documentation recommends starters to get machines with the correct drivers and \gls{osacr} preinstalled \url{https://docs.microsoft.com/en-us/azure-stack/hci/deploy/deployment-quickstart}. Apart from that, they describe additional \gls{osacr} deployment options like using an answer file (unattended installation), network deployment (\gls{pxeacr}), System Center Virtual Machine Manager (only for Windows \gls{osacr}s), and even manual provisioning \url{https://docs.microsoft.com/en-us/azure-stack/hci/deploy/operating-system}. The preinstalled \gls{osacr} makes the vendor (in this case Microsoft) reponsible for provisioning. So it doesn't solve the problem but shifts it somehwere else. Additionally, it doesn't work in all cases - for example on reinstallations.
+\newline
+While Amazon Web Services Outposts is a similar product, it doesn't allow customers to manage it themselves. Instead Amazon dispatch their own service personnel for every necessary manual task \url{https://aws.amazon.com/outposts/} \url{https://aws.amazon.com/outposts/faqs/}.
+\newline
+Google doesn't have a product to bring its whole cloud on-premise or to the edge, but only dedicated featuresets like the Google Kubernetes Engine. The company relies on an underlying VMware vSphere environment and therefore outsources hardware management \url{https://cloud.google.com/anthos/clusters/docs/on-prem/1.3/overview}.
+\newline
+When a company like Google relies on a third-party software it has to be special in some way.
+
+% TODO add vmware numbers here!
+
+So how does deployment of VMwares vSphere clusters work? The most important thing with vSphere is that it can be deployed as a \gls{vmacr} on an ESXi server (since version 7.0 the appliance is the only way - previously a Windows system could be used as well), the hypervisor \gls{osacr} developed by VMware \url{https://blogs.vmware.com/vsphere/2017/08/farewell-vcenter-server-windows.html} \url{https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.esxi.install.doc/GUID-B64AA6D3-40A1-4E3E-B03C-94AD2E95C9F5.html} \url{https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.install.doc/GUID-ACCD2814-0F0A-4786-96C0-8C9BB57A4616.html}. In other words, vSphere requires (at least one) manually installed ESXi server, which can then host the vSphere Server software, which then in turn has a feature called Auto Deploy \url{https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.install.doc/GUID-D0A72192-ED00-4A5D-970F-E44B1ED586C7.html}. This feature creates a \gls{pxeacr} boot infrastructure that requires an external DHCP server \url{https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.install.doc/GUID-9A827220-177E-40DE-99A0-E1EB62A49408.html} \url{https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.install.doc/GUID-8C221180-8B56-4E07-88BE-789B25BA372A.html}. The latter has to be configured to distribute network boot details which point to the preexisting vSphere Server \url{https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.install.doc/GUID-9A827220-177E-40DE-99A0-E1EB62A49408.html}.
+In order to reduce deployment time, Auto Deploy does not install the ESXi \gls{osacr} on machines, but loads the boot image directly into its memory \url{https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.install.doc/GUID-71F8AE6C-FF4A-419B-93B7-1D318D4CB771.html}. This implies that server restarts are equal to redeployments.
+\newline
+Even VMware doesn't seem to bring a \gls{tftpacr} server as part of their software, but describes how to install and configure a third party product themselves \url{https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.install.doc/GUID-F9056360-544A-4452-8C76-B29018235CEB.html}. Since a \gls{pxeacr} environment consists of at least a \gls{dhcpacr}- and \gls{tftpacr}-server (for performance reasons mostly paired with an \gls{httpacr}-server) as well as the operating system image, the ratio of reliance on third party products is suprising - considering VMware develops most of their software themselves. But when VMware does rely on this deployment approach, it must have proven to be reliable and hold water. % "stichhaltig"
+Apaches CloudStack supports two hypervisors; For ESXi it recommends also using vSphere, while for XenServer and KVM it does not specify any deployment options - it documentation starts after the hypervisor is installed \url{http://docs.cloudstack.apache.org/en/latest/installguide/configuration.html#adding-a-host} \url{http://docs.cloudstack.apache.org/en/latest/installguide/configuration.html#adding-a-host-vsphere} \url{http://docs.cloudstack.apache.org/en/latest/installguide/configuration.html#adding-a-host-xenserver-kvm}.
+\newline
+One of the most recently published cluster software for bare metal is Googles Anthos. The software and its documentation completely omit the provisioning part up the point where nodes can only be added when they are already accessable via \gls{sshacr} \url{https://cloud.google.com/anthos/clusters/docs/bare-metal/1.6/quickstart}.
+\newline
+Common asset management tools like servicenow or i-doit, use providers like vSphere or public clouds for instantiation \url{https://docs.servicenow.com/bundle/rome-it-operations-management/page/product/cloud-management-v2-setup/concept/cloud-mgt-vmware-setup-guide.html} or don't support hardware provisioning \url{https://kb.i-doit.com/display/en/VM+Provisioning}.
+\newline
+Other bare-metal lifecycle management tools like Canonical MAAS, Foreman, FOG, FAI,, Cobbler Openstacks Ironic, RackNs Digital Rebar and Equinix Metals Tinkerbell as well as Microsofts System Center Virtual Machine Manager also rely on \gls{pxeacr} for automatic \gls{osacr} deployments \url{https://maas.io/how-it-works} \url{https://theforeman.org/introduction.html} \url{https://wiki.fogproject.org/wiki/index.php?title=Introduction#What_is_FOG} \url{https://fai-project.org/fai-guide/#_a_id_work_a_how_does_fai_work} \url{https://cobbler.readthedocs.io/en/latest/index.html} \url{https://docs.openstack.org/ironic/latest/} \url{https://rackn.com/rebar/#osp-media} \url{https://docs.tinkerbell.org/architecture/} \url{https://docs.microsoft.com/en-us/system-center/vmm/hyper-v-bare-metal?view=sc-vmm-2019}. Most often, they have the required software (the aforementioned \gls{dhcpacr}- and \gls{tftpacr}-server) embedded in some way and only require minor interactions to configure it properly (like setting up the \gls{dhcpacr} range).
+\newline
+Only the minority of bare-metal provisioning software uses or at least supports \gls{ipmiacr} as tool of the trade. This includes Canonical MAAS (only for power management), OpenStacks Ironic (for power management and sensor data), RackNs Digital Rebar and ispsystems DCImanager \url{https://maas.io/docs/snap/3.0/ui/power-management} \url{https://docs.openstack.org/ironic/latest/} \url{https://rackn.com/rebar/#hw-oob} \url{https://docs.ispsystem.com/dcimanager-admin/modules/server-auto-add-module}.
+The main problem with using \gls{ipmiacr} for provisioning is its vendor-specific implementations. Not only is it not available for all hardware, but different vendors support different features of \gls{ipmiacr} - often even with different \gls{apiacr}s. A second, but closely related issue is its unavailability for \gls{vmacr}s: Most hypervisors don't support \gls{ipmiacr} interfaces for virtual machines. And even if they do (for example via plugins), their documentation is sparse and their development stale \url{https://docs.openstack.org/virtualbmc/latest/}.
+\newline
+Another reason for no using \gls{ipmiacr} is its historically low security. Although most vendors had their own credentials for accessing the management interface, they used the same combination of user and password for all of their devices \url{https://github.com/netbiosX/Default-Credentials/blob/master/IPMI-Default-Password-List.mdown}. With the taking effect of senate bill 327 chapter 886 (1798.91.04) in january 2020, the vendors must now use a unique random password for each machine.
+\newline
+On the other hand, the \gls{bmcacr} has capabilities beyond network boot and \gls{wolacr}. For example it allows administrators to debug an unresponsive machine, execute hard resets and change BIOS/UEFI settings remotely.
+So while \gls{ipmiacr} definitely has its own place, it is not the go-to technology for automated provisioning.
+%TODO outlook: combination of ipmi and pxe/netboot might be the future - like a magic packet that tells the machine what to boot
+\newline
+Whenever \gls{pxeacr} is used for deployments, as a first step an iPXE image is deployed via \gls{tftpacr}. iPXE is best compared to a customizable and very advanced BIOS/EFI but has several advantages over the default ones. For one, it is scriptable \url{https://ipxe.org/scripting}. Therefore it is very flexible in its configuration even during its runtime. And it supports loading the actual \gls{osacr} image via \gls{httpacr} instead of \gls{tftpacr}. Since iPXE is several times smaller and more lightweight than most operating systems, as well as the fact that \gls{httpacr} is more performant than \gls{tftpacr} and there exist better tools around it, this approach does not only speed up the deployment but makes it more reliable and customizable, too \url{https://ipxe.org/appnote/uefihttp} \url{https://kb.2pintsoftware.com/help/why-is-ipxe-better-that-good-old-plain-vanilla-pxe} \url{https://projects.theforeman.org/projects/foreman/wiki/Fetch_boot_files_via_http_instead_of_TFTP} \url{https://jpmens.net/2011/07/18/network-booting-machines-over-http/}.
+\newline
+% TODO: Add empty line here
+The previous part of this chapter focused on the technological \textquote{infrastructure} aspect of \gls{iacacr}. Neither less important, less complex nor less diverse is the \textquote{as code} part.
+\newline
+As long as there are few properties that change, it is absolutely feasable to use command-line arguments to describe the desired state for \gls{iacacr} tools \hl{infrastructure as code, oreilly}. But with a growing amount of properties the statespace increases, requiring a better way to describe it: Configuration files. The languages used within those files are mostly \gls{dslacr}s. In contrast to a \gls{gplacr} (not to be confused with the licence), its domain-specific counterpart promises higher success rates even with less experience and significantly higher closeness of mapping \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}. Especially the last attribute helps developers to simplify their state descriptions. Another major advantage of using a \gls{gplacr} is the ecosystem of tools; Because they are well supported by IDEs, they have powerful features like syntax highlighting, code refactoring and testing support \hl{Iac, oreilly, kief morris}.
+% TODO add description and background and examples about configuration management tools into text above
+
+\section{Domain-Specific Languages for Infrastructure-as-Code} % forcing full name
+% overview, introduce them all
+There is a vast amount of \gls{dslacr}s for self-proclaimed \gls{iacacr}. %TODO "self-proclaimed" might be a little bit too harsh
+But they greatly differ in their purpose, flexibility and other parameters. This chapter aims at identifying the differences, comparing them and finally selecting the most appropriate \gls{dslacr} to be extended to bare-metal.
+
+\subsection{Amazon CloudFormation}
+CloudFormation supports both JSON and YAML, is declarative and typed \url{https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html}. The typing is done with an additional field \textquote{type} for all components. An example type is \mintinline[bgcolor=lightgray,breaklines]{bash}{AWS::EC2::Instance}, so it has the format of \mintinline[bgcolor=lightgray,breaklines]{bash}{AWS::ProductIdentifier::ResourceType} \url{https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html}.
+\newline
+Instead of requiring a commandline-tool (there is one \url{https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/what-is-cloudformation-cli.html}), CloudFormation is designed to work by just uploading the file containing the definition - possible sources are s3-buckets, git-repositories or manual uploads. This implies that the orchestrator is run closed-source by Amazon. Therefore CloudFormation is not only a language by Amazon, but also exclusively for Amazon. Since this is arguably a dependency, CloudFormation evaluates worse than the average here. As the user has no (direct) influence on the capabilities of the language and the orchestrator, the language evaluated worse than average in the extensiblity dimension, too.
+\newline
+Nevertheless, AWS holds by far the largest market share of the cloud market \url{https://www.statista.com/chart/18819/worldwide-market-share-of-leading-cloud-infrastructure-service-providers/} and was the first public cloud provider. CloudFormation is therefore one of the earliest \gls{dslacr}s in this comparison. It is widely used \url{https://stackshare.io/aws-cloudformation}, and the language itself as well as the tools around it can be assumed to be very mature. There are plugins for most IDEs \url{https://github.com/aws-cloudformation/cfn-lint}. While the open source linter doesn't guarantee to be all-seeing, it at least promises to not fail in case it doesn't understand everything \url{https://github.com/aws-cloudformation/cfn-lint}. Under the hood, the linter uses schema validation. Assuming the schema has matured as well as the language, it can be reasoned that this guarantees validity of the definition files. The linter also provides detailed information on what exactly is wrong in such a file as well, making it quite error-prone. There is a so-called \textquote{AWS CloudFormation Designer}, too \url{https://console.aws.amazon.com/cloudformation/designer}. It aims at giving the user a GUI to create his infrastructure definition files.
+\newline
+In both JSON and YAML, there are custom function embedded. Examples are
+\newline % mint doesn't automatically make this linebreak...
+\mintinline[bgcolor=lightgray,breaklines]{bash}{{ "Fn::GetAtt" : [ "logicalNameOfResource", "attributeName" ] }} in the former language and \mintinline[bgcolor=lightgray,breaklines]{bash}{Fn::GetAtt: [ logicalNameOfResource, attributeName ]} or the short-version
+\newline % mint doesn't automatically make this linebreak...
+\mintinline[bgcolor=lightgray,breaklines]{bash}{!GetAtt logicalNameOfResource.attributeName} in the latter.
+\newline
+Using CloudFormation requires a lot of knowledge: Starting from all the products and features AWS has to offer, over different solutions that have (partially) redundant features, up to understanding the AWS jargon. For example new users have a hard time understanding that \textquote{EC2} is actually a \gls{vmacr} and that there is no \textquote{EC1} or similar. Other \gls{dslacr}s require less new things to learn, so CloudFormation performs worse in this dimension.
+\newline
+Since CloudFormation is limited to AWS, it is incompatible with bare metal. This also means, that it can be ruled out for further usage in this thesis. Nevertheless, it is a big player in the league of \gls{dslacr}s, so examining it for reference does definitely make sense (to some extend).
+\newline
+The remaining dimensions, namely \textquote{reusability}, \textquote{amount of code}, \textquote{viscosity} and \textquote{visibility} are evaluated as average. This is partly due to it being very similar to the other languages, and partly due to the early rule-out of the language that rendered a possible proof-of-concept pointless.
+
+\subsection{OpenStack Heat}
+% - openstack ironic \url{(https://docs.openstack.org/ironic/latest/user/architecture.html})
+%   - installs OS on a local disk
+%     -> should the OS be installed on a local disk or every boot happen via network?
+%       -> depends on boot-count and network speed and desired first-boot-time and second-boot-time
+%   - verify-HW; verify a node is accessible with HPMI (could be combined with flashing nodes' firmware)
+
+\subsection{HashiCorp Configuration Language and Terraform}
+One of the most prominent tools is Terraform by HashiCorp [\url{https://trends.google.com/trends/explore?q=%2Fg%2F11c3w4k9rx}]. When it was introduced in 2014, it was primarily focused on \gls{awsacr}, but it evolved to support multiple providers. It uses HCL \url{https://www.terraform.io/} as \gls{dslacr} and is highly plugin-based [\url{https://registry.terraform.io/browse/providers}].
+
+\subsection{Pulumi}
+
+\subsection{Open Cloud Computing Interface} % OCCI
+% https://occi-wg.org/
+
+\subsection{OASIS TOSCA with Simple-Profile}
+
+\subsection{OASIS TOSCA with Cloudify}
+
+\section{Culling based on limitations}
+% remove the ones that don't fit like CloudFormation, Vagrant
+The tools and \gls{dslacr}s around \gls{iacacr} can mostly be split up into two fields: On one side is the provisioning, where instantiation is the main purpose. On the other side is configuration management, where instantiation is \textquote{assumed} and the goal is to change configurations. Some of the most promiment examples are Terraform, Cloudformation, Heat, and Vagrant for provisioning and Ansible, Chef or Puppet for configuration management \hl{Infrastructure as code - Final Report, John Klein} \hl{Infrastructure as Code, Kief Morris} \url{https://www.terraform.io/intro/vs/cloudformation.html} \url{https://www.terraform.io/intro/vs/chef-puppet.html} \url{https://www.atlassian.com/continuous-delivery/principles/infrastructure-as-code}.
+\newline
+These two categories are named differently in different sources, f.e. using \textquote{Infrastructure Definition} for the provisioning and \textquote{Configuration Registry} for the configuration management. Some software like Ansible can also fill both roles \hl{Infrastructure as Code, Kief Morris}.
+\newline
+The field of configuration management is mainly platform-agnostic, which means that it does not matter whether it is applying to cloud instances, \gls{vmacr}s or bare-metal. Most of the tools in this area access a preexisting \gls{apiacr} for their tasks. This could be the \gls{apiacr} of a cloud provider or \gls{sshacr} access to a \gls{vmacr} or bare-metal machine.
+\newline
+This thesis focuses on \gls{dslacr}s aimed at provisioning, because they is not platform-agnostic. At the same time, it is relatively easy to create instances by sending requests to a cloud provider or a hypervisor, doing the same with bare-metal not so much.
+\newline %TODO is the following necessary?
+As described earlier, \gls{dslacr}s can be declarative or imperative. The former describe the state, while the latter describe state changes. Because \gls{iacacr} always aims at describing the whole state, declarative languages are better fitted for this task \hl{Infrastructure as Code, Kief Morris}. They also have the property of being idempotent: If applied multiple times, the result won't change \hl{Infrastructure as Code, Kief Morris}.
+\newline
+Another view on these two types is that imperative code describes a set of instructions that specifies how to make things happen, while declarative code describes the desired state \hl{Infrastructure as Code, Kief Morris, second edition}.
+\newline
+Some \gls{dslacr}s (called \textquote{internal}) in this field are based on another language as XML, JSON, or YAML \hl{Infrastructure as Code, Kief Morris, second edition}. This includes both sub- and supersets of them. Libraries are internal \gls{dslacr}s as well \hl{hs script, mode}. Code of \textquote{external} \gls{dslacr}s on the other hand is not directly related to another language \hl{lecture notes MODE}. An example is the \gls{hclacr} used by Terraform. \hl{Infrastructure as Code, Kief Morris, second edition} \hl{lecture notes MODE}
+
+%TODO add this somewhere (only applies to configuration management languages?!)
+% Not so much on the dsl, but on the surrounding tools; Some use a push mechanism, where the management server transfers the configuration to the target nodes. Others use a pull mechanism, where the nodes most often periodically fetch information from the management server and configure themselves as intended.
+
+\section{Approach}
+Comparing languages and selecting the best one is a hard task. Not only is it hard to agree on what is important to compare, nor is it just time-consuming, but it is greatly task-specific as well.
+There already exist multiple comparisons or -methods for \gls{dslacr}s, most of which are not infrastructure-specific \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study} \hl{Domain-specific language for Infrastructure-as-Code} \hl{[Stachowiak, Allgemeine Modelltheorie]}. %TODO add MODE lecture notes as source as well
+They compare based on attributes like (no specific order):
+
+\begin{itemize}
+  \item Primary approach \hl{Comparative Study of DSL Tools}
+  % \item Abstraction level: don't describe all attributes, but only the relevant ones \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study} % TODO add mode lecture notes as source
+  % \item Isomorphism: Statements for the modeled entities hold for the real world \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study} % TODO add mode lecture notes as source
+  \item Guarantees provided in case of well-formedness \hl{Comparative Study of DSL Tools} %TODO this also contains "efficiency" like parallelism
+  \item Reusability of components \hl{Comparative Study of DSL Tools}
+  \item Error proneness and reporting like line number and column offset \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+  \item Efficiency: Amount of code for a given case study \hl{Comparative Study of DSL Tools}
+  \item Aspects to learn for a given case study or how hard the mental operations are \hl{Comparative Study of DSL Tools} % / learning-curve
+  \item Viscosity: How hard it is to make changes/updates \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+  \item Hidden dependencies like requiring agents, a dedicated server or a third-party software \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+  \item Visibility: How easy is it to find the responsible snippet in the codebase \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+  \item Extensibility: Can the language be adapted to environment changes
+  \item Maturity/Documentation/user-base/community: How good are edge-cases documented and how well is the product established
+  \item Ecosystem
+\end{itemize}
+
+% what to compare them on:
+% - optimizations; automatic hinting, execution optimization
+% - error reporting -> error-proneness, progressive evaluation
+% - visibility; how hard is it to find a certain part, is it clear where relations are
+
+The landscape of infrastructure is ever changing - and so are the used tools and protocols. Therefore, \textquote{extensibility} is another property this thesis is going to consider.
+\newline
+Also, younger products tend to change a lot at the beginning, while older products have a hard time coping with change. Because of that, another property that is going to be compared is the \textquote{maturity}. It also relates to the covered edge-cases which takes into consideration the size of the user-base and the quality and quantity of the documentation.
+\newline
+Very important for the \gls{dslacr} in this thesis is the \textquote{ecosystem} surrounding it. This aims at the software that interprets the language, derives actions from it and executes them.
+\newline
+Some of the chosen sources describe more dimensions for their comparisons. While these are useful in general, it was either clear that all languages would perform the same or they are specifically hard to measure (objectively). %TODO might add examples here.
+\newline
+It is important to note that it is out of this thesis' scope to compare the languages on a deeper level, as for example their abstract syntax (i.e. meta models) or their (Extended) Backus-Naur forms. While the selection process is an important part, the goal of this thesis is not to find the perfect \gls{dslacr} but to extend one so it can be applied on bare-metal.
+
+% what to compare:
+% http://www.cse.chalmers.se/~bergert/slides/guest\_lecture\_DSLs.pdf
+% - abstract syntax: meta-model which defines parts/domain-concepts/model-elements and rules/validation of model
+% - concrete syntax: representation of model (instances) f.e. in an editor
+% - static semantics: evaluatable without executing/interpreting the model
+% - dynamic semantics: what the model means or expresses
+
+% Many of these dimensions are hard to measure (objectively). For this reason, this thesis will first take a look at each language, then discuss how they perform on the different comparison dimensions.
+
+\section{Comparison} % and selection
+% Only compare the most promising like terraform and tosca
+%TODO add this or not? Because of the huge amount of existing \gls{dslacr}s, it is not possible to get in touch with each and every one.
+
+The languages this thesis is going to compare are Amazon CloudFormation, OpenStack Heat, HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK), OCCI and TOSCA with two subprofiles \textquote{Simple-Profile} and \textquote{Cloudify}.
+
+\begin{table}[H]
+  % \centering
+  \caption{Overview over the \gls{dslacr} comparison results}
+  % {\small
+  \begin{tabular}{ | l | l | l | l | l | }
+    \hline
+    Dimension & AWS CloudFormation & OpenStack Heat & HCL/Terraform & Pulumi \\
+    \hline
+    Approach & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
+    % Abstraction level & \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
+    % Isomorphism & \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
+    Guarantees & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
+    Reusability & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
+    Errorproneness & X better & \char`\~ & \char`\~ & \char`\~ \\
+    Amount of code & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
+    Aspects to learn & X worse & \char`\~ & \char`\~ & \char`\~ \\
+    Viscosity & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
+    Dependencies & X worse & \char`\~ & \char`\~ & \char`\~ \\
+    Visibility & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
+    Extensibility & X worse & \char`\~ & \char`\~ & \char`\~ \\
+    Maturity & X better & \char`\~ & \char`\~ & \char`\~ \\
+    Ecosystem & X better & \char`\~ & \char`\~ & \char`\~ \\
+    \hline
+  \end{tabular}
+  \newline\smallskip
+  \begin{tabular}{ | l | l | l | l | }
+    \hline
+    Dimension & OCCI & TOSCA Simple-Profile & TOSCA Cloudify \\
+    \hline
+    Approach & \char`\~ & \char`\~ & \char`\~ \\
+    % Abstraction level & \char`\~ & \char`\~ & \char`\~ \\
+    % Isomorphism & \char`\~ & \char`\~ & \char`\~ \\
+    Guarantees & \char`\~ & \char`\~ & \char`\~ \\
+    Reusability & \char`\~ & \char`\~ & \char`\~ \\
+    Errorproneness & \char`\~ & \char`\~ & \char`\~ \\
+    Amount of code & \char`\~ & \char`\~ & \char`\~ \\
+    Aspects to learn & \char`\~ & \char`\~ & \char`\~ \\
+    Viscosity & \char`\~ & \char`\~ & \char`\~ \\
+    Dependencies & \char`\~ & \char`\~ & \char`\~ \\
+    Visibility & \char`\~ & \char`\~ & \char`\~ \\
+    Extensibility & \char`\~ & \char`\~ & \char`\~ \\
+    Maturity & \char`\~ & \char`\~ & \char`\~ \\
+    Ecosystem & \char`\~ & \char`\~ & \char`\~ \\
+    \hline
+  \end{tabular}
+  % }
+  \label{tab:comparison}
+\end{table}
+
+The overview in table \ref{tab:comparison} summarizes the results of the following comparison. The score in each cell is either \textquote{average} (abbreviated with \textquote{\char`\~}), \textquote{worse}, or \textquote{better}. By default every score has the value \textquote{average}. Depending on the comparison to the average features, the values can then be \textquote{worse} or \textquote{better}.
+
+% TODO Actual comparison
+
+
+\section{Selection}
+% Discussion of previous results and why one is better than others
+% Why Terraform and TOSCA are the favorits
+% Why TOSCA is better
+
+%CURRENT
+
 
 % story
 
 % which tools and dsls are state-of-the-art, what is their domain -> comparison
 
-% current state of iac etc
-% - what is a common workflow? Which tools are the most prominent for it / subtasks
-% - what is a common environment (cloud, bare-metal, ...)
+% "current state of iac - an overview"
+% - describe how 
+% - [ ] what is a common workflow? Which tools are the most prominent for it / subtasks
+% - [x] what is a common environment (cloud, bare-metal, ...)
 % - what are the leading providers/backends
-% - What about bare-metal?
-% provisioning tools
-% - why are them important for this thesis?
-% - what do they do and how to they do it
-% - configuration mgmt tools like ansible - where do they fit in here?
-% comparison of DSLs
-% - How to compare
-% - Cloudformation
-% - Heat
-% - Terraform
-% - Tosca/cloudify
-% - Tosca/simple-profile
-% example reference infrastructure
-% issues
-% - TODO why tosca, not terraform, even though it seems to become state-of-the-art
-
-% what I have
-% list of iac tools
-
-
-
+% - [ ] What about bare-metal?
+% "provisioning tools"
+% - [ ] why are they important for this thesis?
+% - [ ] what do they do and how to they do it
+% - [ ] configuration mgmt tools like ansible - where do they fit in here?
 
 % TODO "multi-tenancy" ?
 
-
-\section{Provisioning tools}
-
-
-tools/frameworks
-- openstack ironic \url{(https://docs.openstack.org/ironic/latest/user/architecture.html})
-  - installs OS on a local disk
-    -> should the OS be installed on a local disk or every boot happen via network?
-      -> depends on boot-count and network speed and desired first-boot-time and second-boot-time
-  - verify-HW; verify a node is accessible with HPMI (could be combined with flashing nodes' firmware)
-- ...
-
-- default passwords for IPMI/BMC were vendor-specific (calvin...) but due to new US law they must be random:
-  senate bill no 327, chapter 886 - add title 1.87.26 to part 4 of division 3 of civil code, relating to information privacy
-
 \section{Comparison of existing Domain-Specific-Languages}
-
-One of the most prominent tools is Terraform by HashiCorp [\url{https://trends.google.com/trends/explore?q=%2Fg%2F11c3w4k9rx}]. When it was introduced in 2014, it was primarily focused on \gls{awsacr}, but it evolved to support multiple providers. It uses HCL \url{https://www.terraform.io/} as \gls{dslacr} and is highly plugin-based [\url{https://registry.terraform.io/browse/providers}].
-\newline
 
 % --------------------------------------------------------------------------
 % ```yaml
@@ -512,136 +711,11 @@ One of the most prominent tools is Terraform by HashiCorp [\url{https://trends.g
 % %TODO how to handle secrets in templates
 % %TODO noecho in cloudformation still shows stuff in output, metadata etc -> how to provide a secure way not giving away credentials?
 
-% model: formal representation of entities and relationships [Stachowiak, Allgemeine Modelltheorie]
-%   - abstraction: don't desribe all attributes, only the relevant ones
-%   - isomophism: statements for model entities hold for the real world
-%   - pragmatism: model is build to fulfill a purpose for set of users, during certain time, for certain activities
-
-% modeling language is defined by:
-% - abstract syntax -> which elements exist in a model and how can they be combined
-% - concrete syntax -> how are the model elements and their relations expressed
-% - semantics -> what is the meaning of each model element
-
-% approach:
-% - model-based (original goal is documentation, communication and analysis, model is secondary artefact)
-% - model-driven (model is used to generate code or being interpreted for extracting actions, model is primary artefact)
-%   - increased development speed via automated transformations
-%   - defined output, repeatable process
-%   - seperation of concerns using views
-%   - reuse of transformations
-
-% aspects of mdsd workflow:
-% - always:
-%   - define modeling language (abstract and concrete syntax)
-%   - tool support to define models
-%   - persist models in files or dbs
-%   - tranform models to text
-% - often:
-%   - transform model to model
-%   - transform text to model
-%   - analyze and interpret models
-%   - automate workflows from single steps
-
-
-% domain expert:
-% - uses modeling language to create models
-% technology experts:
-% - creates modeling languages and transformations
-
-% external dsl:
-% - dedicated toolkit to create modeling language
-% internal dsl:
-% - customize existing programming or modeling language (usually textual)
-% - idea: define an api in an ordinary programming language such that accessing this API looks like using specialized dsl
-
-% metamodel: model of modeling language, defines
-% - concepts that can be used to build model
-% - their attributes
-% - how they can be combined
-% - their meaning (usually not though)
-
-% why meta models: allows to reuse technology for
-% - storing models in files
-% - storing models in dbs
-% - creating a form-based editor
-% - creating a graphical editor
-% - generating code from models
-% - transforming models into other models
-% metamodel is used to describe abstract syntax, not concrete syntax!
-
-% MOF Meta Object Facility: domain specific modeling language to describe metamodels
-% contains
-% - classes (meta-class)
-% - properties/attributes (meta-...)
-% - associations (meta-...)
-% - generalisation (meta-...)
-% - packages (meta-package)
-% There is a meta-metamodell: mof described with mof
-% original - model - metamodel - meta-metamodel
-
-% types of concrete syntax:
-% - diagram
-% - text (programming language)
-% - tables
-% - trees and forms
-% - XML
-% - custom
-% - combinations
-
-% why textual languages are popular for computer science:
-% - easy to edit (cut, copy, paste)
-% - easy to create parsers and reuse existing SE tools
-% - accessible with console based tools
-% - single input type; can be worked on with only using the keyboard
-% - compare and merge
-% - version control
-% - no special tools needed (only simple text editor)
-% - can be supported by IDEs
-% bad:
-% - complex dependencies hard to recognize
-
-% approaches:
-% - parsing:
-%   - concrete syntax primary artifact
-%   - concrete syntax (text) is directly edited and converted (parsed) to an AST (model)
-% - projection
-%   - abstract syntax primary artifact
-%   - AST (model) is rendered to concrete syntax (text), edit actions directly on AST (model) (AST=Abstract Syntax Tree)
-
-% what to compare:
-% %http://www.cse.chalmers.se/~bergert/slides/guest\_lecture\_DSLs.pdf
-% - abstract syntax: meta-model which defines parts/domain-concepts/model-elements and rules/validation of model
-% - concrete syntax: representation of model (instances) f.e. in an editor
-% - static semantics: evaluatable without executing/interpreting the model
-% - dynamic semantics: what the model means or expresses
-
-% what to compare them on:
-% - kinds of DSLs: textual DSL, visual DSL, library in a programming language, configuration tool, wizard
-%   - textual
-%     - internal: library in an existing programming language
-%     - exernal: seperate language
-%   - visual
-%     - configuration tool
-%     - wizard
-% - approach, f.e. templating, translation or term rewriting
-%   - declarative, imperative
-% - executability, hidden dependencies
-% - optimizations; automatic hinting, execution optimization
-% - extensibility -> quality
-% - efficiency/lines-of-code -> quality
-% - tooling (developing AND using) -> ecosystem
-% - guarantees
-% - reusability of components
-% - error reporting -> error-proneness, progressive evaluation
-% - aspects to learn / learning curve
-% - viscosity; how hard is it to update stuff
-% - visibility; how hard is it to find a certain part, is it clear where relations are
-% - consistency
 
 
 [\url{https://www.opentosca.org/documents/Presentation\_TOSCA.pdf}]
 
-Two non-vendor-specific standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \hl{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \hl{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be abandoned since then (at least neglected).
+Two non-vendor-specific standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \url{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \url{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be abandoned since then (at least neglected).
 \\
 Second, the \gls{toscaacr} standard was first published in 2013 by the \gls{oasisacr}. The latter is also responsible for well-known standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument, PKCS\#11, \gls{samlacr} and VirtIO so its name is well-known in the world of software. Additionally, its members are not only an overwhelming number of academic or governmental institutions but een more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, SAP and VMware [\url{https://www.oasis-open.org/committees/membership.php?wg\_abbrev=tosca, https://www.oasis-open.org/committees/tosca/obligation.php}]. The latest contribution was only one week before the time of writing, so its actively pursued and developed [\url{https://www.oasis-open.org/committees/documents.php?wg\_abbrev=tosca}].
 \\

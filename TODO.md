@@ -28,6 +28,15 @@
 ## tex
 - replace "f.e." with "for example"
 - replace "\&" with "and"
+- unify license and licence
+- unify bare-metal and bare metal
+- add more stuff of IaC book (available at oreilly with hs access) - f.e. chapter Challenges and Principles
+- [DSL for IaC] page 1, problems arising while deploying infrastructures in cloud
+  - heterogeneity of cloud resources
+  - lack of compatibility of cloud resource model and api in different clouds
+  - lack of integrations between different cloud environments
+  - transferring applications between clouds causes unreasonable complexity and errors
+  - multiple infrastructure deployments demand too much humand resources
 
 ## general code
 - "Orchestrators MUST" are not yet implemented. Example in 5.3.8.4 of simple-profile spec

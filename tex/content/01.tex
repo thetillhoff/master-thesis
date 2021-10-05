@@ -24,7 +24,19 @@
 Todays distributed applications don't scale in the range of tens or hundreds of nodes but in tens of thousands [\hl{Distributed Systems - Concepts and Design George Coulouris}, \hl{Cluster Computing White Paper Mark Baker}, \url{https://cloud.google.com/blog/products/containers-kubernetes/google-kubernetes-engine-clusters-can-have-up-to-15000-nodes}]. In order to be as fast and efficient as possible, the number of nodes has to automatically scale up and down based on their usage. The conditions are simple (f.e. \textquote{add a node when all nodes have reached 80 percent cpu load}) but the frequency for triggers is high. to simplify management of nodes for both the cluster software and administrations, each node should also be set up the same way. A perfect use-case for automation.
 \newline
 The process of software-defining infrastructure is called \gls{iacacr}. Using software development tools to manage infrastructure has many more advantages like version-control, collaboration, reviews, automated tests and continuous deployment. The accompanying combination of development and operations called DevOps opened a complete new field in computer science [\hl{BA, chapter 2}]. To be able to increase the amount of components than can be software-defined, the underlying hardware needs to support it. As an example, processors have a fixed architecture, while with FPGA chips it is configurable.
-\newline
+
+% why textual languages are popular for computer science:
+% - easy to edit (cut, copy, paste)
+% - easy to create parsers and reuse existing SE tools
+% - accessible with console based tools
+% - single input type; can be worked on with only using the keyboard
+% - compare and merge
+% - version control
+% - no special tools needed (only simple text editor)
+% - can be supported by IDEs
+% bad:
+% - complex dependencies hard to recognize
+
 Such hardware features are exposed via a corresponding \gls{apiacr}. Some hardware properties cannot be changed via software, for example how many physical machines exist in a certain environment. A partial solution for such cases are abstraction layers like virtualization.
 \newline
 But virtualization only provides an \gls{apiacr} on a single host; In order to be scalable and in order to be able to distribute new workloads in the most efficient way (f.e. putting a new \gls{vmacr} on the hypervisor with the lowest load), an orchestrating software is needed. Examples for such software are VMware's vSphere, Red Hat's OpenShift but also Google's Kubernetes.

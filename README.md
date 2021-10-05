@@ -133,6 +133,7 @@ subtopics:
 - [ ] Check text with hemingwayapp https://hemingwayapp.com/
 - [ ] Check text with languagetool https://languagetool.org/
 - [ ] Check text with scribens https://www.scribens.com/
+- [ ] Check the text with reverso https://www.reverso.net/spell-checker/english-spelling-grammar/
 - [ ] Check line-endings
 - [ ] Resolve latex-warnings on f.e. overfull lines etc.
 - [ ] Check use of paragraphs instead of empty lines
