@@ -197,7 +197,7 @@ These mechanism not only apply to the interaction between the orchestrator and t
 \newline
 In order to increase the capabilities of the orchestrator or in other words enable more things to get defined via software, middle- or abstraction-layers are introduced. An example for this is the hypervisor that acts as \gls{apiacr}-gateway between hard- and software-defined machines. The deployment (and configuration) of that middleware (i.e. the hypervisor) is not within the scope of most \gls{iacacr} frameworks and is outsourced. This layer must be as easy to deploy as possible, making it hard to bring in mistakes and staying as flexible as possible for further configuration via software.
 \newline
-It is obvious, that not everything can be software-defined, since some physical objects (like cables) have to be physically placed [\hl{Can Infrastructure as Code apply to Bare Metal}]. Robots could possibly be used, but in most cases, this is something human workers do. Whether the configuration is correct can often be detected/measured from software. On the other hand, technologies like FPGAs can even change the CPU architecture via software - so the future might have some surprises in store.
+It is obvious, that not everything can be software-defined, since some physical objects (like cables) have to be physically placed [\hl{Can Infrastructure as Code apply to Bare Metal}]. Robots could possibly be used, but in most cases, this is something human workers do. Whether the configuration is correct can often be detected/measured from software. On the other hand, technologies like \gls{fpgaacr}s can even change the CPU architecture via software - so the future might have some surprises in store.
 \newline
 One of the hardest things about applying \gls{iacacr} to bare metal is the complex management and interactions between the multiple \gls{apiacr}s. On one side are the \textquote{external} protocols and interfaces like \gls{dhcpacr}, \gls{tftpacr}, \gls{httpacr}, \gls{dnsacr} and \gls{sshacr}. On the other side are the \gls{osacr}s and the features they provide for automation [\hl{Can Infrastructure as Code apply to Bare Metal}].
 These range from being able to install the \gls{osacr} in an unattended way, over scriptable settings (or better: The non-scriptable ones - looking at you Windows) to compatibility with widespread instance initialization methods like cloud-init [\url{https://cloudinit.readthedocs.io/en/latest/}].
@@ -215,7 +215,6 @@ In order to describe the state of infrastructure, the declarative way is more in
 In contrast to a \gls{gplacr}, a \gls{dslacr} allows better seperation of infrastructure code from other code \url{http://www.cse.chalmers.se/~bergert/slides/guest_lecture_DSLs.pdf}. Additionally, they are more context driven, which makes them easier to work with for domain experts and users \hl{lecture notes MODE}. Their syntax is smaller and well-defined too, which makes them less complex as well.
 %TODO source (script of MODE?)
 \newline
-
 % domain expert:
 % - uses modeling language to create models
 % technology experts:

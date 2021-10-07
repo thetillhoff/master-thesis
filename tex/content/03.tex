@@ -69,8 +69,7 @@ So while \gls{ipmiacr} definitely has its own place, it is not the go-to technol
 %TODO outlook: combination of ipmi and pxe/netboot might be the future - like a magic packet that tells the machine what to boot
 \newline
 Whenever \gls{pxeacr} is used for deployments, as a first step an iPXE image is deployed via \gls{tftpacr}. iPXE is best compared to a customizable and very advanced BIOS/EFI but has several advantages over the default ones. For one, it is scriptable \url{https://ipxe.org/scripting}. Therefore it is very flexible in its configuration even during its runtime. And it supports loading the actual \gls{osacr} image via \gls{httpacr} instead of \gls{tftpacr}. Since iPXE is several times smaller and more lightweight than most operating systems, as well as the fact that \gls{httpacr} is more performant than \gls{tftpacr} and there exist better tools around it, this approach does not only speed up the deployment but makes it more reliable and customizable, too \url{https://ipxe.org/appnote/uefihttp} \url{https://kb.2pintsoftware.com/help/why-is-ipxe-better-that-good-old-plain-vanilla-pxe} \url{https://projects.theforeman.org/projects/foreman/wiki/Fetch_boot_files_via_http_instead_of_TFTP} \url{https://jpmens.net/2011/07/18/network-booting-machines-over-http/}.
-\newline
-% TODO: Add empty line here
+\newline\smallskip
 The previous part of this chapter focused on the technological \textquote{infrastructure} aspect of \gls{iacacr}. Neither less important, less complex nor less diverse is the \textquote{as code} part.
 \newline
 As long as there are few properties that change, it is absolutely feasable to use command-line arguments to describe the desired state for \gls{iacacr} tools \hl{infrastructure as code, oreilly}. But with a growing amount of properties the statespace increases, requiring a better way to describe it: Configuration files. The languages used within those files are mostly \gls{dslacr}s. In contrast to a \gls{gplacr} (not to be confused with the licence), its domain-specific counterpart promises higher success rates even with less experience and significantly higher closeness of mapping \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}. Especially the last attribute helps developers to simplify their state descriptions. Another major advantage of using a \gls{gplacr} is the ecosystem of tools; Because they are well supported by IDEs, they have powerful features like syntax highlighting, code refactoring and testing support \hl{Iac, oreilly, kief morris}.
@@ -78,46 +77,78 @@ As long as there are few properties that change, it is absolutely feasable to us
 
 \section{Domain-Specific Languages for Infrastructure-as-Code} % forcing full name
 % overview, introduce them all
-There is a vast amount of \gls{dslacr}s for self-proclaimed \gls{iacacr}. %TODO "self-proclaimed" might be a little bit too harsh
-But they greatly differ in their purpose, flexibility and other parameters. This chapter aims at identifying the differences, comparing them and finally selecting the most appropriate \gls{dslacr} to be extended to bare-metal.
+There is a vast amount of \gls{dslacr}s for \gls{iacacr}. Yet, they greatly differ in their purpose, flexibility and other parameters. This chapter aims at identifying the differences, comparing them and finally selecting the most appropriate \gls{dslacr} to be extended to bare-metal.
 
 \subsection{Amazon CloudFormation}
 CloudFormation supports both JSON and YAML, is declarative and typed \url{https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html}. The typing is done with an additional field \textquote{type} for all components. An example type is \mintinline[bgcolor=lightgray,breaklines]{bash}{AWS::EC2::Instance}, so it has the format of \mintinline[bgcolor=lightgray,breaklines]{bash}{AWS::ProductIdentifier::ResourceType} \url{https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html}.
 \newline
-Instead of requiring a commandline-tool (there is one \url{https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/what-is-cloudformation-cli.html}), CloudFormation is designed to work by just uploading the file containing the definition - possible sources are s3-buckets, git-repositories or manual uploads. This implies that the orchestrator is run closed-source by Amazon. Therefore CloudFormation is not only a language by Amazon, but also exclusively for Amazon. Since this is arguably a dependency, CloudFormation evaluates worse than the average here. As the user has no (direct) influence on the capabilities of the language and the orchestrator, the language evaluated worse than average in the extensiblity dimension, too.
+Instead of requiring a commandline-tool (there is one \url{https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/what-is-cloudformation-cli.html}), CloudFormation is designed to work by just uploading the file containing the definition - possible sources are s3-buckets, git-repositories or manual uploads. This implies that the orchestrator is run closed-source by Amazon. Therefore CloudFormation is not only a language by Amazon, but also exclusively for Amazon. Additionally, the user has no (direct) influence on the capabilities of the language and the orchestrator.
 \newline
-Nevertheless, AWS holds by far the largest market share of the cloud market \url{https://www.statista.com/chart/18819/worldwide-market-share-of-leading-cloud-infrastructure-service-providers/} and was the first public cloud provider. CloudFormation is therefore one of the earliest \gls{dslacr}s in this comparison. It is widely used \url{https://stackshare.io/aws-cloudformation}, and the language itself as well as the tools around it can be assumed to be very mature. There are plugins for most IDEs \url{https://github.com/aws-cloudformation/cfn-lint}. While the open source linter doesn't guarantee to be all-seeing, it at least promises to not fail in case it doesn't understand everything \url{https://github.com/aws-cloudformation/cfn-lint}. Under the hood, the linter uses schema validation. Assuming the schema has matured as well as the language, it can be reasoned that this guarantees validity of the definition files. The linter also provides detailed information on what exactly is wrong in such a file as well, making it quite error-prone. There is a so-called \textquote{AWS CloudFormation Designer}, too \url{https://console.aws.amazon.com/cloudformation/designer}. It aims at giving the user a GUI to create his infrastructure definition files.
+Nevertheless, AWS holds by far the largest market share of the cloud market \url{https://www.statista.com/chart/18819/worldwide-market-share-of-leading-cloud-infrastructure-service-providers/} and was the first public cloud provider. CloudFormation is therefore one of the earliest \gls{dslacr}s for describing infrastructure. It is widely used \url{https://stackshare.io/aws-cloudformation}, and the language itself as well as the tools around it can be assumed to be very mature. There are plugins for most IDEs \url{https://github.com/aws-cloudformation/cfn-lint}. While the open source linter doesn't guarantee to be all-seeing and perfect, it at least promises to not fail in case it doesn't understand everything \url{https://github.com/aws-cloudformation/cfn-lint}. Under the hood, the linter uses schema validation. Assuming the schema is as mature as the language, it can be reasoned that this guarantees validity of the definition files. The linter also provides detailed information on what exactly is wrong in such a file as well, making it quite error-prone. There is a so-called \textquote{AWS CloudFormation Designer}, too \url{https://console.aws.amazon.com/cloudformation/designer}. It aims at giving the user a GUI to create his infrastructure definition files.
 \newline
-In both JSON and YAML, there are custom function embedded. Examples are
+As do most languages for \gls{iacacr}, CloudFormation supports custom functions, too. It does so in both JSON and YAML. Examples are
 \newline % mint doesn't automatically make this linebreak...
 \mintinline[bgcolor=lightgray,breaklines]{bash}{{ "Fn::GetAtt" : [ "logicalNameOfResource", "attributeName" ] }} in the former language and \mintinline[bgcolor=lightgray,breaklines]{bash}{Fn::GetAtt: [ logicalNameOfResource, attributeName ]} or the short-version
 \newline % mint doesn't automatically make this linebreak...
 \mintinline[bgcolor=lightgray,breaklines]{bash}{!GetAtt logicalNameOfResource.attributeName} in the latter.
 \newline
-Using CloudFormation requires a lot of knowledge: Starting from all the products and features AWS has to offer, over different solutions that have (partially) redundant features, up to understanding the AWS jargon. For example new users have a hard time understanding that \textquote{EC2} is actually a \gls{vmacr} and that there is no \textquote{EC1} or similar. Other \gls{dslacr}s require less new things to learn, so CloudFormation performs worse in this dimension.
+Using CloudFormation to describe infrastructure requires a lot of knowledge: Starting from all the products and features AWS has to offer, over different solutions that have (partially) redundant features, up to understanding the AWS jargon. An example for this is \textquote{EC2}: New users have a hard time understanding that \textquote{EC2} is actually a \gls{vmacr} and that there is no \textquote{EC1} or similar.
 \newline
-Since CloudFormation is limited to AWS, it is incompatible with bare metal. This also means, that it can be ruled out for further usage in this thesis. Nevertheless, it is a big player in the league of \gls{dslacr}s, so examining it for reference does definitely make sense (to some extend).
-\newline
-The remaining dimensions, namely \textquote{reusability}, \textquote{amount of code}, \textquote{viscosity} and \textquote{visibility} are evaluated as average. This is partly due to it being very similar to the other languages, and partly due to the early rule-out of the language that rendered a possible proof-of-concept pointless.
+Since CloudFormation is limited to AWS, it is incompatible with bare metal. This also means that it can be ruled out for further usage in this thesis. Nevertheless, it is a big player in the league of \gls{dslacr}s, so examining it for reference does definitely make sense (to some extend).
 
 \subsection{OpenStack Heat}
+The Heat component from OpenStack is responsible for \gls{iacacr}. It is not a language by itself, but supports actually two languages. One is named \gls{hotacr} and the other is Amazon CloudFormation. The former is strongly influenced by CloudFormation \url{https://docs.openstack.org/heat/rocky/template_guide/index.html}. When the \gls{apiacr} for CloudFormation is used, the Heat component translates the AWS-specific types to OpenStack compatible ones \url{https://docs.openstack.org/heat/latest/developing_guides/architecture.html}.
+\newline
+\Gls{hotacr} is designed very similar to its counterpart from Amazon, too: They have the same type system (with different types though) and the same overall structure \url{https://docs.openstack.org/heat/latest/developing_guides/architecture.html}. The contextual jargon (f.e. \textquote{stack}) is also inspired by CloudFormation.
+\newline
+Another similarity is about the required knowledge about products/components. Sticking to the earlier example of creating a \gls{vmacr}, new users are required to know that the necessary type is \textquote{OS::NOVA::Server}. The \textquote{NOVA}-part comes from the fact that the compute component of OpenStack is named this way.
+\newline
+There are three ways to communicate with the Heat component; First, the CloudFormation cli-tool. Then an additional commandline tool for \gls{hotacr} \url{https://docs.openstack.org/mitaka/cli-reference/heat.html} and an official library in/for python \url{https://docs.openstack.org/python-heatclient/latest/}.
+\newline
+OpenStack supports bare metal via a component called \textquote{ironic} \url{https://docs.openstack.org/ironic/latest/user/architecture.html}. It is the closest implementation of what this thesis desires to accomplish \url{https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/15/html/bare_metal_provisioning/sect-introduction}. It supports software-defining how new nodes should be provisioned and implements all necessary features - together with other OpenStack components like neutron for networking, glance for \gls{osacr} images, keystone for service discovery and nova for compute node management (f.e. metadata).
+%TODO describe later why this doesn't fully satisfy the research question; Bootstrapping is not covered, an openstack cluster is required beforehand.
+
 % - openstack ironic \url{(https://docs.openstack.org/ironic/latest/user/architecture.html})
 %   - installs OS on a local disk
 %     -> should the OS be installed on a local disk or every boot happen via network?
 %       -> depends on boot-count and network speed and desired first-boot-time and second-boot-time
 %   - verify-HW; verify a node is accessible with HPMI (could be combined with flashing nodes' firmware)
+%   - really good overview: https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/15/html/bare_metal_provisioning/sect-introduction
 
 \subsection{HashiCorp Configuration Language and Terraform}
-One of the most prominent tools is Terraform by HashiCorp [\url{https://trends.google.com/trends/explore?q=%2Fg%2F11c3w4k9rx}]. When it was introduced in 2014, it was primarily focused on \gls{awsacr}, but it evolved to support multiple providers. It uses HCL \url{https://www.terraform.io/} as \gls{dslacr} and is highly plugin-based [\url{https://registry.terraform.io/browse/providers}].
+One of the most prominent tools is Terraform by HashiCorp [\url{https://trends.google.com/trends/explore?q=%2Fg%2F11c3w4k9rx}]. When it was introduced in 2014, it was primarily focused on \gls{awsacr}, but it evolved a lot since then. Nowadays, Terraform supports far over a thousand providers \url{https://registry.terraform.io/browse/providers}. Of those providers \textquote{only} 160 are aimed at \gls{iacacr} \url{https://registry.terraform.io/browse/providers?category=infrastructure}. Terraform uses \gls{hclacr} as \gls{dslacr} and is highly plugin-based \url{https://www.terraform.io/} \url{https://www.terraform.io/docs/extend/index.html}. In addition to the custom language, \gls{jsonacr} is supported as well \url{https://www.terraform.io/docs/language/syntax/configuration.html}.
+\newline
+Working with Terraform happens with a commandline executable. The binary loads plugins as needed, communicates with the \gls{apiacr}s of the necessary providers and gives feedback to the user. In order to be as efficient as possible, Terraform maintains a local state file. The file contains the last obtained state of the infrastructure. Since Terraform assumes it is the only component changing the infrastructure, this approach enables it to detect differences locally. Afterwards, it automatically generates an execution plan on how to eliminate those differences and reach the desired state. The last step is then the execution itself, which is at the same time the only step where communication with external \gls{apiacr}s happens.
+%TODO sources
+\newline
+Cross-plugin dependencies are supported by the tool as well. This makes Terraform extremely versatile and easily extensible.
+\newline
+Since the state file is meant to mirror the current state, manual interactions with the infrastructure as well as with the state file are strongly recommended against \url{https://www.terraform.io/docs/cli/state/recover.html}. Another reason is the difficulty of recovering from such state disasters \url{https://www.terraform.io/docs/cli/state/recover.html}.
 
 \subsection{Pulumi}
+Pulumi is a relatively new technology. Since its first public release in 2017, it came a long way and now advertises as \textquote{\gls{iacacr} for any cloud with any language} \url{https://github.com/pulumi/pulumi/tree/v0.3} \url{https://github.com/pulumi/pulumi}. Instead of using \gls{yamlacr}, \gls{jsonacr} or \gls{hclacr}, Pulumi is available as library in several programming languages. Available are these libraries for Node.js, JavaScript, TypeScript, Python, Go(lang), and .NET Core (therefore C\#, F\#, and Visual Basic).
 
-\subsection{Open Cloud Computing Interface} % OCCI
-% https://occi-wg.org/
+\subsection{Open Cloud Computing Interface} % OCCI https://occi-wg.org/
+The \gls{occiacr} is a protocol and API for a range of management tasks \url{https://occi-wg.org/about/index.html}. Initially designed for \gls{iaasacr}, it has since evolved to serve other models like \gls{paasacr} and \gls{saasacr} \url{https://occi-wg.org/about/index.html}. \Gls{occiacr} is developed by the Open Grid Forum, which is backed by companies such as Dell EMC, NetApp and Oracle \url{www.hpcinthecloud.com/hpccloud/2007-09-17/whats_next_for_ogf.html} \url{https://www.networkworld.com/article/2332351/consortium-formed-to-promote-enterprise-grids.html}. Since the launch of the standard, several open source cloud providers have started to support it, including OpenStack, OpenNebula and CloudStack \url{https://occi-wg.org/community/implementations/index.html}. The last update of the specification was in 2016 \url{https://occi-wg.org/index.html}. The IT worlds changes fast, so five years since the last update are a long time.
 
 \subsection{OASIS TOSCA with Simple-Profile}
+The OASIS organisation have published quite the amount of protocol/standard specifications: AMQP, MQTT, OpenDocument, PKCS\#11, SAML, SARIF and VirtIO are only an selection of them \url{https://www.oasis-open.org/standards/}. OASIS and its standards are backed by many large organisations like Dell EMC, General Motors, IBM, SAP, Red Hat, Microsoft, Google and the MIT \url{https://www.oasis-open.org/member-roster/}. The \gls{toscaacr} standard was first published in 2013 and its latest version was released in late 2020 \url{http://docs.oasis-open.org/tosca/TOSCA/v1.0/TOSCA-v1.0.html} \url{http://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html}. The standard contains the specificiation of a file archive format called \gls{csaracr}. These archives contain five major parts \url{https://www.opentosca.org/documents/howto-build-csars.pdf}:
+\begin{itemize}
+  \item Type definitions, where properties and interfaces are defined
+  \item A topology template, that describes the overall design and how the types should interact.
+  \item Deployment artifacts, like images and binaries
+  \item Implementation artifacts, like scripts
+  \item Management plans that describe certain actions, f.e. how to instantiate a new \gls{vmacr}
+\end{itemize}
+In addition to the \gls{toscaacr} standard itself, OASIS also published an extending standard called \textquote{TOSCA Simple Profile} \url{https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html}. While large parts of both specifications are redundant, Simple Profile provides the types and ecosystem needed for real-world applications of \gls{toscaacr}. The reference implementation of the \gls{toscaacr} orchestrator OpenTOSCA which interprets and executes whatever is necessary of a \gls{csaracr} definition also works with the \gls{toscaacr} Simple Profile \url{https://www.opentosca.org/documents/howto-build-csars.pdf}.
 
 \subsection{OASIS TOSCA with Cloudify}
+While both \gls{toscaacr} implementations / extensions of the \gls{toscaacr} standard are closely related, their included types and ecosystem are different. Yet, their approach is similar: Both have their orchestrator implemented as backend of a webapplication. Both allow visualization and (partial) graphical editing of the \gls{csaracr} definitions. Both provider the user with a catalog of example use-cases.
+\newline
+Cloudify is plugin based, which allows it to support different providers on different levels and for different areas \url{https://docs.cloudify.co/latest/working_with/official_plugins/}. It is very well documented and has many useful integrations like LDAP for authentication and authorization \url{https://docs.cloudify.co/latest/working_with/manager/ldap-integration/}.
+
+\subsection{Ansible}
+Being one of the best-known \gls{iacacr} tools, Ansibles user base is huge and it can be considered very mature. It does support power cycle management and overall \gls{bmcacr} interactions for some hardware providers like Hewlett-Packards remote management software iLO and DELL EMCs counterpart iDRAC \url{https://docs.ansible.com/ansible/latest/collections/community/general/hpilo_boot_module.html} \url{https://docs.ansible.com/ansible/latest/collections/dellemc/openmanage/idrac_network_module.html}. But for \textquote{general} bare-metal provisioning it mostly relies on external systems like cobbler \url{https://docs.ansible.com/ansible/latest/collections/community/general/cobbler_system_module.html#stq=netboot&stp=1}.
 
 \section{Culling based on limitations}
 % remove the ones that don't fit like CloudFormation, Vagrant
@@ -763,11 +794,11 @@ Cloudify -> uses TOSCA
 
 Originally, \gls{toscaacr} was meant to work only with XML, but since \hl{some year or version} it also supports YAML.
 
-terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
+Terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
 
 %TODO application-distribution -> TOSCA CSAR, helm charts, openstack hot packages in murano...
 - CAMP \url{http://docs.oasis-open.org/camp/camp-spec/v1.1/cs01/camp-spec-v1.1-cs01.pdf} , \url{https://en.wikipedia.org/wiki/Cloud\_Application\_Management\_for\_Platforms}
-- terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
+- Terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
 - cloudformation \url{https://www.terraform.io/intro/vs/cloudformation.html}
 
 %TODO -> how can those standards be improved? And what can be added?
@@ -786,7 +817,7 @@ terraform is very similar to tosca, but because its usability is higher and its 
 - Encryption-as-a-Service: ram, disk, network on host/node-level (TPM?)
 - Storage-as-a-Service; alternative to rook, hyper-converged vs dedicated (SVC by IBM), sds, both on hw and sw layer
 - IAM-as-a-Service; webauthn with yubikey, cloud-iam, 3rd-party iam like github oauth (openstack iam? ad necessary? why no ad join for nodes? -> linux, ephemereal, cattle)
-- k8s-as-a-Service; which os, in-memory-os, cluster-api (gardener, how to configure nodes? terraform, ansible, cloud-init, ignite), why multi-tenacy via multi-cluster?
+- k8s-as-a-Service; which os, in-memory-os, cluster-api (gardener, how to configure nodes? Terraform, ansible, cloud-init, ignite), why multi-tenacy via multi-cluster?
 - IaC-as-a-Service; generation/compliance with OPA, CRD-like formal description, check GCP, AWS, Azure and Openstack for common ground
 - secrets-as-a-Service; turtles all the way down presentation, SCM, orchestration, Secrets-as-a-service (hashicorp vault?)
 meta/mgmt
