@@ -37,6 +37,7 @@
   - lack of integrations between different cloud environments
   - transferring applications between clouds causes unreasonable complexity and errors
   - multiple infrastructure deployments demand too much humand resources
+  - unify "vmware" / "VMware" ...
 
 ## general code
 - "Orchestrators MUST" are not yet implemented. Example in 5.3.8.4 of simple-profile spec

@@ -150,27 +150,40 @@ Cloudify is plugin based, which allows it to support different providers on diff
 \subsection{Ansible}
 Being one of the best-known \gls{iacacr} tools, Ansibles user base is huge and it can be considered very mature. It does support power cycle management and overall \gls{bmcacr} interactions for some hardware providers like Hewlett-Packards remote management software iLO and DELL EMCs counterpart iDRAC \url{https://docs.ansible.com/ansible/latest/collections/community/general/hpilo_boot_module.html} \url{https://docs.ansible.com/ansible/latest/collections/dellemc/openmanage/idrac_network_module.html}. But for \textquote{general} bare-metal provisioning it mostly relies on external systems like cobbler \url{https://docs.ansible.com/ansible/latest/collections/community/general/cobbler_system_module.html#stq=netboot&stp=1}.
 
+\subsection{Others}
+There are really a lot of \gls{dslacr}s around \gls{iacacr}. Many of them were not introduced here. The main reason is that their purpose is different or their approach doesn't fit. As an example for the latter, cobbler is only about hardware provisioning, but it is not designed for managing virtual machines or describing applications that run on them. On the other side, VMware vSphere can do most of that (it is not made for describing applications though), but it is primarily GUI based, and therefore only partially usable for \gls{iacacr}.
+
 \section{Culling based on limitations}
 % remove the ones that don't fit like CloudFormation, Vagrant
 The tools and \gls{dslacr}s around \gls{iacacr} can mostly be split up into two fields: On one side is the provisioning, where instantiation is the main purpose. On the other side is configuration management, where instantiation is \textquote{assumed} and the goal is to change configurations. Some of the most promiment examples are Terraform, Cloudformation, Heat, and Vagrant for provisioning and Ansible, Chef or Puppet for configuration management \hl{Infrastructure as code - Final Report, John Klein} \hl{Infrastructure as Code, Kief Morris} \url{https://www.terraform.io/intro/vs/cloudformation.html} \url{https://www.terraform.io/intro/vs/chef-puppet.html} \url{https://www.atlassian.com/continuous-delivery/principles/infrastructure-as-code}.
 \newline
-These two categories are named differently in different sources, f.e. using \textquote{Infrastructure Definition} for the provisioning and \textquote{Configuration Registry} for the configuration management. Some software like Ansible can also fill both roles \hl{Infrastructure as Code, Kief Morris}.
+These two categories are named differently in different sources, f.e. using \textquote{Infrastructure Definition} as synonym for provisioning and \textquote{Configuration Registry} for configuration management. Some software like Ansible can also fill both roles \hl{Infrastructure as Code, Kief Morris}.
 \newline
-The field of configuration management is mainly platform-agnostic, which means that it does not matter whether it is applying to cloud instances, \gls{vmacr}s or bare-metal. Most of the tools in this area access a preexisting \gls{apiacr} for their tasks. This could be the \gls{apiacr} of a cloud provider or \gls{sshacr} access to a \gls{vmacr} or bare-metal machine.
+The field of configuration management is mainly platform-agnostic. Or more specifically, it does not matter whether it is applying to cloud instances, \gls{vmacr}s or bare-metal. Most of the tools in this area interact with a preexisting \gls{apiacr} for their tasks. This could be the \gls{apiacr} of a cloud provider or \gls{sshacr} access to a \gls{vmacr} or bare-metal machine.
 \newline
-This thesis focuses on \gls{dslacr}s aimed at provisioning, because they is not platform-agnostic. At the same time, it is relatively easy to create instances by sending requests to a cloud provider or a hypervisor, doing the same with bare-metal not so much.
+In order to bootstrap a whole infrastructure with not preexisting \gls{apiacr}s except for the ones available at a hardware level, this thesis focuses on \gls{dslacr}s that are aimed at provisioning. At the same time, it is relatively easy to create instances (of whatever) by sending requests to a cloud provider or a hypervisor, while doing the same with bare-metal not so much: There is no such \gls{apiacr} - yet.
+\newline
+As a result, all configuration management \gls{dslacr}s are not eligible. Namely, these are Ansible, Chef and Puppet (from the introduced languages at least).
 \newline %TODO is the following necessary?
-As described earlier, \gls{dslacr}s can be declarative or imperative. The former describe the state, while the latter describe state changes. Because \gls{iacacr} always aims at describing the whole state, declarative languages are better fitted for this task \hl{Infrastructure as Code, Kief Morris}. They also have the property of being idempotent: If applied multiple times, the result won't change \hl{Infrastructure as Code, Kief Morris}.
+As described earlier, \gls{dslacr}s can also be declarative or imperative. The former describe the state, while the latter describe state changes. Because \gls{iacacr} always aims at describing the whole state, declarative languages are better fitted for this task \hl{Infrastructure as Code, Kief Morris}. They also have the property of being idempotent: If applied multiple times, the result won't change \hl{Infrastructure as Code, Kief Morris}.
+Another view on these two types is that imperative code describes a set of instructions that specifies how to make things happen, while declarative code describes the desired state \hl{Infrastructure as Code, Kief Morris, second edition}. And describing the desired state is exactly the purpose of \gls{iacacr}.
 \newline
-Another view on these two types is that imperative code describes a set of instructions that specifies how to make things happen, while declarative code describes the desired state \hl{Infrastructure as Code, Kief Morris, second edition}.
+Therefore, all languages that are imperatively describing infrastructure can be ruled out. Funnily enough, this doesn't apply to any of the introduced \gls{dslacr}s.
 \newline
-Some \gls{dslacr}s (called \textquote{internal}) in this field are based on another language as XML, JSON, or YAML \hl{Infrastructure as Code, Kief Morris, second edition}. This includes both sub- and supersets of them. Libraries are internal \gls{dslacr}s as well \hl{hs script, mode}. Code of \textquote{external} \gls{dslacr}s on the other hand is not directly related to another language \hl{lecture notes MODE}. An example is the \gls{hclacr} used by Terraform. \hl{Infrastructure as Code, Kief Morris, second edition} \hl{lecture notes MODE}
+Some \gls{dslacr}s (called \textquote{internal}) in this field are based on another language as XML, JSON, or YAML \hl{Infrastructure as Code, Kief Morris, second edition}. This includes both sub- and supersets of them. Libraries are internal \gls{dslacr}s as well \hl{hs script, mode}. \textquote{External} \gls{dslacr}s on the other hand are not directly related to other languages \hl{lecture notes MODE}. An example is the \gls{hclacr} used by Terraform \hl{Infrastructure as Code, Kief Morris, second edition} \hl{lecture notes MODE}.
+\newline
+An additional difference between the tools and languages is how they are applied. Some use a push-based mechanism, where f.e. the orchestrator initiates communication with nodes and applies changes. Others use a pull-based mechanism, where the nodes need to watch the(ir) configuration at the orchestrator level and execute the required actions locally so they become configured as intended. The design decision of push or pull applies to other things as well: How code changes are loaded into the orchestrator for example.
+\newline
+As already stated earlier, Amazon CloudFormation is too AWS-specific to be easily extensible to bare-metal and is therfore also not an option.
+\newline
 
-%TODO add this somewhere (only applies to configuration management languages?!)
-% Not so much on the dsl, but on the surrounding tools; Some use a push mechanism, where the management server transfers the configuration to the target nodes. Others use a pull mechanism, where the nodes most often periodically fetch information from the management server and configure themselves as intended.
+%\newline
+%TODO culling: Heat, OCCI
+% Heat: badly documented, mixed documentation for the cloudformation style and hot, few examples, huge ecosystem required to run even basic provisioning
+% OCCI: see paper, badly documented, few examples, no real-world example/implementation (?)
 
 \section{Approach}
-Comparing languages and selecting the best one is a hard task. Not only is it hard to agree on what is important to compare, nor is it just time-consuming, but it is greatly task-specific as well.
+Comparing languages and selecting the best one is a hard task. Not only is it hard to agree on what is important to compare, nor is it just time-consuming, but it is greatly domain-specific as well.
 There already exist multiple comparisons or -methods for \gls{dslacr}s, most of which are not infrastructure-specific \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study} \hl{Domain-specific language for Infrastructure-as-Code} \hl{[Stachowiak, Allgemeine Modelltheorie]}. %TODO add MODE lecture notes as source as well
 They compare based on attributes like (no specific order):
 
@@ -213,13 +226,11 @@ It is important to note that it is out of this thesis' scope to compare the lang
 % - static semantics: evaluatable without executing/interpreting the model
 % - dynamic semantics: what the model means or expresses
 
-% Many of these dimensions are hard to measure (objectively). For this reason, this thesis will first take a look at each language, then discuss how they perform on the different comparison dimensions.
-
 \section{Comparison} % and selection
 % Only compare the most promising like terraform and tosca
 %TODO add this or not? Because of the huge amount of existing \gls{dslacr}s, it is not possible to get in touch with each and every one.
 
-The languages this thesis is going to compare are Amazon CloudFormation, OpenStack Heat, HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK), OCCI and TOSCA with two subprofiles \textquote{Simple-Profile} and \textquote{Cloudify}.
+The languages this thesis is going to compare are OpenStack Heat/HOT, HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK), OCCI and TOSCA with two subprofiles \textquote{Simple-Profile} and \textquote{Cloudify}.
 
 \begin{table}[H]
   % \centering
@@ -227,43 +238,22 @@ The languages this thesis is going to compare are Amazon CloudFormation, OpenSta
   % {\small
   \begin{tabular}{ | l | l | l | l | l | }
     \hline
-    Dimension & AWS CloudFormation & OpenStack Heat & HCL/Terraform & Pulumi \\
+    Dimension & Heat/HOT & HCL/Terraform & Pulumi & TOSCA Simple-Profile \\
     \hline
-    Approach & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
-    % Abstraction level & \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
-    % Isomorphism & \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
-    Guarantees & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
-    Reusability & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
-    Errorproneness & X better & \char`\~ & \char`\~ & \char`\~ \\
-    Amount of code & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
-    Aspects to learn & X worse & \char`\~ & \char`\~ & \char`\~ \\
-    Viscosity & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
-    Dependencies & X worse & \char`\~ & \char`\~ & \char`\~ \\
-    Visibility & X \char`\~ & \char`\~ & \char`\~ & \char`\~ \\
-    Extensibility & X worse & \char`\~ & \char`\~ & \char`\~ \\
-    Maturity & X better & \char`\~ & \char`\~ & \char`\~ \\
-    Ecosystem & X better & \char`\~ & \char`\~ & \char`\~ \\
-    \hline
-  \end{tabular}
-  \newline\smallskip
-  \begin{tabular}{ | l | l | l | l | }
-    \hline
-    Dimension & OCCI & TOSCA Simple-Profile & TOSCA Cloudify \\
-    \hline
-    Approach & \char`\~ & \char`\~ & \char`\~ \\
-    % Abstraction level & \char`\~ & \char`\~ & \char`\~ \\
-    % Isomorphism & \char`\~ & \char`\~ & \char`\~ \\
-    Guarantees & \char`\~ & \char`\~ & \char`\~ \\
-    Reusability & \char`\~ & \char`\~ & \char`\~ \\
-    Errorproneness & \char`\~ & \char`\~ & \char`\~ \\
-    Amount of code & \char`\~ & \char`\~ & \char`\~ \\
-    Aspects to learn & \char`\~ & \char`\~ & \char`\~ \\
-    Viscosity & \char`\~ & \char`\~ & \char`\~ \\
-    Dependencies & \char`\~ & \char`\~ & \char`\~ \\
-    Visibility & \char`\~ & \char`\~ & \char`\~ \\
-    Extensibility & \char`\~ & \char`\~ & \char`\~ \\
-    Maturity & \char`\~ & \char`\~ & \char`\~ \\
-    Ecosystem & \char`\~ & \char`\~ & \char`\~ \\
+    Approach & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    % Abstraction level & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    % Isomorphism & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Guarantees & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Reusability & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Errorproneness & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Amount of code & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Aspects to learn & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Viscosity & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Dependencies & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Visibility & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Extensibility & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Maturity & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Ecosystem & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
     \hline
   \end{tabular}
   % }
@@ -279,6 +269,8 @@ The overview in table \ref{tab:comparison} summarizes the results of the followi
 % Discussion of previous results and why one is better than others
 % Why Terraform and TOSCA are the favorits
 % Why TOSCA is better
+
+% own work: additional properties, culling/scope
 
 %CURRENT
 
