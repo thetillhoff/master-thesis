@@ -1,12 +1,31 @@
-\chapter{Conclusion}
+\chapter{Outlook}
 
-- 2-4 pages
-- do NOT summarize the thesis -> thats what the abstract is for. (but you can summarize most important results as introduction)
-- synthesize findings and conclude what can be learnt from them
-- refer to research questions and answer them (confirm, rejected). can be sections
-- clarify whether result/software meets requirements as stated earlier.
-- compare with results/software from others
-- finish with an outlook on how work could be continued
-  - ideas
-  - better technique
-  - unsolved problems
+% aspects of mdsd workflow:
+% - always:
+%   - define modeling language (abstract and concrete syntax)
+%   - tool support to define models
+%   - persist models in files or dbs
+%   - tranform models to text
+% - often:
+%   - transform model to model
+%   - transform text to model
+%   - analyze and interpret models
+%   - automate workflows from single steps
+
+% why meta models: allows to reuse technology for
+% - storing models in files
+% - storing models in dbs
+% - creating a form-based editor
+% - creating a graphical editor
+% - generating code from models
+% - transforming models into other models
+% metamodel is used to describe abstract syntax, not concrete syntax!
+
+\begin{itemize}
+  \item compare metamodels, find similarities, could lead to common ground
+  \item vendor bioses should support http by default or embed ipxe for network boot. Maybe even allow flashing the network-boot system (remotely?). VMware does support this already for its VMs: https://ipxe.org/howto/vmware
+  \item ipmi like interface for provisioning, f.e. provide (remote) kernel path and parameters (addition to "local boot", "net boot" selection)
+  \item common standard for bmc/ipmi features.
+  \item making all bios settings available over an scriptable interface - bmc is not (universal) enough.
+  \item tosca standard improvements from notes. Example: Two types of script execution: one on the orchestrator and one on the nodes.
+\end{itemize}

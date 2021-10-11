@@ -164,27 +164,41 @@ The field of configuration management is mainly platform-agnostic. Or more speci
 In order to bootstrap a whole infrastructure with not preexisting \gls{apiacr}s except for the ones available at a hardware level, this thesis focuses on \gls{dslacr}s that are aimed at provisioning. At the same time, it is relatively easy to create instances (of whatever) by sending requests to a cloud provider or a hypervisor, while doing the same with bare-metal not so much: There is no such \gls{apiacr} - yet.
 \newline
 As a result, all configuration management \gls{dslacr}s are not eligible. Namely, these are Ansible, Chef and Puppet (from the introduced languages at least).
-\newline %TODO is the following necessary?
-As described earlier, \gls{dslacr}s can also be declarative or imperative. The former describe the state, while the latter describe state changes. Because \gls{iacacr} always aims at describing the whole state, declarative languages are better fitted for this task \hl{Infrastructure as Code, Kief Morris}. They also have the property of being idempotent: If applied multiple times, the result won't change \hl{Infrastructure as Code, Kief Morris}.
-Another view on these two types is that imperative code describes a set of instructions that specifies how to make things happen, while declarative code describes the desired state \hl{Infrastructure as Code, Kief Morris, second edition}. And describing the desired state is exactly the purpose of \gls{iacacr}.
 \newline
-Therefore, all languages that are imperatively describing infrastructure can be ruled out. Funnily enough, this doesn't apply to any of the introduced \gls{dslacr}s.
+As described earlier, all languages that are imperatively describing infrastructure can be ruled out as well. Funnily enough, this doesn't apply to any of the introduced \gls{dslacr}s for \gls{iacacr}.
 \newline
-Some \gls{dslacr}s (called \textquote{internal}) in this field are based on another language as XML, JSON, or YAML \hl{Infrastructure as Code, Kief Morris, second edition}. This includes both sub- and supersets of them. Libraries are internal \gls{dslacr}s as well \hl{hs script, mode}. \textquote{External} \gls{dslacr}s on the other hand are not directly related to other languages \hl{lecture notes MODE}. An example is the \gls{hclacr} used by Terraform \hl{Infrastructure as Code, Kief Morris, second edition} \hl{lecture notes MODE}.
+As already stated earlier, Amazon CloudFormation is too AWS-specific to be easily extended to bare-metal and is therefore also not an option.
 \newline
-An additional difference between the tools and languages is how they are applied. Some use a push-based mechanism, where f.e. the orchestrator initiates communication with nodes and applies changes. Others use a pull-based mechanism, where the nodes need to watch the(ir) configuration at the orchestrator level and execute the required actions locally so they become configured as intended. The design decision of push or pull applies to other things as well: How code changes are loaded into the orchestrator for example.
+The implementations of OCCI-compatible software are severely outdated, and their interrelated deprecation/maintenance levels are confusing to say the least \url{https://occi-wg.org/2012/07/18/occi-in-openstack/index.html} \url{https://occi-wg.org/2012/07/18/occi-in-opennebula/index.html} \url{https://github.com/tmetsch/occi-os} \url{https://github.com/stackforge/occi-os}.
+That, and because the latest release of the OCCI standard was over five years ago, as well as sources stating OCCI software does not work even with basic examples, together with an accompanying recommendation to use \gls{toscaacr} instead, % TODO add source (OCCI/TOSCA comparison)
+OCCI will not be looked at in too much detail as well. For example, the documentation for the OpenStack implementation \url{https://occi-wg.org/2012/07/18/occi-in-openstack/index.html} recommends to visit the corresponding wiki-site, which is even older \url{https://wiki.openstack.org/wiki/Occi}.
 \newline
-As already stated earlier, Amazon CloudFormation is too AWS-specific to be easily extensible to bare-metal and is therfore also not an option.
+Due to its origin, OpenStack Heat definitely has the ability to possibly solve the initially described problems of this thesis. Sadly enough, its documentation leaves much to be desired \url{https://docs.openstack.org/heat/latest/}. Additionally, there are few examples, and to run it even in a proof-of-concept style requires to install and run many components of OpenStack. These requirements make it not only unfeasable for smaller infrastructures, but for "from-scratch" deployments like the one desired in this thesis as well.
 \newline
+\Gls{toscaacr} has several implementations and corresponding (inofficial) extensions like Cloudify, Alien 4 Cloud or Puccini. It is ouf of this thesis' capabilities to compare all of them. Therefore, only the official extension, named \textquote{Simple-Profile} will be included in the comparison.
 
-%\newline
-%TODO culling: Heat, OCCI
-% Heat: badly documented, mixed documentation for the cloudformation style and hot, few examples, huge ecosystem required to run even basic provisioning
-% OCCI: see paper, badly documented, few examples, no real-world example/implementation (?)
+\begin{table}[H]
+  % \centering
+  \caption{Overview of language candidates that are ruled out}
+  % {\small
+  \begin{tabular}{ | l | l | }
+    \hline
+    Language & State/Description \\
+    \hline
+    Ansible, Chef, Puppet & Ruled out because they are made for configuration management, not provisioning. \\
+    CloudFormation & Ruled out because it is too AWS-specific. \\
+    OCCI & Ruled out because of old/outdated specificiation and tools. \\
+    Heat/HOT & Ruled out because of unfeasable prerequisites. \\
+    inofficial TOSCA extensions & Ruled out because too many and closely related to original TOSCA. \\
+    \hline & . \\
+  \end{tabular}
+  % }
+  \label{tab:afterculling}
+\end{table}
 
 \section{Approach}
-Comparing languages and selecting the best one is a hard task. Not only is it hard to agree on what is important to compare, nor is it just time-consuming, but it is greatly domain-specific as well.
-There already exist multiple comparisons or -methods for \gls{dslacr}s, most of which are not infrastructure-specific \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study} \hl{Domain-specific language for Infrastructure-as-Code} \hl{[Stachowiak, Allgemeine Modelltheorie]}. %TODO add MODE lecture notes as source as well
+Choosing and selecting the best language for a task is hard. Not only is it hard to agree on what is important to compare, nor is it just time-consuming, but it is greatly domain-specific as well.
+There exist multiple comparisons or -methods for \gls{dslacr}s already, most of which are not infrastructure-specific \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study} \hl{Domain-specific language for Infrastructure-as-Code} \hl{[Stachowiak, Allgemeine Modelltheorie]}. %TODO add MODE lecture notes as source as well
 They compare based on attributes like (no specific order):
 
 \begin{itemize}
@@ -200,7 +214,7 @@ They compare based on attributes like (no specific order):
   \item Hidden dependencies like requiring agents, a dedicated server or a third-party software \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
   \item Visibility: How easy is it to find the responsible snippet in the codebase \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
   \item Extensibility: Can the language be adapted to environment changes
-  \item Maturity/Documentation/user-base/community: How good are edge-cases documented and how well is the product established
+  \item Maturity (documentation, user-base, community): How good are edge-cases documented and how well is the product established
   \item Ecosystem
 \end{itemize}
 
@@ -215,9 +229,9 @@ Also, younger products tend to change a lot at the beginning, while older produc
 \newline
 Very important for the \gls{dslacr} in this thesis is the \textquote{ecosystem} surrounding it. This aims at the software that interprets the language, derives actions from it and executes them.
 \newline
-Some of the chosen sources describe more dimensions for their comparisons. While these are useful in general, it was either clear that all languages would perform the same or they are specifically hard to measure (objectively). %TODO might add examples here.
+Some of the chosen sources describe more dimensions for their comparisons. While these are useful in general, it was either clear that all languages would perform the same or they are specifically hard to measure (objectively or in a feasable amount of time). %TODO might add examples here.
 \newline
-It is important to note that it is out of this thesis' scope to compare the languages on a deeper level, as for example their abstract syntax (i.e. meta models) or their (Extended) Backus-Naur forms. While the selection process is an important part, the goal of this thesis is not to find the perfect \gls{dslacr} but to extend one so it can be applied on bare-metal.
+It is important to note that it is out of this thesis' scope to compare the languages on a deeper level, as for example their abstract syntax (i.e. meta models) or their (Extended) Backus-Naur forms. While the selection process is an important part, the goal of this thesis is not to find the perfect \gls{dslacr} but to find a fitting one and extend it so it can be applied on bare-metal.
 
 % what to compare:
 % http://www.cse.chalmers.se/~bergert/slides/guest\_lecture\_DSLs.pdf
@@ -230,7 +244,9 @@ It is important to note that it is out of this thesis' scope to compare the lang
 % Only compare the most promising like terraform and tosca
 %TODO add this or not? Because of the huge amount of existing \gls{dslacr}s, it is not possible to get in touch with each and every one.
 
-The languages this thesis is going to compare are OpenStack Heat/HOT, HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK), OCCI and TOSCA with two subprofiles \textquote{Simple-Profile} and \textquote{Cloudify}.
+The languages this thesis is going to compare are HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK) and TOSCA in combination with  \textquote{Simple-Profile}.
+\newline
+The following overview in table \ref{tab:comparison} summarizes the results of the comparison. The score in each cell is either \textquote{average} (abbreviated with \textquote{\char`\~}), \textquote{worse}, or \textquote{better}. By default every score has the value \textquote{average}. Depending on the comparison to the average features, the values can then be \textquote{worse} or \textquote{better}.
 
 \begin{table}[H]
   % \centering
@@ -238,29 +254,29 @@ The languages this thesis is going to compare are OpenStack Heat/HOT, HashiCorp 
   % {\small
   \begin{tabular}{ | l | l | l | l | l | }
     \hline
-    Dimension & Heat/HOT & HCL/Terraform & Pulumi & TOSCA Simple-Profile \\
+    Dimension & HCL/Terraform & Pulumi & TOSCA Simple-Profile \\
     \hline
-    Approach & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    % Abstraction level & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    % Isomorphism & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Guarantees & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Reusability & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Errorproneness & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Amount of code & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Aspects to learn & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Viscosity & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Dependencies & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Visibility & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Extensibility & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Maturity & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
-    Ecosystem & \char`\~ &\char`\~ &\char`\~ &\char`\~ \\
+    Approach & \char`\~ &\char`\~ &\char`\~ \\
+    % Abstraction level & \char`\~ &\char`\~ &\char`\~ \\
+    % Isomorphism & \char`\~ &\char`\~ &\char`\~ \\
+    Guarantees & \char`\~ &\char`\~ &\char`\~ \\
+    Reusability & \char`\~ &\char`\~ &\char`\~ \\
+    Errorproneness & \char`\~ &\char`\~ &\char`\~ \\
+    Amount of code & \char`\~ &\char`\~ &\char`\~ \\
+    Aspects to learn & \char`\~ &\char`\~ &\char`\~ \\
+    Viscosity & \char`\~ &\char`\~ &\char`\~ \\
+    Dependencies & \char`\~ &\char`\~ &\char`\~ \\
+    Visibility & \char`\~ &\char`\~ &\char`\~ \\
+    Extensibility & \char`\~ &\char`\~ &\char`\~ \\
+    Maturity & \char`\~ &\char`\~ &\char`\~ \\
+    Ecosystem & \char`\~ &\char`\~ &\char`\~ \\
     \hline
   \end{tabular}
   % }
   \label{tab:comparison}
 \end{table}
 
-The overview in table \ref{tab:comparison} summarizes the results of the following comparison. The score in each cell is either \textquote{average} (abbreviated with \textquote{\char`\~}), \textquote{worse}, or \textquote{better}. By default every score has the value \textquote{average}. Depending on the comparison to the average features, the values can then be \textquote{worse} or \textquote{better}.
+
 
 % TODO Actual comparison
 

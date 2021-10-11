@@ -1,37 +1,84 @@
 \chapter{Design and Implementation} %  Design Principles and Architecture
+%TODO add chapter introduction
 
-- 5-10 pages
-- goal: fellow student understands content and would be able to more or less reproduce work
-- legitimate chosen approach
-- develop own ideas, trace them to existing theories
-- analysis and development
-- why was the approach (algorithm/technique/...) chosen and how does it work
-- show how concepts from theory are applied
-- test setup and achieved results
+% - 5-10 pages
+% - goal: fellow student understands content and would be able to more or less reproduce work
+% - legitimate chosen approach
+% - develop own ideas, trace them to existing theories
+% - analysis and development
+% - why was the approach (algorithm/technique/...) chosen and how does it work
+% - show how concepts from theory are applied
+% - test setup and achieved results
 
-possible steps:
-- requirement study
-- analysis / design -> UML, interaction, behavioural model, basic algorithms/methods, detailed description of models and their interactions (class/sequence diagrams)
-- manual, how to use program/device
-- system development and implementation
+% possible steps:
+% - requirement study
+% - analysis / design -> UML, interaction, behavioural model, basic algorithms/methods, detailed description of models and their interactions (class/sequence diagrams)
+% - manual, how to use program/device
+% - system development and implementation
 
----
+% ---
 
-considerations:
-- ipv6 not 100 percent necessary, but would be good
-- easy to learn
-- easy to adapt (to counterpart-interface updates) -> plug-in system?
-- tosca-orchestrator:
-  - 4.3ff of \url{http://docs.oasis-open.org/tosca/TOSCA-Instance-Model/v1.0/csd01/TOSCA-Instance-Model-v1.0-csd01.html#_Toc500843787}
-    "orchestrators manage the state of nodes and transitions them from state to state. This notion of state is somewhat artificial in that the orchestrator assumes a stable state is reached after an operation executes [...] without error"
-    "an error results in an undefined state" (no automatic rollback defined in tosca)
-    "orchestration states are only valid during orchestration. [...] the orchestrator or the imperative workflow [...] must decide the current state of all nodes in the topology.
-    "[...] event stream can be maintained for the life of a deployment [...]"
-    "As nodes are transitioned through their states, a subset of attributes and relationships may be defined. [...] This requires that in general TOSCA implies semantics such that not all attributes would be available in a given state."
-    "Nodes are only visible when they have a state defined (i.e. the orchestrator is dealing with their lifecycle)"
-    "node attributes are only defined for the stable states"
-    "node relationships are always navigable when the source and target node exists"
-    "[...] state is never updated outside an orchestration. [...] no way to propagate state changes from the node to the orchestrator and nodes don't have a state attribute."
-      -> no state file!
-    "Nodes can update their attributes with no specific guarantees in terms of precision or accuracy"
+% considerations:
+% - ipv6 not 100 percent necessary, but would be good
+% - easy to learn
+% - easy to adapt (to counterpart-interface updates) -> plug-in system?
+% - tosca-orchestrator:
+%   - 4.3ff of \url{http://docs.oasis-open.org/tosca/TOSCA-Instance-Model/v1.0/csd01/TOSCA-Instance-Model-v1.0-csd01.html#_Toc500843787}
+%     "orchestrators manage the state of nodes and transitions them from state to state. This notion of state is somewhat artificial in that the orchestrator assumes a stable state is reached after an operation executes [...] without error"
+%     "an error results in an undefined state" (no automatic rollback defined in tosca)
+%     "orchestration states are only valid during orchestration. [...] the orchestrator or the imperative workflow [...] must decide the current state of all nodes in the topology.
+%     "[...] event stream can be maintained for the life of a deployment [...]"
+%     "As nodes are transitioned through their states, a subset of attributes and relationships may be defined. [...] This requires that in general TOSCA implies semantics such that not all attributes would be available in a given state."
+%     "Nodes are only visible when they have a state defined (i.e. the orchestrator is dealing with their lifecycle)"
+%     "node attributes are only defined for the stable states"
+%     "node relationships are always navigable when the source and target node exists"
+%     "[...] state is never updated outside an orchestration. [...] no way to propagate state changes from the node to the orchestrator and nodes don't have a state attribute."
+%       -> no state file!
+%     "Nodes can update their attributes with no specific guarantees in terms of precision or accuracy"
 
+\section{Requirements}
+\begin{itemize}
+  \item Understand basic TOSCA (CSAR files, file-structure, yaml-structure)
+  \item Understand TOSCA-extensions (at least the one for hardware)
+  \item wol capabilitiy
+  \item ssh command execution
+  \item feedback to user
+\end{itemize}
+
+\section{Architecture}
+\begin{itemize}
+  \item executable, library
+  \item why and which modules/packages
+  \item sub-commands (init, install, uninstall, ...)
+\end{itemize}
+
+\section{Features}
+%TODO chapter introduction
+
+\subsection{TOSCA package}
+
+\subsection{CSAR package}
+
+\subsection{Command-execution package}
+
+\subsection{Docker control package}
+creating images, running containers, stopping containers
+
+\subsection{Live-OS image generation}
+tests with different operating systems (size, speed, repeatable, webserver-capable)
+\newline
+live-debian details
+
+\subsection{DHCP-, TFTP-, HTTP-server package}
+docker container, ports, variable config vs fixed config
+
+\subsection{Wake-on-lan package}
+actual wol vs simulated wol for hypervisors
+
+\subsection{SSH package}
+key-generation, variable key path, key placement on servers
+\newline
+actual command execution and feedback returning
+
+\subsection{TOSCA hardware extension}
+types, topology, tests
