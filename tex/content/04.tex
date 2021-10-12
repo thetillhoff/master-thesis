@@ -41,6 +41,7 @@
   \item Understand basic TOSCA (CSAR files, file-structure, yaml-structure)
   \item Understand TOSCA-extensions (at least the one for hardware)
   \item wol capabilitiy
+  \item live-os / hardware-information
   \item ssh command execution
   \item feedback to user
 \end{itemize}
@@ -54,17 +55,43 @@
 
 \section{Features}
 %TODO chapter introduction
+%TODO describe library/package architecture
+%TODO explain why features were implemented in this order
 
 \subsection{TOSCA package}
+The first task for the implementation to understand the TOSCA standard in high detail, so it can be properly implemented. This included research on preexisting implementations. Sadly, most of the larger implementations were based on one another, and the most complete of them all was severly outdated. %TODO add source
+The other implementations were unfinished and could not be taken as references. %TODO add sources or delete
+\newline
+The library that was developed is the result of a line-by-line read-through with parallel implementation of the whole \gls{toscaacr} standard specification.
+\newline
+With it, it is possible to parse any Service Templates, Types, and Topologies.
+In addition to parsing them and creating Go-native structures out of them, basic functionalities like the %TODO how are the ycalled?
+functions or validation of elements, it is limited to one implementation type, Bash, while the specification states that Python should be supported as well. There are several occasions, where the specification is very unclear, or simply incomplete. These cases are mostly about edge cases and were not required for the proof-of-concept this thesis tries to achieve. Therefore, they were left out of the implementation.
+\newline
+Because the basic TOSCA specification describes how to work with extensions like the TOSCA Simple Profile, it was possible to implement such imports, references, and relations as well. This means, the TOSCA library (called package in Golang context) is fully compatible with the TOSCA Simple Profile and all other extensions.
+
+%TODO add TOSCA processor, orchestrator etc definitions, and what is fulfilled or not
 
 \subsection{CSAR package}
+After the TOSCA package was able to parse the contents of file, the last chapter of the specification was implemented as a seperate package. It contains information about how to pack multiple artifacts like \gls{osacr}-images, definition-, or other required files together into one CSAR file. The file is basically a zip-archive, but the contents need to follow a certain schema. For example there are three places where metadata like version and name can be placed. If they are not found there, the whole file is invalid.
+%TODO add more
 
 \subsection{Command-execution package}
+In order to run Bash commands from the application itself and retrieve their outputs, a complete package about command execution was built. It makes it easy to run commands that are defined in TOSCA definitions.
+%TODO add more
 
 \subsection{Docker control package}
-creating images, running containers, stopping containers
+During the implementation phase it was clear very early, that some kind of DHCP- and TFTP-server will be required. And those will require easily repeatable setup. In most cases, this can be solved with docker. But because the goal of this thesis was to bring all required bits together, it was necessary to create docker images, start containers (with parameters like volumes and forwarded ports), as well as stopping and removing the containers when they are not needed any more.
+\newline
+The official docker binary (for linux) is created in Golang as well, and the software is open source. Docker even provides an SDK for other developers to integrate communication with the docker engine into their binary.
+Sadly, the documentation is sparse and the few examples displayed along the SDK were often not enough to get even seemingly things like container stopping to work. For this particular example it was necessary to add the container stopping and removal twice: One time when the application terminates successfully, the container fulfilled its job and isn't needed any more. And a second time, when the application terminates due to an error somewhere else, and the default termination does not happen. Even \textquote{deferring} the container termination did not work. Only when the SIGTERM interrupt was \textquote{manually} listended for and a function was implemented to remove the container in such a case, the removal was successfull in all cases.
+\newline
+Another obstacle was on how to retrieve live logs of the container and embed the retrieved output in the logs of the application. It was solved by creating a buffered streamreader, which was polled periodically for contained linebreaks.
 
 \subsection{Live-OS image generation}
+After the application was able to handle docker containers, a replicatable way to create a live-\gls{osacr} was neede. It should create an iso-file from scratch, with no previous requirements (apart from an internet connection). Since tiny linux images should be relatively common, this was first estimated to be an easy task.
+\newline
+As one can image, it turned out differently. The first linux distribution that was tested was \textquote{Minimal Linux Live}.
 tests with different operating systems (size, speed, repeatable, webserver-capable)
 \newline
 live-debian details

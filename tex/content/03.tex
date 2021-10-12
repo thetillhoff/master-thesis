@@ -196,7 +196,7 @@ Due to its origin, OpenStack Heat definitely has the ability to possibly solve t
   \label{tab:afterculling}
 \end{table}
 
-\section{Approach}
+\section{Dimensions of a comparison}
 Choosing and selecting the best language for a task is hard. Not only is it hard to agree on what is important to compare, nor is it just time-consuming, but it is greatly domain-specific as well.
 There exist multiple comparisons or -methods for \gls{dslacr}s already, most of which are not infrastructure-specific \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study} \hl{Domain-specific language for Infrastructure-as-Code} \hl{[Stachowiak, Allgemeine Modelltheorie]}. %TODO add MODE lecture notes as source as well
 They compare based on attributes like (no specific order):
@@ -218,11 +218,6 @@ They compare based on attributes like (no specific order):
   \item Ecosystem
 \end{itemize}
 
-% what to compare them on:
-% - optimizations; automatic hinting, execution optimization
-% - error reporting -> error-proneness, progressive evaluation
-% - visibility; how hard is it to find a certain part, is it clear where relations are
-
 The landscape of infrastructure is ever changing - and so are the used tools and protocols. Therefore, \textquote{extensibility} is another property this thesis is going to consider.
 \newline
 Also, younger products tend to change a lot at the beginning, while older products have a hard time coping with change. Because of that, another property that is going to be compared is the \textquote{maturity}. It also relates to the covered edge-cases which takes into consideration the size of the user-base and the quality and quantity of the documentation.
@@ -240,17 +235,15 @@ It is important to note that it is out of this thesis' scope to compare the lang
 % - static semantics: evaluatable without executing/interpreting the model
 % - dynamic semantics: what the model means or expresses
 
-\section{Comparison} % and selection
-% Only compare the most promising like terraform and tosca
-%TODO add this or not? Because of the huge amount of existing \gls{dslacr}s, it is not possible to get in touch with each and every one.
-
-The languages this thesis is going to compare are HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK) and TOSCA in combination with  \textquote{Simple-Profile}.
+\section{Selection}
+Since previously, many \gls{dslacr}s were ruled out, this thesis is going to look at only three languages in more detail. These are HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK) and TOSCA in combination with the \textquote{Simple-Profile} extension.
 \newline
+%The following text and the table should be after the text for all three languages
 The following overview in table \ref{tab:comparison} summarizes the results of the comparison. The score in each cell is either \textquote{average} (abbreviated with \textquote{\char`\~}), \textquote{worse}, or \textquote{better}. By default every score has the value \textquote{average}. Depending on the comparison to the average features, the values can then be \textquote{worse} or \textquote{better}.
 
 \begin{table}[H]
   % \centering
-  \caption{Overview over the \gls{dslacr} comparison results}
+  \caption{Overview over the \gls{dslacr} comparison results - TODO adjust to new structure}
   % {\small
   \begin{tabular}{ | l | l | l | l | l | }
     \hline
@@ -277,36 +270,141 @@ The following overview in table \ref{tab:comparison} summarizes the results of t
 \end{table}
 
 
-
 % TODO Actual comparison
 
-
-\section{Selection}
 % Discussion of previous results and why one is better than others
 % Why Terraform and TOSCA are the favorits
 % Why TOSCA is better
 
-% own work: additional properties, culling/scope
 
-%CURRENT
+\subsection{HashiCorp Configuration Language and Terraform}
+The Configuration Language used by Terraform is a mixture between \gls{jsonacr}, \gls{yamlacr} and a programming language like Golang.
+To give a first impression, the \gls{jsonacr} in code-snippet 1 %TODO add proper number/ref
+expresses the very same as the \gls{hclacr} in code-snippet 2 %TODO add proper number/ref
+
+\begin{listing}[H]\begin{addmargin}[2em]{2em}\begin{minted}[linenos,bgcolor=lightgray,breaklines,escapeinside=||]{json}
+  "resource": {
+    "aws_instance": {
+      "example": {
+        "instance_type": "t2.micro",
+        "ami": "ami-abc123"
+      }
+    }
+  }
+  \end{minted}
+  \caption{\gls{jsonacr} example}
+  \label{code:json_example}
+  \end{addmargin}
+\end{listing}
+
+\begin{listing}[H]\begin{addmargin}[2em]{2em}\begin{minted}[linenos,bgcolor=lightgray,breaklines,escapeinside=||]{bash}
+  resource "aws_instance" "example" {
+    instance_type = "t2.micro"
+    ami = "ami-abc123"
+  }
+  \end{minted}
+  \caption{\gls{hclacr} example}
+  \label{code:hcl_example}
+  \end{addmargin}
+\end{listing}
+
+The language is able to display the same amount of information in a denser way. This has both positive and negative effects: On one side, the fewer brackets enable users to focus on the actual content. On the other side, it is a complete new languages, and developers first need to learn it.
+\newline
+Because the architecture of Terraform is highly plugin-based and these plugins are often developed by third parties, the documentation of the core tool never mentions anything about guarantees.
+\newline
+The plugin system is cure and blessing at the same time. It enables extraordinary extensibility, but makes it sometimes hard to reuse snippets - what works for one provider most often doesn't work for another, too. The system allows for cross-plugin dependencies, so that really every infrastructure integration can be described. But the quality of the ecosystem depends on the quality of the plugins in most cases. Terraforms user-base is huge, and it is the current state-of-the art. %TODO source
+Therefore, its maturity is very high, most edge cases are covered, the documentation is great, and the very same applies to the most common plugins.
+\newline
+In larger environments, making the correct change to the infrastructure described with \gls{hclacr} can be hard. Not only does the developer need to know all of the used technologies/platforms/providers used in the state description, but he has to find which one applies to the desired bit as well.
+
+\subsection{OASIS TOSCA with Simple-Profile}
+%wrong place?
+[\url{https://www.opentosca.org/documents/Presentation\_TOSCA.pdf}]
+
+Two non-vendor-specific standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \url{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \url{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be abandoned since then (at least neglected).
+\\
+Second, the \gls{toscaacr} standard was first published in 2013 by the \gls{oasisacr}. The latter is also responsible for well-known standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument, PKCS\#11, \gls{samlacr} and VirtIO so its name is well-known in the world of software. Additionally, its members are not only an overwhelming number of academic or governmental institutions but een more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, SAP and VMware [\url{https://www.oasis-open.org/committees/membership.php?wg\_abbrev=tosca, https://www.oasis-open.org/committees/tosca/obligation.php}]. The latest contribution was only one week before the time of writing, so its actively pursued and developed [\url{https://www.oasis-open.org/committees/documents.php?wg\_abbrev=tosca}].
+\\
+\gls{toscaacr} has been used in some proof-of-concept projects [Domain-specific language for infrastructure as code] in 2019, but their results were disappointing: The interfaces between the core standard and the supported providers are said to be always out of date making even simple operations impossible. The tools of the ecosystem surrounding the standard are said to be non-user-friendly and their learning curves to flat \hl{/ all but steep} [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
+Still, \gls{toscaacr} has a lot of plug-ins for platforms like OpenStack, VMWare, \gls{awsacr}, \gls{gcpacr} and \gls{azureacr}, configuration management tools like ansible, chef, puppet and saltstack or container orchestrators like docker swarm and kubernetes [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}, \url{https://docs.vmware.com/en/VMware-Telco-Cloud-Automation/1.9/com.vmware.tca.userguide/GUID-43644485-9AAE-410E-89D2-3C4A56228794.html}].
+All those projects conclude that the standard is extremely promising, but the current state makes it impossible to use properly [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
 
 
-% story
+... %CURRENT
 
-% which tools and dsls are state-of-the-art, what is their domain -> comparison
+% \item Primary approach \hl{Comparative Study of DSL Tools}
+% \item Guarantees provided in case of well-formedness \hl{Comparative Study of DSL Tools} %TODO this also contains "efficiency" like parallelism
+% \item Reusability of components \hl{Comparative Study of DSL Tools}
+% \item Error proneness and reporting like line number and column offset \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+% \item Efficiency: Amount of code for a given case study \hl{Comparative Study of DSL Tools}
+% \item Aspects to learn for a given case study or how hard the mental operations are \hl{Comparative Study of DSL Tools} % / learning-curve
+% \item Viscosity: How hard it is to make changes/updates \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+% \item Hidden dependencies like requiring agents, a dedicated server or a third-party software \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+% \item Visibility: How easy is it to find the responsible snippet in the codebase \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+% \item Extensibility: Can the language be adapted to environment changes
+% \item Maturity (documentation, user-base, community): How good are edge-cases documented and how well is the product established
+% \item Ecosystem
 
-% "current state of iac - an overview"
-% - describe how 
-% - [ ] what is a common workflow? Which tools are the most prominent for it / subtasks
-% - [x] what is a common environment (cloud, bare-metal, ...)
-% - what are the leading providers/backends
-% - [ ] What about bare-metal?
-% "provisioning tools"
-% - [ ] why are they important for this thesis?
-% - [ ] what do they do and how to they do it
-% - [ ] configuration mgmt tools like ansible - where do they fit in here?
 
-% TODO "multi-tenancy" ?
+OpenStack Heat 
+\url{https://www.slideshare.net/openstackil/heat-tosca}
+HOT == Heat Orchestration Template, YAML only
+came to replace cloud formation syntax
+following the cloudformation limited model
+hot is only for infrastructure creation
+tosca is application centric by design
+-> tosca is more universal
+hot workflow hardcoded in heat engine
+toscas interfaces allow for any workflow -> no hardcoded workflow
+tosca to hot translator project developed by ibm, huawei and others -> goal is to describe stack in tosca and use heat
+cloudify uses tosca templates directly
+  soon to use heat to orchestrate infrastructure
+  adds monitoring, log collection, analytics, workflows
+
+tosca adopted hot input and output parameters, which took that from cloudformation
+hot added software\_config provider to describe application stack explicitely
+hot adopted tosca relationship syntax and semantics
+
+\url{https://www.oasis-open.org/committees/download.php/56826/OpenStack%202015%20Tokyo%20Summit%20-%20TOSCA-and-Heat-Translator-TechTalk.pdf}
+"TOSCA-Parser" by IBM, can parse TOSCA Simple Profile in YAML
+"Heat-Translator", maps and translates non-heat (f.e. tosca) templates to hot
+  supports tosca csar
+"Murano" == OpenStack's application catalog that provides application packaging, deployment and lifecycle management - plans to integrate tosca csar
+
+\url{https://wiki.openstack.org/wiki/Heat/DSL2}
+evolve first heat/dsl and incorporate tosca and CAMP
+
+Terraform
+- AWS CloudFormation
+  - \url{https://en.wikipedia.org/wiki/RAML\_(software)} -> supported by aws api
+OpenStack Heat -> can use TOSCA
+Cloudify -> uses TOSCA
+... (see notes)
+
+Originally, \gls{toscaacr} was meant to work only with XML, but since \hl{some year or version} it also supports YAML.
+
+Terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
+
+%TODO application-distribution -> TOSCA CSAR, helm charts, openstack hot packages in murano...
+- CAMP \url{http://docs.oasis-open.org/camp/camp-spec/v1.1/cs01/camp-spec-v1.1-cs01.pdf} , \url{https://en.wikipedia.org/wiki/Cloud\_Application\_Management\_for\_Platforms}
+- Terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
+- cloudformation \url{https://www.terraform.io/intro/vs/cloudformation.html}
+
+\subsection{Pulumi}
+...
+
+% \item Primary approach \hl{Comparative Study of DSL Tools}
+% \item Guarantees provided in case of well-formedness \hl{Comparative Study of DSL Tools} %TODO this also contains "efficiency" like parallelism
+% \item Reusability of components \hl{Comparative Study of DSL Tools}
+% \item Error proneness and reporting like line number and column offset \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+% \item Efficiency: Amount of code for a given case study \hl{Comparative Study of DSL Tools}
+% \item Aspects to learn for a given case study or how hard the mental operations are \hl{Comparative Study of DSL Tools} % / learning-curve
+% \item Viscosity: How hard it is to make changes/updates \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+% \item Hidden dependencies like requiring agents, a dedicated server or a third-party software \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+% \item Visibility: How easy is it to find the responsible snippet in the codebase \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
+% \item Extensibility: Can the language be adapted to environment changes
+% \item Maturity (documentation, user-base, community): How good are edge-cases documented and how well is the product established
+% \item Ecosystem
 
 \section{Comparison of existing Domain-Specific-Languages}
 
@@ -750,65 +848,6 @@ The following overview in table \ref{tab:comparison} summarizes the results of t
 % %TODO how to handle secrets in templates
 % %TODO noecho in cloudformation still shows stuff in output, metadata etc -> how to provide a secure way not giving away credentials?
 
-
-
-[\url{https://www.opentosca.org/documents/Presentation\_TOSCA.pdf}]
-
-Two non-vendor-specific standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \url{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \url{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be abandoned since then (at least neglected).
-\\
-Second, the \gls{toscaacr} standard was first published in 2013 by the \gls{oasisacr}. The latter is also responsible for well-known standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument, PKCS\#11, \gls{samlacr} and VirtIO so its name is well-known in the world of software. Additionally, its members are not only an overwhelming number of academic or governmental institutions but een more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, SAP and VMware [\url{https://www.oasis-open.org/committees/membership.php?wg\_abbrev=tosca, https://www.oasis-open.org/committees/tosca/obligation.php}]. The latest contribution was only one week before the time of writing, so its actively pursued and developed [\url{https://www.oasis-open.org/committees/documents.php?wg\_abbrev=tosca}].
-\\
-\gls{toscaacr} has been used in some proof-of-concept projects [Domain-specific language for infrastructure as code] in 2019, but their results were disappointing: The interfaces between the core standard and the supported providers are said to be always out of date making even simple operations impossible. The tools of the ecosystem surrounding the standard are said to be non-user-friendly and their learning curves to flat \hl{/ all but steep} [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
-Still, \gls{toscaacr} has a lot of plug-ins for platforms like OpenStack, VMWare, \gls{awsacr}, \gls{gcpacr} and \gls{azureacr}, configuration management tools like ansible, chef, puppet and saltstack or container orchestrators like docker swarm and kubernetes [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}, \url{https://docs.vmware.com/en/VMware-Telco-Cloud-Automation/1.9/com.vmware.tca.userguide/GUID-43644485-9AAE-410E-89D2-3C4A56228794.html}].
-All those projects conclude that the standard is extremely promising, but the current state makes it impossible to use properly [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
-\\
-While \gls{awsacr} CloudFormation only works for a single provider, being developed by the same company that provides the infrastructure its determined to manage is a major advantage.
-cloudformation was the first?
-\\
-OpenStack Heat 
-\url{https://www.slideshare.net/openstackil/heat-tosca}
-HOT == Heat Orchestration Template, YAML only
-came to replace cloud formation syntax
-following the cloudformation limited model
-hot is only for infrastructure creation
-tosca is application centric by design
--> tosca is more universal
-hot workflow hardcoded in heat engine
-toscas interfaces allow for any workflow -> no hardcoded workflow
-tosca to hot translator project developed by ibm, huawei and others -> goal is to describe stack in tosca and use heat
-cloudify uses tosca templates directly
-  soon to use heat to orchestrate infrastructure
-  adds monitoring, log collection, analytics, workflows
-
-tosca adopted hot input and output parameters, which took that from cloudformation
-hot added software\_config provider to describe application stack explicitely
-hot adopted tosca relationship syntax and semantics
-
-\url{https://www.oasis-open.org/committees/download.php/56826/OpenStack%202015%20Tokyo%20Summit%20-%20TOSCA-and-Heat-Translator-TechTalk.pdf}
-"TOSCA-Parser" by IBM, can parse TOSCA Simple Profile in YAML
-"Heat-Translator", maps and translates non-heat (f.e. tosca) templates to hot
-  supports tosca csar
-"Murano" == OpenStack's application catalog that provides application packaging, deployment and lifecycle management - plans to integrate tosca csar
-
-\url{https://wiki.openstack.org/wiki/Heat/DSL2}
-evolve first heat/dsl and incorporate tosca and CAMP
-
-Terraform
-- AWS CloudFormation
-  - \url{https://en.wikipedia.org/wiki/RAML\_(software)} -> supported by aws api
-OpenStack Heat -> can use TOSCA
-Cloudify -> uses TOSCA
-... (see notes)
-
-Originally, \gls{toscaacr} was meant to work only with XML, but since \hl{some year or version} it also supports YAML.
-
-Terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
-
-%TODO application-distribution -> TOSCA CSAR, helm charts, openstack hot packages in murano...
-- CAMP \url{http://docs.oasis-open.org/camp/camp-spec/v1.1/cs01/camp-spec-v1.1-cs01.pdf} , \url{https://en.wikipedia.org/wiki/Cloud\_Application\_Management\_for\_Platforms}
-- Terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
-- cloudformation \url{https://www.terraform.io/intro/vs/cloudformation.html}
-
 %TODO -> how can those standards be improved? And what can be added?
 
 \section{Everything-as-a-Service}
@@ -881,14 +920,8 @@ meta/mgmt
 
 \section{Issues with existing standards and frameworks}
 - no comparison of iac dsls
-- not enough effort to integrate with other tools / dsls / clouds
+- not enough effort to integrate with other tools / dsls / clouds (vendor-lock-in seems desired)
 - either no proper standard (vendor-specific) or not enough support for multiple vendors -> everyone reinvents the wheel and wants to establish the own work as industry-standard
-- %TODO: propose solution / new approach -> integrate all, search common ground
-
-
-%%%%% notes
+- %TODO: propose solution / new approach -> integrate all, search common ground, can tosca solve this?
 
 %TODO market at bottom of iac
-
-
-
