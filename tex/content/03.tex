@@ -129,10 +129,23 @@ Since the state file is meant to mirror the current state, manual interactions w
 Pulumi is a relatively new technology. Since its first public release in 2017, it came a long way and now advertises as \textquote{\gls{iacacr} for any cloud with any language} \url{https://github.com/pulumi/pulumi/tree/v0.3} \url{https://github.com/pulumi/pulumi}. Instead of using \gls{yamlacr}, \gls{jsonacr} or \gls{hclacr}, Pulumi is available as library in several programming languages. Available are these libraries for Node.js, JavaScript, TypeScript, Python, Go(lang), and .NET Core (therefore C\#, F\#, and Visual Basic).
 
 \subsection{Open Cloud Computing Interface} % OCCI https://occi-wg.org/
-The \gls{occiacr} is a protocol and API for a range of management tasks \url{https://occi-wg.org/about/index.html}. Initially designed for \gls{iaasacr}, it has since evolved to serve other models like \gls{paasacr} and \gls{saasacr} \url{https://occi-wg.org/about/index.html}. \Gls{occiacr} is developed by the Open Grid Forum, which is backed by companies such as Dell EMC, NetApp and Oracle \url{www.hpcinthecloud.com/hpccloud/2007-09-17/whats_next_for_ogf.html} \url{https://www.networkworld.com/article/2332351/consortium-formed-to-promote-enterprise-grids.html}. Since the launch of the standard, several open source cloud providers have started to support it, including OpenStack, OpenNebula and CloudStack \url{https://occi-wg.org/community/implementations/index.html}. The last update of the specification was in 2016 \url{https://occi-wg.org/index.html}. The IT worlds changes fast, so five years since the last update are a long time.
+%wrong place?
+[\url{https://www.opentosca.org/documents/Presentation\_TOSCA.pdf}]
+
+Two non-vendor-specific standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \url{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \url{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be either abandoned or at least neglected since then.
+\newline
+\Gls{occiacr} defines a protocol and API for a range of management tasks \url{https://occi-wg.org/about/index.html}. Initially designed for \gls{iaasacr}, it has since evolved to serve other models like \gls{paasacr} and \gls{saasacr} \url{https://occi-wg.org/about/index.html}. \Gls{occiacr} is developed by the Open Grid Forum, which is backed by companies such as Dell EMC, NetApp and Oracle \url{www.hpcinthecloud.com/hpccloud/2007-09-17/whats_next_for_ogf.html} \url{https://www.networkworld.com/article/2332351/consortium-formed-to-promote-enterprise-grids.html}. Since the launch of the standard, several open source cloud providers have started to support it, including OpenStack, OpenNebula and CloudStack \url{https://occi-wg.org/community/implementations/index.html}. The last update of the specification was in 2016 \url{https://occi-wg.org/index.html}. The IT worlds changes fast, so five years since the last update are a long time.
 
 \subsection{OASIS TOSCA with Simple-Profile}
-The OASIS organisation have published quite the amount of protocol/standard specifications: AMQP, MQTT, OpenDocument, PKCS\#11, SAML, SARIF and VirtIO are only an selection of them \url{https://www.oasis-open.org/standards/}. OASIS and its standards are backed by many large organisations like Dell EMC, General Motors, IBM, SAP, Red Hat, Microsoft, Google and the MIT \url{https://www.oasis-open.org/member-roster/}. The \gls{toscaacr} standard was first published in 2013 and its latest version was released in late 2020 \url{http://docs.oasis-open.org/tosca/TOSCA/v1.0/TOSCA-v1.0.html} \url{http://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html}. The standard contains the specificiation of a file archive format called \gls{csaracr}. These archives contain five major parts \url{https://www.opentosca.org/documents/howto-build-csars.pdf}:
+The second cross-vendor standard that has emerged is called \gls{toscaacr}. It was first published in 2013 by the \gls{oasisacr}. The latter is also well-known for widespread standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument, PKCS\#11, \gls{samlacr}, SARIF and VirtIO \url{https://www.oasis-open.org/standards/}. Additionally, its members are not only an overwhelming number of academic or governmental institutions but even more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, the MIT, SAP and VMware \url{https://www.oasis-open.org/committees/membership.php?wg\_abbrev=tosca, https://www.oasis-open.org/committees/tosca/obligation.php} \url{https://www.oasis-open.org/member-roster/}. The latest contribution was only one week before the time of writing, so its actively pursued and developed \url{http://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html} \url{https://www.oasis-open.org/committees/documents.php?wg\_abbrev=tosca}.
+\newline
+\gls{toscaacr} has been used in some proof-of-concept projects [Domain-specific language for infrastructure as code] in 2019, but their results were disappointing: The interfaces between the core standard and the supported providers are described as to be always out of date making even simple operations impossible. The tools of the ecosystem surrounding the standard are said to be non-user-friendly and their learning curves to be flat [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
+Still, \gls{toscaacr} has a lot of plug-ins for platforms like OpenStack, VMWare, \gls{awsacr}, \gls{gcpacr} and \gls{azureacr}, configuration management tools like ansible, chef, puppet and saltstack or container orchestrators like docker swarm and kubernetes [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}, \url{https://docs.vmware.com/en/VMware-Telco-Cloud-Automation/1.9/com.vmware.tca.userguide/GUID-43644485-9AAE-410E-89D2-3C4A56228794.html}].
+All those projects conclude that the standard is extremely promising, but the current state makes it impossible to use properly [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
+\newline
+Since then, \gls{toscaacr} 2.0 was released, which introduced huge changes like the transition from XML- to the current \gls{yamlacr}-declaration.
+\newline
+The standard contains the specificiation of a file archive format called \gls{csaracr}. These archives contain five major parts \url{https://www.opentosca.org/documents/howto-build-csars.pdf}:
 \begin{itemize}
   \item Type definitions, where properties and interfaces are defined
   \item A topology template, that describes the overall design and how the types should interact.
@@ -140,7 +153,8 @@ The OASIS organisation have published quite the amount of protocol/standard spec
   \item Implementation artifacts, like scripts
   \item Management plans that describe certain actions, f.e. how to instantiate a new \gls{vmacr}
 \end{itemize}
-In addition to the \gls{toscaacr} standard itself, OASIS also published an extending standard called \textquote{TOSCA Simple Profile} \url{https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html}. While large parts of both specifications are redundant, Simple Profile provides the types and ecosystem needed for real-world applications of \gls{toscaacr}. The reference implementation of the \gls{toscaacr} orchestrator OpenTOSCA which interprets and executes whatever is necessary of a \gls{csaracr} definition also works with the \gls{toscaacr} Simple Profile \url{https://www.opentosca.org/documents/howto-build-csars.pdf}.
+In addition to the \gls{toscaacr} standard itself, OASIS also published an extending standard called \textquote{TOSCA Simple Profile} \url{https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html}. While large parts of both specifications are redundant, Simple Profile provides the types and ecosystem needed for real-world applications of \gls{toscaacr}. The reference implementation of the \gls{toscaacr} orchestrator, OpenTOSCA interprets and executes whatever is necessary of a \gls{csaracr} definition is also compatible with the \gls{toscaacr} Simple Profile \url{https://www.opentosca.org/documents/howto-build-csars.pdf}.
+
 
 \subsection{OASIS TOSCA with Cloudify}
 While both \gls{toscaacr} implementations / extensions of the \gls{toscaacr} standard are closely related, their included types and ecosystem are different. Yet, their approach is similar: Both have their orchestrator implemented as backend of a webapplication. Both allow visualization and (partial) graphical editing of the \gls{csaracr} definitions. Both provider the user with a catalog of example use-cases.
@@ -236,9 +250,9 @@ It is important to note that it is out of this thesis' scope to compare the lang
 % - dynamic semantics: what the model means or expresses
 
 \section{Selection}
-Since previously, many \gls{dslacr}s were ruled out, this thesis is going to look at only three languages in more detail. These are HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK) and TOSCA in combination with the \textquote{Simple-Profile} extension.
+Since previously, many \gls{dslacr}s were ruled out, this thesis is going to look at only three languages in more detail. These are HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK) and TOSCA in combination with its \textquote{Simple-Profile} extension.
 \newline
-%The following text and the table should be after the text for all three languages
+%TODO The following text and the table should be after the text for all three languages
 The following overview in table \ref{tab:comparison} summarizes the results of the comparison. The score in each cell is either \textquote{average} (abbreviated with \textquote{\char`\~}), \textquote{worse}, or \textquote{better}. By default every score has the value \textquote{average}. Depending on the comparison to the average features, the values can then be \textquote{worse} or \textquote{better}.
 
 \begin{table}[H]
@@ -315,83 +329,80 @@ Because the architecture of Terraform is highly plugin-based and these plugins a
 The plugin system is cure and blessing at the same time. It enables extraordinary extensibility, but makes it sometimes hard to reuse snippets - what works for one provider most often doesn't work for another, too. The system allows for cross-plugin dependencies, so that really every infrastructure integration can be described. But the quality of the ecosystem depends on the quality of the plugins in most cases. Terraforms user-base is huge, and it is the current state-of-the art. %TODO source
 Therefore, its maturity is very high, most edge cases are covered, the documentation is great, and the very same applies to the most common plugins.
 \newline
-In larger environments, making the correct change to the infrastructure described with \gls{hclacr} can be hard. Not only does the developer need to know all of the used technologies/platforms/providers used in the state description, but he has to find which one applies to the desired bit as well.
+In larger environments, making the correct change to the infrastructure described with \gls{hclacr} can be hard. Not only does the developer need to know all used technologies, platforms, providers and their specific products and jargon used in the state description, but it has to determine which one applies to the desired bit as well.
 
 \subsection{OASIS TOSCA with Simple-Profile}
-%wrong place?
-[\url{https://www.opentosca.org/documents/Presentation\_TOSCA.pdf}]
+As described earlier, infrastructure in \gls{toscaacr} is modelled via \gls{csaracr} files. The main part is the so-called Topology Template: It describes how the different parts of a system interact with each other, gives a holistic overview and defines variable values. Because the parts (for example a webapplication on a webserver that references a database on another server) can often be reused for other infrastructure parts (or other applications), it makes sense to split some kind of generic description for those parts from the concrete definition. \Gls{toscaacr} does this with its type definitions. They are optional and not part of the topology template, and their sole purpose is to provide some kind of generic template of a component. The standard allows for different kinds of types; The most intuitive type is the node type. In \gls{toscaacr} context, nodes does not refer to only machines or servers, but all components that can be defined via software. This includes low-level applications like operating systems, intermediate middleware programs like web- and database-servers, as well as high-level software like the webapplications running on them. The other types are more specialized. For example artifact types are used to describe constant artifacts like \gls{osacr}-images, scripts and other external (as in non-\gls{toscaacr}) files. The other type categories are data-, capability-, interface-, relationship-, group- and policy-types. They are mostly self-explaining, but the capability and requirement system of \gls{toscaacr} is worth additional description. In order to reflect where relationships are allowed (for example a webapplication cannot run on a database server), the standard has the aforementioned system. Corresponding capabilities interlock with requirements like puzzle pieces. An example: Assuming a node has a requirement \textquote{container runtime}, it can only be assigned to an underlying node that offers a capability with the same name. To satisfy this constraint, \gls{toscaacr} orchestrators know they need a node that offers that capability. If there isn't one, they will try to create one. If the container runtime itself has other requirements like \textquote{compute}, the orchestrator will resolve those as well.
 
-Two non-vendor-specific standards for describing \gls{iacacr} in a formal way have emerged. First, \gls{occiacr} which was published by the \gls{ogfacr} Open Grid Forum in 2011 \url{https://www.ogf.org/documents/GFD.183.pdf}. Their organizational member list mirrors their mainly academic purpose \url{https://www.ogf.org/ogf/doku.php/members/organizational\_members}. Yet, the website of the \gls{occiacr} standard reveals that the last contribution happened back in 2016, so this project seems to be abandoned since then (at least neglected).
-\\
-Second, the \gls{toscaacr} standard was first published in 2013 by the \gls{oasisacr}. The latter is also responsible for well-known standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument, PKCS\#11, \gls{samlacr} and VirtIO so its name is well-known in the world of software. Additionally, its members are not only an overwhelming number of academic or governmental institutions but een more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, SAP and VMware [\url{https://www.oasis-open.org/committees/membership.php?wg\_abbrev=tosca, https://www.oasis-open.org/committees/tosca/obligation.php}]. The latest contribution was only one week before the time of writing, so its actively pursued and developed [\url{https://www.oasis-open.org/committees/documents.php?wg\_abbrev=tosca}].
-\\
-\gls{toscaacr} has been used in some proof-of-concept projects [Domain-specific language for infrastructure as code] in 2019, but their results were disappointing: The interfaces between the core standard and the supported providers are said to be always out of date making even simple operations impossible. The tools of the ecosystem surrounding the standard are said to be non-user-friendly and their learning curves to flat \hl{/ all but steep} [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
-Still, \gls{toscaacr} has a lot of plug-ins for platforms like OpenStack, VMWare, \gls{awsacr}, \gls{gcpacr} and \gls{azureacr}, configuration management tools like ansible, chef, puppet and saltstack or container orchestrators like docker swarm and kubernetes [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}, \url{https://docs.vmware.com/en/VMware-Telco-Cloud-Automation/1.9/com.vmware.tca.userguide/GUID-43644485-9AAE-410E-89D2-3C4A56228794.html}].
-All those projects conclude that the standard is extremely promising, but the current state makes it impossible to use properly [\url{https://www.admin-magazin.de/Das-Heft/2018/02/Apache-ARIA-TOSCA}].
+\begin{figure}[H]
+  \includegraphics[width=14cm]{tosca_overview}
+  \centering
+  \caption{Architecture of \gls{toscaacr} and the components of \gls{csaracr} files} %TODO add source: official tosca spec
+  \label{image:tosca_overview}
+\end{figure}
 
-
-... %CURRENT
-
-% \item Primary approach \hl{Comparative Study of DSL Tools}
-% \item Guarantees provided in case of well-formedness \hl{Comparative Study of DSL Tools} %TODO this also contains "efficiency" like parallelism
-% \item Reusability of components \hl{Comparative Study of DSL Tools}
-% \item Error proneness and reporting like line number and column offset \hl{Comparative Study of DSL Tools} \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
-% \item Efficiency: Amount of code for a given case study \hl{Comparative Study of DSL Tools}
-% \item Aspects to learn for a given case study or how hard the mental operations are \hl{Comparative Study of DSL Tools} % / learning-curve
-% \item Viscosity: How hard it is to make changes/updates \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
-% \item Hidden dependencies like requiring agents, a dedicated server or a third-party software \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
-% \item Visibility: How easy is it to find the responsible snippet in the codebase \hl{Comparing General-Purpose and Domain-Specific Languages - An Empirical Study}
-% \item Extensibility: Can the language be adapted to environment changes
-% \item Maturity (documentation, user-base, community): How good are edge-cases documented and how well is the product established
-% \item Ecosystem
+The last part contained in \gls{csaracr} files are the management plans. They describe the lifecycle of nodes and how to achieve them. Examples are instantiation, configuration and deallocating/uninstallation/deletion (depending on the resource type).
+\newline
+%TODO add official spec as source
+\newline
+The standard supports imports with or without namespacing. One potential import is the Simple-Profile extension.
+It adds a basic set of such predefined types to the standard, for example the node-types Compute, Webserver, and Webapplication with necessary requirements and capabilities.
+\newline
+While \gls{toscaacr} does not seem to be very widespread, its origin from OASIS and the many and huge companies backing it and involved in its development make it a very promising standard.
+\newline
+The architecture of the \gls{csaracr} files and the ability of inclusions and substitutions make it relatively easy to find the corresponding code for a certain component.
+\newline
+This, and the fact that versioning is not only possible but even required by design make changes in the infrastructure or lifecycles easily managable.
 
 
-OpenStack Heat 
-\url{https://www.slideshare.net/openstackil/heat-tosca}
-HOT == Heat Orchestration Template, YAML only
-came to replace cloud formation syntax
-following the cloudformation limited model
-hot is only for infrastructure creation
-tosca is application centric by design
--> tosca is more universal
-hot workflow hardcoded in heat engine
-toscas interfaces allow for any workflow -> no hardcoded workflow
-tosca to hot translator project developed by ibm, huawei and others -> goal is to describe stack in tosca and use heat
-cloudify uses tosca templates directly
-  soon to use heat to orchestrate infrastructure
-  adds monitoring, log collection, analytics, workflows
+% TODO integrate the following findings into this and the previous sections.
 
-tosca adopted hot input and output parameters, which took that from cloudformation
-hot added software\_config provider to describe application stack explicitely
-hot adopted tosca relationship syntax and semantics
+% \url{https://www.slideshare.net/openstackil/heat-tosca}
+% HOT == Heat Orchestration Template, YAML only
+% came to replace cloud formation syntax
+% following the cloudformation limited model
+% hot is only for infrastructure creation
+%! tosca is application centric by design
+%! -> tosca is more universal
+%! hot workflow hardcoded in heat engine
+%! toscas interfaces allow for any workflow -> no hardcoded workflow
+%! tosca to hot translator project developed by ibm, huawei and others -> goal is to describe stack in tosca and use heat
+% cloudify uses tosca templates directly
+%   soon to use heat to orchestrate infrastructure
+%   adds monitoring, log collection, analytics, workflows
 
-\url{https://www.oasis-open.org/committees/download.php/56826/OpenStack%202015%20Tokyo%20Summit%20-%20TOSCA-and-Heat-Translator-TechTalk.pdf}
-"TOSCA-Parser" by IBM, can parse TOSCA Simple Profile in YAML
-"Heat-Translator", maps and translates non-heat (f.e. tosca) templates to hot
-  supports tosca csar
-"Murano" == OpenStack's application catalog that provides application packaging, deployment and lifecycle management - plans to integrate tosca csar
+%! tosca adopted hot input and output parameters, which took that from cloudformation
+% hot added software\_config provider to describe application stack explicitely
+% hot adopted tosca relationship syntax and semantics
 
-\url{https://wiki.openstack.org/wiki/Heat/DSL2}
-evolve first heat/dsl and incorporate tosca and CAMP
+% \url{https://www.oasis-open.org/committees/download.php/56826/OpenStack%202015%20Tokyo%20Summit%20-%20TOSCA-and-Heat-Translator-TechTalk.pdf}
+% "TOSCA-Parser" by IBM, can parse TOSCA Simple Profile in YAML
+% "Heat-Translator", maps and translates non-heat (f.e. tosca) templates to hot
+%   supports tosca csar
+% "Murano" == OpenStack's application catalog that provides application packaging, deployment and lifecycle management - plans to integrate tosca csar
 
-Terraform
-- AWS CloudFormation
-  - \url{https://en.wikipedia.org/wiki/RAML\_(software)} -> supported by aws api
-OpenStack Heat -> can use TOSCA
-Cloudify -> uses TOSCA
-... (see notes)
+% \url{https://wiki.openstack.org/wiki/Heat/DSL2}
+% evolved first heat/dsl and incorporate tosca and CAMP
 
-Originally, \gls{toscaacr} was meant to work only with XML, but since \hl{some year or version} it also supports YAML.
+% Terraform
+% - AWS CloudFormation
+%   - \url{https://en.wikipedia.org/wiki/RAML\_(software)} -> supported by aws api
+% OpenStack Heat -> can use TOSCA
+% Cloudify -> uses TOSCA
+% ... (see notes)
 
-Terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
+% Terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
 
-%TODO application-distribution -> TOSCA CSAR, helm charts, openstack hot packages in murano...
-- CAMP \url{http://docs.oasis-open.org/camp/camp-spec/v1.1/cs01/camp-spec-v1.1-cs01.pdf} , \url{https://en.wikipedia.org/wiki/Cloud\_Application\_Management\_for\_Platforms}
-- Terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
-- cloudformation \url{https://www.terraform.io/intro/vs/cloudformation.html}
+% %TODO application-distribution -> TOSCA CSAR, helm charts, openstack hot packages in murano...
+% - CAMP \url{http://docs.oasis-open.org/camp/camp-spec/v1.1/cs01/camp-spec-v1.1-cs01.pdf} , \url{https://en.wikipedia.org/wiki/Cloud\_Application\_Management\_for\_Platforms}
+% - Terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
+% - cloudformation \url{https://www.terraform.io/intro/vs/cloudformation.html}
+
+\subsection{ONLY READ UNTIL HERE}
 
 \subsection{Pulumi}
-...
+
+... %CURRENT
 
 % \item Primary approach \hl{Comparative Study of DSL Tools}
 % \item Guarantees provided in case of well-formedness \hl{Comparative Study of DSL Tools} %TODO this also contains "efficiency" like parallelism
@@ -834,7 +845,7 @@ Terraform is very similar to tosca, but because its usability is higher and its 
 % - implement one or two reference providers (direct)
 % - 
 % ---
-% implementation details:
+% implementation details (terraform):
 % - grpc as rpc between modules / for plugin-architecture, requires server and clients to be running in parallel - how to start on demand?
 %   - ssl/tls by default
 %   - grpc-web might enable gui-stuff
