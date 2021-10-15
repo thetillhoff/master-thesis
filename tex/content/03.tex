@@ -183,7 +183,7 @@ As described earlier, all languages that are imperatively describing infrastruct
 \newline
 As already stated earlier, Amazon CloudFormation is too AWS-specific to be easily extended to bare-metal and is therefore also not an option.
 \newline
-The implementations of OCCI-compatible software are severely outdated, and their interrelated deprecation/maintenance levels are confusing to say the least \cite{occi_openstack} \cite{occi-opennebula} \cite{github_tmetsch_occi_os} \cite{github_stackforge_occi_os}.
+The implementations of OCCI-compatible software are severely outdated, and their interrelated deprecation/maintenance levels are confusing to say the least \cite{occi_openstack} \cite{occi_opennebula} \cite{github_tmetsch_occi_os} \cite{github_stackforge_occi_os}.
 That, and because the latest release of the OCCI standard was over five years ago, as well as sources stating OCCI software does not work even with basic examples, together with an accompanying recommendation to use \gls{toscaacr} instead, % TODO add source (OCCI/TOSCA comparison)
 OCCI will not be looked at in too much detail as well. For example, the documentation for the OpenStack implementation \cite{occi_openstack} recommends to visit the corresponding wiki-site, which is even older \cite{openstack_occi}.
 \newline
@@ -197,14 +197,18 @@ Due to its origin, OpenStack Heat definitely has the ability to possibly solve t
   % {\small
   \begin{tabular}{ | l | l | }
     \hline
-    Language & State/Description \\
+    Language & Reason \\
     \hline
-    Ansible, Chef, Puppet & Ruled out because they are made for configuration management, not provisioning. \\
+    Ansible, Chef, Puppet & \makecell{Ruled out because they are made for configuration \\ management, not provisioning.} \\
+    \hline
     CloudFormation & Ruled out because it is too AWS-specific. \\
-    OCCI & Ruled out because of old/outdated specificiation and tools. \\
+    \hline
+    OCCI & \makecell{Ruled out because of old/outdated specificiation \\ and tools.} \\
+    \hline
     Heat/HOT & Ruled out because of unfeasable prerequisites. \\
-    inofficial TOSCA extensions & Ruled out because too many and closely related to original TOSCA. \\
-    \hline & . \\
+    \hline
+    inofficial TOSCA extensions & \makecell{Ruled out because too many and closely related to \\ original TOSCA.} \\
+    \hline
   \end{tabular}
   % }
   \label{tab:afterculling}
@@ -212,7 +216,7 @@ Due to its origin, OpenStack Heat definitely has the ability to possibly solve t
 
 \section{Dimensions of a comparison}
 Choosing and selecting the best language for a task is hard. Not only is it hard to agree on what is important to compare, nor is it just time-consuming, but it is greatly domain-specific as well.
-There exist multiple comparisons or -methods for \gls{dslacr}s already, most of which are not infrastructure-specific \cite{comparative_study_dsl_tools} \cite{comparing_gpl_dsl} \cite{dsl_for_iac} \cite{allgemeine_modeltheorie}. %TODO add MODE lecture notes as source as well
+There exist multiple comparisons or -methods for \gls{dslacr}s already, most of which are not infrastructure-specific \cite{comparative_study_of_dsl_tools} \cite{comparing_gpl_dsl} \cite{dsl_for_iac} \cite{allgemeine_modeltheorie}. %TODO add MODE lecture notes as source as well
 They compare based on attributes like (no specific order):
 
 \begin{itemize}
@@ -250,51 +254,11 @@ It is important to note that it is out of this thesis' scope to compare the lang
 % - dynamic semantics: what the model means or expresses
 
 \section{Selection}
-Since previously, many \gls{dslacr}s were ruled out, this thesis is going to look at only three languages in more detail. These are HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK) and TOSCA in combination with its \textquote{Simple-Profile} extension.
-\newline
-%TODO The following text and the table should be after the text for all three languages
-The following overview in table \ref{tab:comparison} summarizes the results of the comparison. The score in each cell is either \textquote{average} (abbreviated with \textquote{\char`\~}), \textquote{worse}, or \textquote{better}. By default every score has the value \textquote{average}. Depending on the comparison to the average features, the values can then be \textquote{worse} or \textquote{better}.
-
-\begin{table}[H]
-  % \centering
-  \caption{Overview over the \gls{dslacr} comparison results - TODO adjust to new structure}
-  % {\small
-  \begin{tabular}{ | l | l | l | l | l | }
-    \hline
-    Dimension & HCL/Terraform & Pulumi & TOSCA Simple-Profile \\
-    \hline
-    Approach & \char`\~ &\char`\~ &\char`\~ \\
-    % Abstraction level & \char`\~ &\char`\~ &\char`\~ \\
-    % Isomorphism & \char`\~ &\char`\~ &\char`\~ \\
-    Guarantees & \char`\~ &\char`\~ &\char`\~ \\
-    Reusability & \char`\~ &\char`\~ &\char`\~ \\
-    Errorproneness & \char`\~ &\char`\~ &\char`\~ \\
-    Amount of code & \char`\~ &\char`\~ &\char`\~ \\
-    Aspects to learn & \char`\~ &\char`\~ &\char`\~ \\
-    Viscosity & \char`\~ &\char`\~ &\char`\~ \\
-    Dependencies & \char`\~ &\char`\~ &\char`\~ \\
-    Visibility & \char`\~ &\char`\~ &\char`\~ \\
-    Extensibility & \char`\~ &\char`\~ &\char`\~ \\
-    Maturity & \char`\~ &\char`\~ &\char`\~ \\
-    Ecosystem & \char`\~ &\char`\~ &\char`\~ \\
-    \hline
-  \end{tabular}
-  % }
-  \label{tab:comparison}
-\end{table}
-
-
-% TODO Actual comparison
-
-% Discussion of previous results and why one is better than others
-% Why Terraform and TOSCA are the favorits
-% Why TOSCA is better
-
+Previously, many \gls{dslacr}s were ruled out, so this thesis is going to look at the remaining three languages in more detail. These are HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK) and TOSCA in combination with its \textquote{Simple-Profile} extension.
 
 \subsection{HashiCorp Configuration Language and Terraform}
 The Configuration Language used by Terraform is a mixture between \gls{jsonacr}, \gls{yamlacr} and a programming language like Golang.
-To give a first impression, the \gls{jsonacr} in code-snippet 1 %TODO add proper number/ref
-expresses the very same as the \gls{hclacr} in code-snippet 2 %TODO add proper number/ref
+To give a first impression, the \gls{jsonacr} in code-snippet \ref{code:json_example} expresses the very same as the \gls{hclacr} in code-snippet \ref{code:hcl_example}.
 
 \begin{listing}[H]\begin{addmargin}[2em]{2em}\begin{minted}[linenos,bgcolor=lightgray,breaklines,escapeinside=||]{json}
   "resource": {
@@ -342,7 +306,6 @@ As described earlier, infrastructure in \gls{toscaacr} is modelled via \gls{csar
 \end{figure}
 
 The last part contained in \gls{csaracr} files are the management plans. They describe the lifecycle of nodes and how to achieve them. Examples are instantiation, configuration and deallocating/uninstallation/deletion (depending on the resource type).
-\newline
 %TODO add official spec as source
 \newline
 The standard supports imports with or without namespacing. One potential import is the Simple-Profile extension.
@@ -417,6 +380,42 @@ This, and the fact that versioning is not only possible but even required by des
 % \item Ecosystem
 
 \section{Comparison of existing Domain-Specific-Languages}
+
+% TODO Actual comparison
+
+% Discussion of previous results and why one is better than others
+% Why Terraform and TOSCA are the favorits
+% Why TOSCA is better
+
+The following overview in table \ref{tab:comparison} summarizes the results of the comparison. The score in each cell is either \textquote{average} (abbreviated with \textquote{\char`\~}), \textquote{worse}, or \textquote{better}. By default every score has the value \textquote{average}. Depending on the comparison to the average features, the values can then be \textquote{worse} or \textquote{better}.
+
+\begin{table}[H]
+  % \centering
+  \caption{Overview over the \gls{dslacr} comparison results - TODO adjust to new structure}
+  % {\small
+  \begin{tabular}{ | l | l | l | l | l | }
+    \hline
+    Dimension & HCL/Terraform & Pulumi & TOSCA Simple-Profile \\
+    \hline
+    Approach & \char`\~ &\char`\~ &\char`\~ \\
+    % Abstraction level & \char`\~ &\char`\~ &\char`\~ \\
+    % Isomorphism & \char`\~ &\char`\~ &\char`\~ \\
+    Guarantees & \char`\~ &\char`\~ &\char`\~ \\
+    Reusability & \char`\~ &\char`\~ &\char`\~ \\
+    Errorproneness & \char`\~ &\char`\~ &\char`\~ \\
+    Amount of code & \char`\~ &\char`\~ &\char`\~ \\
+    Aspects to learn & \char`\~ &\char`\~ &\char`\~ \\
+    Viscosity & \char`\~ &\char`\~ &\char`\~ \\
+    Dependencies & \char`\~ &\char`\~ &\char`\~ \\
+    Visibility & \char`\~ &\char`\~ &\char`\~ \\
+    Extensibility & \char`\~ &\char`\~ &\char`\~ \\
+    Maturity & \char`\~ &\char`\~ &\char`\~ \\
+    Ecosystem & \char`\~ &\char`\~ &\char`\~ \\
+    \hline
+  \end{tabular}
+  % }
+  \label{tab:comparison}
+\end{table}
 
 % --------------------------------------------------------------------------
 % ```yaml
