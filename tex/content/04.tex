@@ -55,7 +55,7 @@
 
 \section{Features}
 %TODO chapter introduction
-%TODO describe library/package architecture
+%TODO describe chosen library/package architecture
 %TODO explain why features were implemented in this order
 
 \subsection{TOSCA package}
@@ -65,7 +65,7 @@ The other implementations were unfinished and could not be taken as references. 
 The library that was developed is the result of a line-by-line read-through with parallel implementation of the whole \gls{toscaacr} standard specification.
 \newline
 With it, it is possible to parse any Service Templates, Types, and Topologies.
-In addition to parsing them and creating Go-native structures out of them, basic functionalities like the %TODO how are the ycalled?
+In addition to parsing them and creating Go-native structures out of them, basic functionalities like the %TODO how are they called?
 functions or validation of elements, it is limited to one implementation type, Bash, while the specification states that Python should be supported as well. There are several occasions, where the specification is very unclear, or simply incomplete. These cases are mostly about edge cases and were not required for the proof-of-concept this thesis tries to achieve. Therefore, they were left out of the implementation.
 \newline
 Because the basic TOSCA specification describes how to work with extensions like the TOSCA Simple Profile, it was possible to implement such imports, references, and relations as well. This means, the TOSCA library (called package in Golang context) is fully compatible with the TOSCA Simple Profile and all other extensions.
