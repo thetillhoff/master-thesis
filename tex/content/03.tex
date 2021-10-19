@@ -78,6 +78,8 @@ As long as there are few properties that change, it is absolutely feasable to us
 \section{Domain-Specific Languages for Infrastructure-as-Code} % forcing full name
 % overview, introduce them all
 There is a vast amount of \gls{dslacr}s for \gls{iacacr}. Yet, they greatly differ in their purpose, flexibility and other parameters. This chapter aims at identifying the differences, comparing them and finally selecting the most appropriate \gls{dslacr} to be extended to bare-metal.
+\newline
+Since in most cases there is no obvious perfect solution, the selection process needs first gather the most prominent options. Because there are many \gls{dslacr}s, languages need to be ruled out based on their limitations afterwards. As an intermediate result, two or three languages should remain. These can than be compared on a deeper level, for example whether their internal design allows to easily extend it. Based on the better understanding gained in that step, a meaningful decision can be made.
 
 \subsection{Amazon CloudFormation}
 CloudFormation supports both JSON and YAML, is declarative and typed \cite{aws_cfn_concept}. The typing is done with an additional field \textquote{type} for all components. An example type is \mintinline[bgcolor=lightgray,breaklines]{bash}{AWS::EC2::Instance}, so it has the format of \mintinline[bgcolor=lightgray,breaklines]{bash}{AWS::ProductIdentifier::ResourceType} \cite{aws_cfn_concept}.
@@ -127,6 +129,8 @@ Since the state file is meant to mirror the current state, manual interactions w
 
 \subsection{Pulumi}
 Pulumi is a relatively new technology. Since its first public release in 2017, it came a long way and now advertises as \textquote{\gls{iacacr} for any cloud with any language} \cite{github_pulumi_first_release} \cite{github_pulumi}. Instead of using \gls{yamlacr}, \gls{jsonacr} or \gls{hclacr}, Pulumi is available as library in several programming languages. Available are these libraries for Node.js, JavaScript, TypeScript, Python, Go(lang), and .NET Core (therefore C\#, F\#, and Visual Basic).
+\newline
+The very different approach Pulumi takes is extremely interesting: It takes the \textquote{as code} part of \gls{iacacr} to a new level. On the other side it has no documentation on how to extend it and the current state only supports public clouds and kubernetes \cite{pulumi_providers}. This renders it basically useless for the scope of this thesis.
 
 \subsection{Open Cloud Computing Interface} % OCCI https://occi-wg.org/
 %wrong place?
@@ -167,7 +171,7 @@ Being one of the best-known \gls{iacacr} tools, Ansibles user base is huge and i
 \subsection{Others}
 There are really a lot of \gls{dslacr}s around \gls{iacacr}. Many of them were not introduced here. The main reason is that their purpose is different or their approach doesn't fit. As an example for the latter, cobbler is only about hardware provisioning, but it is not designed for managing virtual machines or describing applications that run on them. On the other side, VMware vSphere can do most of that (it is not made for describing applications though), but it is primarily GUI based, and therefore only partially usable for \gls{iacacr}.
 
-\section{Culling based on limitations}
+\section{Exclusion based on limitations}
 % remove the ones that don't fit like CloudFormation, Vagrant
 The tools and \gls{dslacr}s around \gls{iacacr} can mostly be split up into two fields: On one side is the provisioning, where instantiation is the main purpose. On the other side is configuration management, where instantiation is \textquote{assumed} and the goal is to change configurations. Some of the most promiment examples are Terraform, Cloudformation, Heat, and Vagrant for provisioning and Ansible, Chef or Puppet for configuration management \cite{iac_report} \cite{iac_oreilly} \cite{terraform_cloudformation} \cite{terraform_chef_puppet} \cite{atlassian_iac}.
 \newline
@@ -189,6 +193,8 @@ OCCI will not be looked at in too much detail as well. For example, the document
 \newline
 Due to its origin, OpenStack Heat definitely has the ability to possibly solve the initially described problems of this thesis. Sadly enough, its documentation leaves much to be desired \cite{openstack_heat}. Additionally, there are few examples, and to run it even in a proof-of-concept style requires to install and run many components of OpenStack. These requirements make it not only unfeasable for smaller infrastructures, but for "from-scratch" deployments like the one desired in this thesis as well.
 \newline
+While Pulumi has an extremely interesting approach with using actual programming languages as medium, it is neither easily extensible nor does it aim at provisioning infrastructure itself. Instead it parses the infrastructure code and communicates with the corresponding providers. Based on both of these limitations Pulumi is not a valid potential candidate for the scope of this thesis.
+\newline
 \Gls{toscaacr} has several implementations and corresponding (inofficial) extensions like Cloudify, Alien 4 Cloud or Puccini. It is ouf of this thesis' capabilities to compare all of them. Therefore, only the official extension, named \textquote{Simple-Profile} will be included in the comparison.
 
 \begin{table}[H]
@@ -206,6 +212,8 @@ Due to its origin, OpenStack Heat definitely has the ability to possibly solve t
     OCCI & \makecell{Ruled out because of old/outdated specificiation \\ and tools.} \\
     \hline
     Heat/HOT & Ruled out because of unfeasable prerequisites. \\
+    \hline
+    Pulumi & Ruled out because only public clouds and kubernetes are supported. \\
     \hline
     inofficial TOSCA extensions & \makecell{Ruled out because too many and closely related to \\ original TOSCA.} \\
     \hline
@@ -253,8 +261,8 @@ It is important to note that it is out of this thesis' scope to compare the lang
 % - static semantics: evaluatable without executing/interpreting the model
 % - dynamic semantics: what the model means or expresses
 
-\section{Selection}
-Previously, many \gls{dslacr}s were ruled out, so this thesis is going to look at the remaining three languages in more detail. These are HashiCorp Configuration Language (HCL), Pulumi (Golang-SDK) and TOSCA in combination with its \textquote{Simple-Profile} extension.
+\section{Comparison}
+Previously, many \gls{dslacr}s were ruled out, so this thesis is going to look at the remaining three languages in more detail. These are HashiCorp Configuration Language (HCL) with the tool Terraform and TOSCA in combination with its \textquote{Simple-Profile} extension.
 
 \subsection{HashiCorp Configuration Language and Terraform}
 The Configuration Language used by Terraform is a mixture between \gls{jsonacr}, \gls{yamlacr} and a programming language like Golang.
@@ -286,306 +294,24 @@ To give a first impression, the \gls{jsonacr} in code-snippet \ref{code:json_exa
   \end{addmargin}
 \end{listing}
 
-The language is able to display the same amount of information in a denser way. This has both positive and negative effects: On one side, the fewer brackets enable users to focus on the actual content. On the other side, it is a complete new languages, and developers first need to learn it.
+The language is able to display the same amount of information in a denser way. This has both positive and negative effects: On one hand, the fewer brackets enable users to focus on the actual content. On the other hand, it is its own language, and developers first need to learn it.
 \newline
-Because the architecture of Terraform is highly plugin-based and these plugins are often developed by third parties, the documentation of the core tool never mentions anything about guarantees.
+The architecture of Terraform is highly plugin-based and these plugins are often developed by third parties. Terraform accomplishes its integration with those via \gls{rpcacr}. This means, that each plugin is an executable on its own. And when deploying with Terraform, it simply invokes the necessary executables. When invoked, plugins could use a library dedicated for the provider, communicate with \gls{apiacr}s or invoke other executables. This approach also allows plugin developers to decide on the programming language of their choice. At the same time, it outsources authentication for each provider to the corresponding plugin. The core Terrafrom executable can detect necessary plugins out of the provided code and downloads them automatically from a repository like the Terraform registry.
 \newline
-The plugin system is cure and blessing at the same time. It enables extraordinary extensibility, but makes it sometimes hard to reuse snippets - what works for one provider most often doesn't work for another, too. The system allows for cross-plugin dependencies, so that really every infrastructure integration can be described. But the quality of the ecosystem depends on the quality of the plugins in most cases. Terraforms user-base is huge, and it is the current state-of-the art. %TODO source
-Therefore, its maturity is very high, most edge cases are covered, the documentation is great, and the very same applies to the most common plugins.
+Still, the plugin system is cure and blessing at the same time. It enables extraordinary extensibility, yet makes it hard to reuse snippets - what works for one provider most often doesn't work for another that provides basically the very same featureset. On the other side, being able to share the same provider integration across organizations is a huge bonus that reduces overall duplicate work. The system allows for cross-plugin dependencies, so that really every infrastructure integration can be described. But the quality of the ecosystem depends on the quality of the plugins in most cases. Since Terraforms user-base is huge, most plugins are relatively mature. This means most edge cases are covered, the documentation is great, and most features of a provider are available.
 \newline
-In larger environments, making the correct change to the infrastructure described with \gls{hclacr} can be hard. Not only does the developer need to know all used technologies, platforms, providers and their specific products and jargon used in the state description, but it has to determine which one applies to the desired bit as well.
-
-\subsection{OASIS TOSCA with Simple-Profile}
-As described earlier, infrastructure in \gls{toscaacr} is modelled via \gls{csaracr} files. As described in figure \ref{image:tosca_overview}, these archives contain multiple parts: The main component is the so-called Topology Template: It describes how the different parts of a system interact with each other, gives a holistic overview and defines variable values. Because the parts (for example a webapplication on a webserver that references a database on another server) can often be reused for other infrastructure parts (or other applications), it makes sense to split some kind of generic description for those parts from the concrete definition. \Gls{toscaacr} does this with its type definitions. They are optional and not part of the topology template, and their sole purpose is to provide some kind of generic template of a component. The standard allows for different kinds of types; The most intuitive type is the node type. In \gls{toscaacr} context, nodes does not refer to only machines or servers, but all components that can be defined via software. This includes low-level applications like operating systems, intermediate middleware programs like web- and database-servers, as well as high-level software like the webapplications running on them. The other types are more specialized. For example artifact types are used to describe constant artifacts like \gls{osacr}-images, scripts and other external (as in non-\gls{toscaacr}) files. The other type categories are data-, capability-, interface-, relationship-, group- and policy-types. They are mostly self-explaining, but the capability and requirement system of \gls{toscaacr} is worth additional description. In order to reflect where relationships are allowed (for example a webapplication cannot run on a database server), the standard has the aforementioned system. Corresponding capabilities interlock with requirements like puzzle pieces. An example: Assuming a node has a requirement \textquote{container runtime}, it can only be assigned to an underlying node that offers a capability with the same name. To satisfy this constraint, \gls{toscaacr} orchestrators know they need a node that offers that capability. If there isn't one, they will try to create one. If the container runtime itself has other requirements like \textquote{compute}, the orchestrator will resolve those as well.
-
-\begin{figure}[H]
-  \includegraphics[width=14cm]{tosca_overview}
-  \centering
-  \caption{Architecture of \gls{toscaacr} and the components of \gls{csaracr} files} %TODO add source: official tosca spec
-  \label{image:tosca_overview}
-\end{figure}
-
-The last part contained in \gls{csaracr} files are the management plans. They describe the lifecycle of nodes and how to achieve them. Examples are instantiation, configuration and deallocating/uninstallation/deletion (depending on the resource type).
-%TODO add official spec as source
+In larger environments, making the correct change to the infrastructure described with \gls{hclacr} can be hard. Not only does the developer need to know all used technologies, platforms, providers and their specific products and jargon used in the state description, but it has to determine which one relates to the bit it wants to change as well.
 \newline
-The standard supports imports with or without namespacing. One potential import is the Simple-Profile extension.
-It adds a basic set of such predefined types to the standard, for example the node-types Compute, Webserver, and Webapplication with necessary requirements and capabilities.
+Using Terraform comes with three steps: Authoring the infrastructure configuration as code, (automated) planning on how to achieve the desired state and applying/provisioning the desired infrastructure \cite{terraform_workflow}. The authoring part is self-explaining. The planning is done automatically by the Terraform executable \cite{terraform_workflow}. It compares the state described in the code with the current state, and create an execution plan, where things are parallelized as much as possible.
 \newline
-While \gls{toscaacr} does not seem to be very widespread, its origin from OASIS and the many and huge companies backing it and involved in its development make it a very promising standard.
+Instead of retrieving the current state via \gls{apiacr}s directly from the providers, Terraform maintains a local state(-file). Apart from mapping configuration to real world instance identifiers (like an \gls{vmacr}-identifier for example) it is used to significantly improve the performance of the planning phase \cite{terraform_state}; The local mirroring of the actual state enables Terraform to work with the state as fast as a local file-accesss instead of requiring several \gls{apiacr}-requests. This is especially convenient in large environments, where the provisioned state consists of hundreds or thousands of instances \cite{terraform_state_purpose}.
+The local caching of the state has the downside that it is required to sync the state of all invocations of Terraform for the same infrastructure \cite{terraform_state_purpose} in order to prevent race conditions when deploying. If Terraform is integrated in a sole \gls{cicdacr} pipeline this is not a problem as there is only one instance. For all other cases the documentation of Terraform recommends to use a so-called remote state backend that provides state locking as a main feature \cite{terraform_remote_state}. Supported backends range from a shared folder over Terraform Cloud to S3-compatible object storages.
 \newline
-The architecture of the \gls{csaracr} files and the ability of inclusions and substitutions make it relatively easy to find the corresponding code for a certain component.
+It is strongly advised against manipulating the state manually \cite{terraform_state}. Errors are hard to debug, since Terraform assumes that the state is always valid. Apart from manual changes, failures during state-migration (when applying a new state and writing it back to the statefile) can result in almost unrecoverable crashes of Terraform \cite{terraform_no_rollback}.
 \newline
-This, and the fact that versioning is not only possible but even required by design make changes to the infrastructure or lifecycles easily managable.
+At the same time it is strongly advised against manual changes in the infrastructure without using Terraform to get there. After such changes, Terraform might be unable to find that component later and assumes it doesn't exist.
 
-% TODO integrate the following findings into this and the previous sections.
-
-% \url{https://www.slideshare.net/openstackil/heat-tosca}
-% HOT == Heat Orchestration Template, YAML only
-% came to replace cloud formation syntax
-% following the cloudformation limited model
-% hot is only for infrastructure creation
-%! tosca is application centric by design
-%! -> tosca is more universal
-%! hot workflow hardcoded in heat engine
-%! toscas interfaces allow for any workflow -> no hardcoded workflow
-%! tosca to hot translator project developed by ibm, huawei and others -> goal is to describe stack in tosca and use heat
-% cloudify uses tosca templates directly
-%   soon to use heat to orchestrate infrastructure
-%   adds monitoring, log collection, analytics, workflows
-
-%! tosca adopted hot input and output parameters, which took that from cloudformation
-% hot added software\_config provider to describe application stack explicitely
-% hot adopted tosca relationship syntax and semantics
-
-% \url{https://www.oasis-open.org/committees/download.php/56826/OpenStack%202015%20Tokyo%20Summit%20-%20TOSCA-and-Heat-Translator-TechTalk.pdf}
-% "TOSCA-Parser" by IBM, can parse TOSCA Simple Profile in YAML
-% "Heat-Translator", maps and translates non-heat (f.e. tosca) templates to hot
-%   supports tosca csar
-% "Murano" == OpenStack's application catalog that provides application packaging, deployment and lifecycle management - plans to integrate tosca csar
-
-% \url{https://wiki.openstack.org/wiki/Heat/DSL2}
-% evolved first heat/dsl and incorporate tosca and CAMP
-
-% Terraform
-% - AWS CloudFormation
-%   - \url{https://en.wikipedia.org/wiki/RAML\_(software)} -> supported by aws api
-% OpenStack Heat -> can use TOSCA
-% Cloudify -> uses TOSCA
-% ... (see notes)
-
-% Terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
-
-% %TODO application-distribution -> TOSCA CSAR, helm charts, openstack hot packages in murano...
-% - CAMP \url{http://docs.oasis-open.org/camp/camp-spec/v1.1/cs01/camp-spec-v1.1-cs01.pdf} , \url{https://en.wikipedia.org/wiki/Cloud\_Application\_Management\_for\_Platforms}
-% - Terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
-% - cloudformation \url{https://www.terraform.io/intro/vs/cloudformation.html}
-
-\subsection{ONLY READ UNTIL HERE}
-
-\subsection{Pulumi}
-
-... %CURRENT
-
-% \item Primary approach \cite{comparative_study_of_dsl_tools}
-% \item Guarantees provided in case of well-formedness \cite{comparative_study_of_dsl_tools} %TODO this also contains "efficiency" like parallelism
-% \item Reusability of components \cite{comparative_study_of_dsl_tools}
-% \item Error proneness and reporting like line number and column offset \cite{comparative_study_of_dsl_tools} \\cite{comparing_gpl_dsl}
-% \item Efficiency: Amount of code for a given case study \cite{comparative_study_of_dsl_tools}
-% \item Aspects to learn for a given case study or how hard the mental operations are \cite{comparative_study_of_dsl_tools} % / learning-curve
-% \item Viscosity: How hard it is to make changes/updates \\cite{comparing_gpl_dsl}
-% \item Hidden dependencies like requiring agents, a dedicated server or a third-party software \\cite{comparing_gpl_dsl}
-% \item Visibility: How easy is it to find the responsible snippet in the codebase \\cite{comparing_gpl_dsl}
-% \item Extensibility: Can the language be adapted to environment changes
-% \item Maturity (documentation, user-base, community): How good are edge-cases documented and how well is the product established
-% \item Ecosystem
-
-\section{Comparison of existing Domain-Specific-Languages}
-
-% TODO Actual comparison
-
-% Discussion of previous results and why one is better than others
-% Why Terraform and TOSCA are the favorits
-% Why TOSCA is better
-
-The following overview in table \ref{tab:comparison} summarizes the results of the comparison. The score in each cell is either \textquote{average} (abbreviated with \textquote{\char`\~}), \textquote{worse}, or \textquote{better}. By default every score has the value \textquote{average}. Depending on the comparison to the average features, the values can then be \textquote{worse} or \textquote{better}.
-
-\begin{table}[H]
-  % \centering
-  \caption{Overview over the \gls{dslacr} comparison results - TODO adjust to new structure}
-  % {\small
-  \begin{tabular}{ | l | l | l | l | l | }
-    \hline
-    Dimension & HCL/Terraform & Pulumi & TOSCA Simple-Profile \\
-    \hline
-    Approach & \char`\~ &\char`\~ &\char`\~ \\
-    % Abstraction level & \char`\~ &\char`\~ &\char`\~ \\
-    % Isomorphism & \char`\~ &\char`\~ &\char`\~ \\
-    Guarantees & \char`\~ &\char`\~ &\char`\~ \\
-    Reusability & \char`\~ &\char`\~ &\char`\~ \\
-    Errorproneness & \char`\~ &\char`\~ &\char`\~ \\
-    Amount of code & \char`\~ &\char`\~ &\char`\~ \\
-    Aspects to learn & \char`\~ &\char`\~ &\char`\~ \\
-    Viscosity & \char`\~ &\char`\~ &\char`\~ \\
-    Dependencies & \char`\~ &\char`\~ &\char`\~ \\
-    Visibility & \char`\~ &\char`\~ &\char`\~ \\
-    Extensibility & \char`\~ &\char`\~ &\char`\~ \\
-    Maturity & \char`\~ &\char`\~ &\char`\~ \\
-    Ecosystem & \char`\~ &\char`\~ &\char`\~ \\
-    \hline
-  \end{tabular}
-  % }
-  \label{tab:comparison}
-\end{table}
-
-% --------------------------------------------------------------------------
-% ```yaml
-% CloudFormation: % https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/updating.stacks.walkthrough.html
-%   approach:
-%     - declarative
-%     - JSON and YAML
-%     - typed (AWS::ProductIdentifier::ResourceType, f.e. AWS::EC2::SecurityGroup) - how does the typing system work: field "type" for all components
-%     - create "stack update" (execution path), save it in s3-buck or anywhere, then run it. no direct api access?
-%     - state is retrieved "live"
-%   hidden-dependencies:
-%     - AWS only
-%   structure:
-%     - mappings: % conditional mappings
-%       - ... % f.e. different ami images per region and architecture; a lot like a switch statement
-%     - metadata: ... % can exist on all levels, contains f.e. information about visual representation
-%     - outputs: % viewable on the management console etc.
-%       - ... % f.e. Access-URL for an application after installation
-%     - parameters:
-%       - <variablename>:
-%         - Default: ...
-%         - Description: ...
-%         - Type: ...
-%         - minlength, maxlength, regex pattern for strings, ...
-%         - Constraintdescription
-%     - resources: % only resources are required
-%       - WebServer: % valid resource type
-%         - type: AWS::EC2::Instance
-%         - properties:
-%           - UserData: ... % valid values for this resource type
-%           - KeyName:
-%             Ref: <variablename> % can reference to parameters
-%   validation / error reporting:
-%     - custom schema validation (?)
-%     - only checks if parent language is well-formatted (json,yaml)
-%     - additional tools
-%       - python cfn-lint as plugin for IDEs or static analysis tool
-%       - ruby cfn-nag for static analysis, aimed at security
-%       - python taskcat for making a testrun with a template -> integration tests
-%     - dry-run possible
-%   aspecty-to-learn:
-%     - "Fn::..." in JSON, "!..." in YAML -> custom functions like Join, GetAtt
-%     - JSON or YAML is required, the graphical designer does only the rawest of work
-%       alternatively: use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
-%     - AWS products, their naming and how each components attributes are named
-%   tooling/ecosystem:
-%     - integrated in aws-cli
-%     - "designer": https://eu-central-1.console.aws.amazon.com/cloudformation/designer/home?region=eu-central-1
-%     - any text-editor for JSON/YAML, or use the AWS Cloud Development Kit (AWS CDK) for Typescript, python, java or .net
-%     - git pre-commit validation with "cfn\_nag" (https://github.com/stelligent/cfn\_nag) and "taskcat" (https://github.com/aws-quickstart/taskcat)
-%   optimizations:
-%     - parallel resource creation/updating/deletion, can be controlled with "DependsOn" attribute
-%   extensibility:
-%     - https://aws.amazon.com/cloudformation/features/: There is a CloudFormation Registry, where third-party sources can provide a template for their app
-%   guarantees:
-%     - cost calculator: https://calculator.aws/
-%     - no guarantee updates work (f.e. insufficient permissions, account quota limit); automatic roll-back on failure
-%   reusability of components:
-%     - there is the cloudformation registry where apps can be published
-%     - "Ref" can reference to other components
-%     - nesting of "stacks" is possible
-%   Visibility:
-%     - predefined structure, splitting into different files possible
-%   Viscosity:
-%     - updates of the DSL are made by aws
-%     - updates to your apps have to be made manually
-%     - updates have to be validated manually
-%   Consistency:
-%     - (probably) pretty high, as developed by one team and being an official product by amazon.
-%   notes:
-%     - fails if dependend component is neither defined nor already existing
-%     - state-monitoring: events; but those are not saying much (only time, type of the event origin (alarm, stack,...), logical ID (custom name), physical ID (instance id), status (f.e. CREATE\_COMPLETE, CREATE\_IN\_PROGRESS), Reason (User initiated))
-%     - costs:
-%       - AWS::*, Alexa::* and Custom::* are free
-%       - 3rd party providers cost stuff
-%     - "Naming resources restricts the reusability of templates and results in naming conflict when an update causes a resource to be replaces" [https://aws.amazon.com/cloudformation/faqs/] -> naming is not possible for all components
-% ---
-% Heat:
-%   approach:
-%     - declarative
-%     - compatible to AWS CloudFormation
-%     - OpenStack-native REST API, CloudFormation-compatible Query-API
-%     - either cli or api directly
-%     - YAML
-%     - python app
-%     - heat cli accesses heat-api, which sends API-requests via RPC to heat-engine, which does the heavy lifting
-%     - python-heatclient lib (== api)
-%   hidden-dependencies:
-%   structure:
-%     - parameters % input parameters, typed
-%         image\_type:
-%           type: string % every parameter is typed
-%           label: Image Type
-%           description: Type of instance (flavor) to be used
-%           default: m1.small % optional default value
-%           %hidden: true % optional attribute to hide secrets from users who request information about the deployed stack
-%           constraints:
-%             - allowed\_values: [ m1.medium, m1.large, m1.xlarge ]
-%               description: Value must be one of m1.medium, m1.large or m1.xlarge.
-%             %- allowed\_pattern: "[a-zA-Z0-9.]+"
-%           %immutable: true % defines whether the param is updatable
-%     - resources % typed, f.e. OS::NOVA::Server
-%         my\_instance:
-%           type: OS::Nova::Server
-%           properties:
-%             key\_name: ...
-%             image: ...
-%             flavor: { get\_param: image\_type }
-%           %metadata
-%           %depends\_on
-%           %update\_policy
-%           %deletion\_policy
-%           %external\_id
-%           %condition
-%     - outputs
-%         instance\_ip:
-%           description: The IP address of the deployed instance
-%           value: { get\_addr: [my\_instance, first\_address] } % alternative: get\_file: URL/path and get\_param or get\_resource (like named port)
-%           %condition % conditional output is supported
-%     %- conditions % declaration of conditions
-%     %- parameter\_groups % a declaration of input parameter groups and order
-%   validation/error-reporting:
-%     - heat template-validate: used to validate a template, with inserting templated values and ignoring specific errors -> feels like dry-run
-%   aspects to learn:
-%     - YAML
-%     - HOT structure, types, functions and how each components attributes are named
-%   tooling/ecosystem:
-%     - cli
-%     - python-lib
-%   optimizations: % none?
-%   extensibility:
-%     - there is NO app catalog (\url{http://lists.openstack.org/pipermail/openstack-operators/2017-July/013965.html}) for heat templates
-%   guarantees: % none?
-%   reusability of components:
-%     - works with cloudformation stuff, and is closely related to it
-%   visibility:
-%     - see cloudformation
-%   viscosity:
-%     - see cloudformation (?)
-%   consistency:
-%     - similar to cloudformation, but with openstack types
-%   notes:
-%     - imitates AWS Cloudformation on several occasions (types, structures, wording (f.e. stack))
-%     - there is a openstack REST-API AND a CFN-API
-%     - cli-command names are confusing
-%     - "heat" makes the clouds rise
-% ---
 % Terraform:
-%   approach:
-%     - declarative
-%     - plugins; allow for different providers
-%     - dependencies possible
-%     - state of real infrastructure in "state file" == source of truth; remote state backend feature; file is refreshed on every "terraform apply"
-%     - terraform cloud to prevent race conditions
-%     - init command downloads and installs required provider plugins
-%     - creates execution plan
-%     - own format (HCL), but JSON is also supported
-%     - architecture
-%       - core does state mgmt, constructs resource graph and discovers and communicates with plugins via rpc
-%       - plugins are binaries as well and are invoked via rpc
-%       - plugins should initialize included libraries to make api calls, authenticate and define resources that map to services and run commands/scripts
-%       - terraform init checks configuration files to determine which plugins are necessary (and saves current version of plugin until init is ran again)
-%       - providers are downloaded from tf-registry, but network- or file-system-mirror can be configured
-%       - if no provider is set, local lookups are done by default as well (both global and current dir)
-%       - dev overrides possible, without failsafes
-%   hidden-dependencies:
-%     - HCL requirement just adds another layer, and migration between clouds is still a lot of manual work
-%     - cloud-specific cli (like aws-cli)
-%     - terraform init downloads additional modules (but internet connection is already required for most providers)
-%     - sometimes requires the cloud-specific cli as well
 %   structure:
 %     - main.tf ; contains:
 %       - terraform configuration/settings (provider, f.e. aws-cli)
@@ -597,20 +323,6 @@ The following overview in table \ref{tab:comparison} summarizes the results of t
 %   validation/error-reporting:
 %     - `terraform fmt`: format configuration
 %     - `terraform validate`: validate configuration
-%   aspects to learn:
-%     - HCL (complete "language", similar but still different to JSON) -> alternatively, JSON can be used as well
-%     - provider-specific resources and their attributes
-%   tooling/ecosystem:
-%     - terraform cli
-%     - terraform registry for 3rd party
-%   optimizations:
-%     - parallel execution of actions whenever possible (can even be limited)
-%   extensibility:
-%     - plug-ins / external modules
-%   guarantees:
-%     - none - no rollback when in state-migration and facing an error (https://news.ycombinator.com/item?id=19472485)
-%   reusability of components:
-%     - providers, plug-ins \& modules
 %   visibility:
 %     - all *.tf files are considered and read, so it is possible to split as much as you want - in the same directory
 %     - components in subfolders should be made tf-modules
@@ -625,92 +337,71 @@ The following overview in table \ref{tab:comparison} summarizes the results of t
 %     - providers and modules are developed by different people, so they tend to be inconsistent.
 %     - overall structure is predefined
 %   notes:
-%     - track resources with state
-%     - resusable components == modules
-%     - tells when resources are updated and when they are replaced and on the latter which attribute causes the replacement
-%     - Problem with statefile; changed region after deployment, then went for destroy -> terraform didnt find the deployment and deleted it from the statefile after resetting the value, making it undeletable. Manually restoring the statefile was necessary to be able to destroy the deployment.
 %     - purpose of the statefile:
-%       - mapping between non-named resources to generated name
 %       - how should terraform know to delete a resource (and dependencies and their destruction order) when its not in the config file any more?
 %       - for larger infrastructure, querying everything for each action is too much overhead and might become a problem with rate limits
-%       - statefile is only useful for single-user usage, for teams a remote-state-backend is used like tf-cloud, consul, aws-s3, azure blob, gcp storage, alibaba cloud etc
-%         - latest state present, resource locking == state locking, so no corruption during writing
 %       - local state contains plain initial passwords, remote state might be encrypted
 %       - only tf-internal use recommended, use json flag for output commands
 %     - multiple environments/workspaces sometimes supported; dev, prod, local etc.
 %     - wants every external file to be translated to own file-format, f.e. dockerfile \url{https://learn.hashicorp.com/tutorials/terraform/docker-build?in=terraform/docker-get-started}
-% ---
+
+\subsection{OASIS TOSCA with Simple-Profile}
+As described earlier, in \gls{toscaacr} infrastructure is modelled via \gls{csaracr} files. As described in figure \ref{image:tosca_overview}, these archives contain multiple parts. These can be defined in one or multiple \gls{yamlacr} files. The main component is the so-called Topology Template. It describes how the different parts of a system interact with each other, gives a holistic overview and defines variable values.
+
+\begin{figure}[H]
+  \includegraphics[width=14cm]{tosca_overview}
+  \centering
+  \caption{Architecture of \gls{toscaacr} and the components of \gls{csaracr} files \cite{tosca_standard_v2}} %TODO add source: official tosca spec
+  \label{image:tosca_overview}
+\end{figure}
+
+Because the parts (for example a webapplication on a webserver that references a database on another server) can often be reused for other infrastructure parts (or other applications), it makes sense to split a generic description for those parts from the concrete case-specific definition. \Gls{toscaacr} does this with its type definitions. They are optional and not part of the Topology Template, and their sole purpose is to provide a generic template of a component. They can best be desribed as building blocks, whereas the Topology Template is the actual recipe. It is important to not get confused by the fact that \gls{toscaacr} has three layers of abstraction: The most generic description of a component is the corresponding type. The type defines which properties are allowed, required, what their datatype is and which connections to other components are allowed or required. Derived from this type is a template. As already stated, the template is part of the Topology Template, which describes the actual desired state. The template contains all the information required to instantiate it. 
+\newline
+The standard allows for different kinds of types; The most important type is the node type. In \gls{toscaacr} context, the term \textquote{node} does not only refer to machines or servers, but all components that can be defined via software. This includes low-level applications like operating systems, intermediate middleware programs like web- and database-servers, as well as high-level software like the webapplications running on them. The other types have a more specialized purpose. For example artifact types are used to describe constant artifacts like \gls{osacr}-images, scripts and other external (as in non-\gls{toscaacr}) files. The type categories are data-, capability-, interface-, relationship-, group- and policy-types. For most types there are predefined/default ones, as the basic \gls{yaml} types like string, integer, etc. for datatypes. Custom ones can be added though, as well as composite datatypes. The other types are either self-explaining or not necessary to understand for this thesis. Except for the capability and requirement system, which is worth additional explanation. In order to reflect where relationships are allowed (for example a webapplication cannot run on a database server), the standard has the aforementioned system. Corresponding capabilities interlock with requirements like puzzle pieces. An example: Assuming a node has a requirement \textquote{container runtime}, it can only be assigned to an underlying node that offers a capability with the same name. To satisfy this constraint, \gls{toscaacr} orchestrators know they need a node that offers that capability. If there isn't one, they will try to create one. If the container runtime itself has other requirements like \textquote{compute}, the orchestrator will resolve those as well.
+Figure \ref{image:tosca_layers_and_requirements} displays how types and templates correspond and how requirements and capabilities are mapped.
+
+\begin{figure}[H]
+  \includegraphics[width=14cm]{tosca_layers_and_requirements}
+  \centering
+  \caption{Derivation and relationships between \gls{toscaacr} elements \cite{tosca_standard_v2}}
+  \label{image:tosca_layers_and_requirements}
+\end{figure}
+
+The last part contained in \gls{csaracr} files are the management plans. They describe the lifecycle of nodes and how to achieve them. Examples are instantiation, configuration and deallocating/uninstallation/deletion (depending on their type) of nodes \cite{tosca_standard_v2}.
+\newline
+The standard supports imports with or without namespacing. One common import is the Simple-Profile extension.
+It adds a basic set of predefined types to the standard, for example the node-types Compute, Webserver, and Webapplication with necessary (default) properties, requirements and capabilities.
+\newline
+Another important feature of the \gls{toscaacr} standard is \textquote{substitution}. It allows users to outsource the definition of a specific node template to a completely different \gls{csaracr} package. This allows splitting and distribution of concerns and strongly increases reusability of components. The architecture of the \gls{csaracr} files and the ability of inclusions and substitutions make it also relatively easy to find the corresponding code for a certain component. Figure \ref{image:tosca_substitution} visualizes this substitution approach.
+
+\begin{figure}[H]
+  \includegraphics[width=14cm]{tosca_substitution}
+  \centering
+  \caption{Substitution of node templates with external topologies \cite{tosca_standard_v2}}
+  \label{image:tosca_layers_and_requirements}
+\end{figure}
+
+While \gls{toscaacr} does not seem to be very widespread, its origin from OASIS and the many and huge companies backing it and involved in its development make it a very promising standard. The current state of the specification is unfinished, and it is hard to get started in other ways than reading the specification.
+\newline
+The two most commonly used implementations of \gls{toscaacr} are OpenTOSCA and Cloudify (the latter with its own \gls{toscaacr}-extension). All those preexisting orchestrators have the same approach: They have a web-based frontend, where deployments are managed. In some cases like Cloudify, an additional commandline tool exists, which communicates with the web-based orchestrator via an \gls{apiacr}. The orchestrator is therefore needed to run at all times, and needs to have access to the whole infrastructure. The web-based design allows for easy integration with authentication services like LDAP.
+
+
+% TODO integrate the following findings into this and the previous sections.
+
 % Tosca/cloudify:
-%   approach:
-%     - webapp, manager with REST-API, accessed via webgui and/or cli
-%     - manager, database and messaging queue -> either hosted on one box (vm/container) or clustered (all services on all nodes or each service on different node)
-%       - manager:
-%         - event-stream processing
-%         - secured requests
-%         - metric/logs/events queueing
-%         - aggregation and analysis
-%         - task execution/queueing, can be automated based on live streams of events or aggregated data
-%         - interaction with cloudify agents
-%     - has optional agents installable via ssh/winrm or f.e cloud-init or plugin (temporary download link for the install script) or agent preinstalled in image or no agent at all
-%       - execute orchestration operations locally
-%       - collect metrics and report them to manager
-%     - blueprints == app-description
-%       deployment == instance of app (but with its own scaling etc)
-%   hidden-dependencies:
-%     - dedicated manager-server, global for complete infrastructure is needed (partial access is done via permissions...)
 %   structure:
 %     - how to actually write components and templates is hard to find in the docs -> \url{https://docs.cloudify.co/latest/developer/writing_plugins/creating-your-own-plugin/#writing-plugin-operations}
-%   validation/error-reporting:
-%     - ide linting \& type validation
-%   aspects to learn:
-%     - YAML
 %     - TOSCA/cloudify standard
-%   tooling/ecosystem:
-%     - ide-autocompletion
-%     - examples for aws, terraform, azure, gcp and openstack, but all with predefined code (since its hard to create that)
 %   optimizations:
 %     - parallelism, resource graph
 %   extensibility:
 %     - plugins can be extended, and written by yourself, blueprints
-%   guarantees: none?
-%   reusability of components:
-%     - plugins
-%     - blueprints
-%   visibility:
-%     - depends on structure of project
-%   viscosity:
-%     - updates don't seem to considered properly somehow
-%   consistency:
-%     - completely different for different providers, even the api-call is completely different
-%   notes:
-%     - see notes.md
+% - see notes.md
 % ---
 % Tosca/simple-profile:
 %   approach:
-%     - YAML
-%     - namespaced imports (of type definitions) possible
-%       prefixes:
-%       - tosca: from tosca-definitions
-%       - <none>: try to find in tosca namespace first, then lookup in current file (tosca.nodes.Compute == Compute)
-%       - <namespaced-import>: imported file, alias for namespace defined there
 %     - types, automated type-matching (same name for instances of different types -> tosca automatically matches correct type)
-%     - property types:
-%       - string (default)
-%       - integer
-%       - float
-%       - boolean
-%       - timestamp
-%       - null
 %     - other types:
-%       - range [lower, upper|UNBOUNDED] -> can be used for template values, like port-numbers etc ("constraints")
-%       - list [ elem1, elem2, ...] == yaml-list (isnt this normal yaml stuff?) f.e.
-%         something:
-%           type: list
-%           entry_schema:
-%             description: ...
-%             type: <sometype>
-%             [constraints]: ..<list>..
-%       - map: normal key-value pair, shorthanded with {}
 %       - scalar-unit: <scalar> <unit> % whitespace between is allowed but not required, case-insensitive
 %         types:
 %         - scalar-unit.size == 1 B, ..., 2 TiB
@@ -725,14 +416,6 @@ The following overview in table \ref{tab:comparison} summarizes the results of t
 %         - stopping -> configured
 %         - deleting -> not longer tracked
 %         - error
-%       - relationship-states: % -> would require additional states?
-%         - initial: relationship is not yet created, only exists in template
-%       - special directives:
-%         - substitute: mark node template as abstract, orchestrator must substitue with appropriate template
-%         - select: mark node template as abstract, orchestrator must select a node of this type from its inventory (based on defined constraints ("node_filter"))
-%       - network-names: % used in tosca.capabilities.Endpoint capability type
-%         - PRIVATE
-%         - PUBLIC
 %     - reusable modeling definitions:
 %       - description: <string>
 %       - metadata: <map>
@@ -822,10 +505,58 @@ The following overview in table \ref{tab:comparison} summarizes the results of t
 %   notes:
 %     - where does yaml-schema fit in? this seems to define its own meta-schema?
 %     - cloudify and alien4cloud used tosca before spec reached final state: https://gitter.im/ystia/yorc?at=5e3b29bfbfe65274eae0f3d0
-% ---
-% % really strange documentations:
-% ystia / yorc : only for compute, disk, vpc and public ip (but on many providers like aws, gcp, openstack, ...) \& k8s
-% alien4cloud : many providers like openstack, slurm, hosts pool, gcp, aws, k8s
+
+% \url{https://www.slideshare.net/openstackil/heat-tosca}
+% HOT == Heat Orchestration Template, YAML only
+% came to replace cloud formation syntax
+% following the cloudformation limited model
+% hot is only for infrastructure creation
+%! tosca is application centric by design
+%! -> tosca is more universal
+%! hot workflow hardcoded in heat engine
+%! toscas interfaces allow for any workflow -> no hardcoded workflow
+%! tosca to hot translator project developed by ibm, huawei and others -> goal is to describe stack in tosca and use heat
+% cloudify uses tosca templates directly
+%   soon to use heat to orchestrate infrastructure
+%   adds monitoring, log collection, analytics, workflows
+
+%! tosca adopted hot input and output parameters, which took that from cloudformation
+% hot added software\_config provider to describe application stack explicitely
+% hot adopted tosca relationship syntax and semantics
+
+% \url{https://www.oasis-open.org/committees/download.php/56826/OpenStack%202015%20Tokyo%20Summit%20-%20TOSCA-and-Heat-Translator-TechTalk.pdf}
+% "TOSCA-Parser" by IBM, can parse TOSCA Simple Profile in YAML
+% "Heat-Translator", maps and translates non-heat (f.e. tosca) templates to hot
+%   supports tosca csar
+% "Murano" == OpenStack's application catalog that provides application packaging, deployment and lifecycle management - plans to integrate tosca csar
+
+% \url{https://wiki.openstack.org/wiki/Heat/DSL2}
+% evolved first heat/dsl and incorporate tosca and CAMP
+
+% Terraform
+% - AWS CloudFormation
+%   - \url{https://en.wikipedia.org/wiki/RAML\_(software)} -> supported by aws api
+% OpenStack Heat -> can use TOSCA
+% Cloudify -> uses TOSCA
+% ... (see notes)
+
+% Terraform is very similar to tosca, but because its usability is higher and its learning curve is steeper, its a lot more user friendly.
+
+% %TODO application-distribution -> TOSCA CSAR, helm charts, openstack hot packages in murano...
+% - CAMP \url{http://docs.oasis-open.org/camp/camp-spec/v1.1/cs01/camp-spec-v1.1-cs01.pdf} , \url{https://en.wikipedia.org/wiki/Cloud\_Application\_Management\_for\_Platforms}
+% - Terraform (describes itself as standard: \url{https://www.terraform.io/intro/vs/custom.html} )
+% - cloudformation \url{https://www.terraform.io/intro/vs/cloudformation.html}
+
+\subsection{Selection}
+As can be seen by both the amount of initial candidates and the length of the selection process, making a decision for a \gls{dslacr} is hard. In this case, it \textquote{only} influences the further course of the thesis, but organizations have the same struggle (based on the amount of comparisons and recommendations that circulate the internet). %TODO source
+This is due to the nature of these languages: As soon as one is used, it is not feasable to move to another soon. The organization is locked into it. What cross-platform tools and languages like Terraform accomplish is abstracting the vendor lock-in away by language lock-in. Before the rise of \gls{iacacr}, organizations had to go through a similar selection process for their providers. With \gls{iacacr}, organizations now have to select a language that supports all potential providers, has a huge and active user- and developerbase, so all development on it distributes across many organizations.
+\newline
+As of 2021, Terraform is definitely the state of the art: It supports more providers than any organization should want to use simultaniously, has the largest marketshare and is considered by most providers as a key player \cite{jetbrains_devops_ecosystem_2019}. Therefore, its ecosystem grows and matures exponentially. It has achieved economies of scale and almost a monopoly on cross-provider \gls{iacacr}.
+\newline
+\Gls{toscaacr} on the other hand is backed by many important companies and is even more customizable than Terraform. Instead of the plugin-system, it is based on importable components. While Terraform supports multiple providers in the same infrastructure, moving between providers for the same feature (for example switching the cloud provider) requires manual work. With \gls{toscaacr}s namespacing and substitution system, it is possible to be completely provider-agnostic. At the same time, it does not force (or at least strongly recommend) a new language on its users, as does Terraform with \gls{hclacr}. Additionally, the preexisting types of \gls{toscaacr}s Simple-Profile extension already include types that are necessary for bare metal, for example the image file type. Another point goes to \gls{toscaacr} because its extensible design makes it possible to include foreign \gls{dslacr}s for their dedicated tasks. An example is that implementations can be written in bash- or python-scripts 
+\newline
+Because \gls{toscaacr} has a more generic approach and already somewhat aims at working with bare metal, this thesis is going to work with this \gls{dslacr}.
+
 % ---
 % there are two types so far:
 % - cli, where the dsl is "not perfect" (cloudformation, heat)
@@ -849,37 +580,41 @@ The following overview in table \ref{tab:comparison} summarizes the results of t
 %   - grpc-web might enable gui-stuff
 % - statefile? namespacing for performance?
 % ```
-% ---------------------------------------------------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------------------------------
 
-% %TODO how does deprovisioning work
-% %TODO how are existing resources referenced
-% %TODO how to handle secrets in outputs
-% %TODO how to handle secrets in templates
-% %TODO noecho in cloudformation still shows stuff in output, metadata etc -> how to provide a secure way not giving away credentials?
+%TODO how does deprovisioning work
+%TODO how are existing resources referenced
+%TODO how to handle secrets in outputs
+%TODO how to handle secrets in templates
+%TODO noecho in cloudformation still shows stuff in output, metadata etc -> how to provide a secure way not giving away credentials?
 
 %TODO -> how can those standards be improved? And what can be added?
 
-\section{Everything-as-a-Service}
-- can openstack do all of this?
-  - stability
-  - legacy code
-  - complexity
-- Rackspace-as-a-Service; will-on-prem die? ("Why on-prem won't die") no, security of data, costs, privacy, pressure/trust, (with or without pdu, usc, ups)
-- Metal-as-a-Service; vs VM-as-a-Service (vps), noisy neighbour, vSphere AutoDeploy, Ironic, tinkerbell, ipv6, which os, ipmi, kernel/firmware integrity, zones, pdu, psu, rack, sdn
-- Network-as-a-Service; topology, vlan, sdn, both on hw and sw layer
-- DNS-as-a-Service; global or not? via k8s?
-- Hypervisor-as-a-Service; esxi, kvm (used by aws, gcp (no qemu)), node-size, vm-size, compare to metal-as-a-serice (differentiate)
-- Compute-as-a-Service; vm-as-a-service, vps
-- Encryption-as-a-Service: ram, disk, network on host/node-level (TPM?)
-- Storage-as-a-Service; alternative to rook, hyper-converged vs dedicated (SVC by IBM), sds, both on hw and sw layer
-- IAM-as-a-Service; webauthn with yubikey, cloud-iam, 3rd-party iam like github oauth (openstack iam? ad necessary? why no ad join for nodes? -> linux, ephemereal, cattle)
-- k8s-as-a-Service; which os, in-memory-os, cluster-api (gardener, how to configure nodes? Terraform, ansible, cloud-init, ignite), why multi-tenacy via multi-cluster?
-- IaC-as-a-Service; generation/compliance with OPA, CRD-like formal description, check GCP, AWS, Azure and Openstack for common ground
-- secrets-as-a-Service; turtles all the way down presentation, SCM, orchestration, Secrets-as-a-service (hashicorp vault?)
-meta/mgmt
-- bare-metal-marketplace
+% \section{Everything-as-a-Service}
+% - can openstack do all of this?
+%   - stability
+%   - legacy code
+%   - complexity
+% - Rackspace-as-a-Service; will-on-prem die? ("Why on-prem won't die") no, security of data, costs, privacy, pressure/trust, (with or without pdu, usc, ups)
+% - Metal-as-a-Service; vs VM-as-a-Service (vps), noisy neighbour, vSphere AutoDeploy, Ironic, tinkerbell, ipv6, which os, ipmi, kernel/firmware integrity, zones, pdu, psu, rack, sdn
+% - Network-as-a-Service; topology, vlan, sdn, both on hw and sw layer
+% - DNS-as-a-Service; global or not? via k8s?
+% - Hypervisor-as-a-Service; esxi, kvm (used by aws, gcp (no qemu)), node-size, vm-size, compare to metal-as-a-serice (differentiate)
+% - Compute-as-a-Service; vm-as-a-service, vps
+% - Encryption-as-a-Service: ram, disk, network on host/node-level (TPM?)
+% - Storage-as-a-Service; alternative to rook, hyper-converged vs dedicated (SVC by IBM), sds, both on hw and sw layer
+% - IAM-as-a-Service; webauthn with yubikey, cloud-iam, 3rd-party iam like github oauth (openstack iam? ad necessary? why no ad join for nodes? -> linux, ephemereal, cattle)
+% - k8s-as-a-Service; which os, in-memory-os, cluster-api (gardener, how to configure nodes? Terraform, ansible, cloud-init, ignite), why multi-tenacy via multi-cluster?
+% - IaC-as-a-Service; generation/compliance with OPA, CRD-like formal description, check GCP, AWS, Azure and Openstack for common ground
+% - secrets-as-a-Service; turtles all the way down presentation, SCM, orchestration, Secrets-as-a-service (hashicorp vault?)
+% meta/mgmt
+% - bare-metal-marketplace
 
-\section{Example reference infrastructure} %TODO multiple?
+\section{Reference infrastructure}
+% basically: why is os provisioning sufficient
+
+
+
 - Are VMs dead? / will containers replace them completely? (/ the case for bare-metal)
   - isolation level
   - comparison of bare-metal approach vs vSphere and/or OpenStack approach
@@ -927,10 +662,10 @@ meta/mgmt
     - ECC vs EDAC (Error Detection And Correction) module; ECC is in hardware, EDAC in software, when both enabled, they can conflicts, with unplanned shutdowns of a server.
     - managed bare metal; up to OS is managed, then the customer is responsible
 
-\section{Issues with existing standards and frameworks}
-- no comparison of iac dsls
-- not enough effort to integrate with other tools / dsls / clouds (vendor-lock-in seems desired)
-- either no proper standard (vendor-specific) or not enough support for multiple vendors -> everyone reinvents the wheel and wants to establish the own work as industry-standard
+% \section{Issues with existing standards and frameworks}
+% - no comparison of iac dsls
+% - not enough effort to integrate with other tools / dsls / clouds (vendor-lock-in seems desired)
+% - either no proper standard (vendor-specific) or not enough support for multiple vendors -> everyone reinvents the wheel and wants to establish the own work as industry-standard
 - %TODO: propose solution / new approach -> integrate all, search common ground, can tosca solve this?
 
 %TODO market at bottom of iac
