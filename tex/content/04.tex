@@ -153,22 +153,25 @@ The resulting image is smaller than one GB, boots in under ten seconds, is as ex
 The customizations include a webserver that autostarts during boot, and a simple service that also starts automatically during the boot-process. The service runs some commands and stores the output into files that are then served by the webserver. Due to the proof-of-concept nature, only information about the CPU and RAM is served.
 
 \subsection{DHCP-, TFTP-, HTTP-server}
-docker container, ports, variable config vs fixed config
+The \gls{dhcpacr}-server does not only provide devices with (temporary) IP-addresses, but additional information about the network as well. Common examples are the subnet mask and the network gateway for routing beyond the current network. But the \gls{dhcpacr}-server can advertise options for network-boot as well. This includes the URL of a boot firmware on a \gls{tftpacr}-server. Since \gls{biosacr} and \gls{uefiacr} require different files there, a condition is required to run on the \gls{dhcpacr}-server. As described earlier, \gls{tftpacr} is not very efficient, and to support \gls{httpacr}, a boot firmware named iPXE is distributed and loaded before the actual operating system. The loaded iPXE will then send another \gls{dhcpacr} request and will as a result begin to load iPXE anew. To escape this loop, the DHCP-server can detect whether the client is iPXE or not. In case it is not, the iPXE firmware for this specific client is provided (as described above). In case it is, a script location is passed. This can be a simple \gls{httpacr} URL. The \gls{httpacr}-server can then dynamically provide the client with special iPXE-instructions and the actual live-\gls{osacr} image.
 \newline
-why not external ones
-\newline
-why http server, too (A observant reader might have noticed...)
+The software dnsmasq combines \gls{dhcpacr} and \gls{tftpacr} server (DNS as well, but that is not needed here). In order to start and stop the servers on-demand and in one go, dnsmasq and a webserver of choice is installed in a container image. When running the container, the hostport 67 (UDP) is required for \gls{dhcpacr}-, hostport 69 (UDP) for \gls{tftpacr}-, and hostport 80 (TCP) for the \gls{httpacr}-server. The previously generated live-\gls{osacr} image is provided as a volume mount.
+
+% docker container, ports, variable config vs fixed config
+% why not external ones
 
 \subsection{Wake-on-lan}
-actual wol vs simulated wol for hypervisors
+In order to wake a machine, a so-called magic packet is broadcasted. This packet has a very special format. The only \textquote{real} payload is the MAC-address of the \gls{nicacr} that can power the attached machine when the packet is received.
+\newline
+This package contains methods for the creation and broadcasting of the magic packet for a MAC-address. Since \gls{wolacr} is incompatible with most hypervisors, an additional mechanism has to check whether a hypervisor hosts a \gls{vmacr} with the specified MAC-address. Should this be the case, it determines its identifier and issues the hypervisor to power the \gls{vmacr} on.
 
-\subsection{Hardware inspection}
-% why web-server, how to add additional information about the hardware
-periodic checking for new ip, try to reach machine, don't fail if unreachable.
+\subsection{Hardware}
+The hardware package manages the bare metal provisioning process. It controls the container that is responsible for the \gls{dhcpacr}-, \gls{tftpacr}- and \gls{httpacr}-servers. It also initiates live-\gls{osacr} image generation. And it issues the calls to the wake-on-lan package. Because the loading and booting of the live-\gls{osacr} still takes several seconds, a simple \gls{httpacr} request would time out and the provisioning would fail. Therefore, this package also waits until the hardware information is available. Because of the lease time of issued IP-addresses, the \gls{dhcpacr}-server assigns different IP-addresses to a machine that wants to boot via network and when the live-\gls{osacr} comes up. The hardware package therefore also checks the lease-list of the \gls{dhcpacr}-server for the latest IP-address for each MAC-address.
+\newline
+Upon having gathered all desired information about the hardware, the package returns the information to the orchestrator package.
 
 \subsection{SSH}
-key-generation, variable key path, key placement on servers / integration in live-os
-\newline
-actual command execution and feedback returning
-\newline
-Why only manipulate live-os, instead of deploying complete new os
+%TODO add sources and text on why password auth is bad
+In order to provide the most possible security for deployed live-\gls{osacr} images, \gls{sshacr} password authentication is disabled. To run remote commands, an \gls{sshacr} public key is included in the image generation workflow. This package manages the generation of a public/private key-pair, as well as invoking commands on the remote machines. In case of the latter, it returns the output to the orchestrator for further processing (like logging).
+
+% TODO Why only manipulate live-os, instead of deploying complete new os
