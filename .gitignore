@@ -7,3 +7,5 @@
 
 **/*.iso
 **/dnsmasq/leases
+
+**/*Zone.Identifier
