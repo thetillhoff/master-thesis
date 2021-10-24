@@ -4,37 +4,139 @@
 % - case studies - how does it work in close to real-world settings
 % - how well does it work (scale, speed, stability)
 
-% todo reference architecture?
 
-% existing infrastructure
-%   up-to-date tosca orchestrator, compliant with the original standard and Simple-Profile -> IaC tool at least
-%   provisioning of new hardware is possible
-%   migration to tosca necessary
+% - improvements to this orchestrator: deploy complete os, instead of only manipulating live-os
+The currently described software architecture does not aim at a complete installation of an \gls{osacr} on a machine, but instead uses the live-\gls{osacr} deployed during information gathering phase. Additional work is necessary to support not only the unattended installation of an \gls{osacr}, or even several different ones.
+
+% - boot machines in batches, with an automatic batchsize that scales with the current machines network capacity. For single-initiation systems at least.
+Another bottleneck of the current design is that all machines have to be booted to gather information on the underlying hardware. All machines are be started simultaniously, producing one huge network traffic and power spike. In the test runs for the proof-of-concept implementations this was not an issue, because the machines were only a few. In larger environments, including larger datacenters, this approach is not an option. Therefore, the machines should be started in batches, where the batchsize might scale with the current load of the issuing host (as the capacity hugely depends on the network bandwidth). Alternatively, a viable solution for bare-metal systems with no other orchestrator might be to provision machines dedicated for further the handling of \gls{dhcpacr}, \gls{tftpacr} and \gls{httpacr}. The number of these can then be scaled separately. While this could partially solve the network bottleneck, the power scaling problem persists nevertheless.
+
+% - add integrations with external dhcp- tftp- http-servers.
+The aforementioned dedicated services needed for provisioning are not necessarily fully managed and integrated into the described orchestrator. Interfaces for external systems like networking hardware should be implemented and integrated.
+
+% - architecture improvements: plugin-system, so integrations (dhcp, tftp, http) are easier. Like terraform.
+Even apart from these services, a plugin system similar to the one provided by Terrafrom would bring huge benefits. While \gls{toscaacr} has a similar feature with its imports, namespaces, and substitutions, the orchestrator itself needs additional capabilities as well. This includes the hardware extension described in this thesis, but also applies to the original \gls{toscaacr} standard as well: Currently limited to Bash and Python, plugins for additional implementation artifact languages are thinkable.
+
+% - get a list of mac addresses directly from currently attached network cards. Broadcast/ARP?
+The currently described provisioning workflow requires an initial list of MAC addresses. Further research should investigate whether retrieval of those addresses could be automated. A first idea would be a network broadcast, which leads to the addresses being communicated via the ARP protocol.
+
+% - tosca standard improvements from notes. Example: Two types of script execution: one on the orchestrator and one on the nodes.
+Apart from the implementation details on the tool itself, the \gls{toscaacr} standard or at least its specification has improvement potential as well. In several occasions, the \gls{yamlacr} examples provided along the introduction of a new structure are invalid. The issues range from \gls{yamlacr}-structure errors, inconsistencies or simply missing information. Table \ref{tab:tosca_issues} lists those in the order they occur in the specification. The Simple-Profile extension has similar issues, those are listed in table \ref{tab:simple_profile_issues}.
+
+% continued after tables
+
+\begin{table}[h]
+  \caption{List of issues with the \gls{toscaacr} specification}
+  \begin{tabular}{ | l | l | }
+    \hline
+    Chapter & Issue description \\
+    \hline \hline
+    % 2.1 & \makecell{Ruled out because they are made for configuration \\ management, not provisioning.} \\
+    % \hline
+    % 4.2.1.3.16.3 & missing capability definition name(\textquote{mytypes.myfeatures.transactSQL}) \\
+    \hline
+    4.2.6.2.7.2 & Indentation error \\
+    % \hline
+    4.3.5.6.3.3 & Indentation error \\
+    \hline
+    4.4.2 & \makecell{Paths used in \mintinline[bgcolor=lightgray,breaklines]{bash}{get_property} should adhere to the format of \\ \mintinline[bgcolor=lightgray,breaklines]{bash}{[<entity_name>, <optional_req_or_cap_name>, <property_name>,} \\ \mintinline[bgcolor=lightgray,breaklines]{bash}{<nested_property_name_or_index>*]}.} \\
+    \hline
+    4.4.7.2 & \makecell{It is unclear whether \mintinline[bgcolor=lightgray,breaklines]{bash}{external_schema} is a string or \\ complete schema definition.} \\
+    \hline
+    4.5.5.2 & \makecell{Unclear whether the properties and attributes are a list or a map. \\ (Here they are lists, in all other occurences they are maps.)} \\
+    \hline
+    5.2.1 & Indentation error \\
+    \hline
+    %TODO ?
+    5.3.1.3 & \makecell{Missing output name makes the examples grammar invalid. \\ It is not possible to efficiently detect whether \mintinline[bgcolor=lightgray,breaklines]{bash}{optional_req_or_cap_name} \\ or another \mintinline[bgcolor=lightgray,breaklines]{bash}{nested_property_name_or_index} is set.} \\
+    %Therefore it is assumed, that \mintinline[bgcolor=lightgray,breaklines]{bash}{optional_req_or_cap_name} is NEVER set. \\
+    \hline
+  \end{tabular}
+  \label{tab:tosca_issues}
+\end{table}
+
+
+\begin{table}[h]
+  \caption{List of issues with the Simple-Profile specification}
+  \begin{longtable}{ | l | l | }
+    \hline
+    Chapter & Issue description \\
+    \hline \hline
+    2.1 & Inconsistent value for \mintinline[bgcolor=lightgray,breaklines]{bash}{tosca_definitions_version}. \\
+    \hline
+    3 &  Redundant with \gls{toscaacr} specification. \\
+    \hline
+    %TODO where
+    unkown & \makecell{The Simple-Profile definition of \textquote{Operation Implementation} \\ has an attribute \mintinline[bgcolor=lightgray,breaklines]{bash}{operation_host}, while in the \gls{toscaacr} specification \\ it does not.} \\
+    \hline
+    %TODO where
+    unkown & \makecell{\textquote{operation implementation} and \textquote{notification implementation} \\ of the Simple-Profile specification are completely distinct, while \\ in the \gls{toscaacr} specification they are treated as if they are the \\ same.} \\
+    \hline
+    %TODO where
+    unkown & \makecell{The \textquote{interface definition} keynames do not contain the \\ field \textquote{type}, but it is listed in grammar notations. The \gls{toscaacr} \\ specification complies the former.} \\
+    \hline
+    5.3.4.2.2 & Inconsistent indentation (3 spaces) \\
+    \hline
+    5.3 & \makecell{Inconsistent datatype naming; Whilst case sensitive, some \\ names start with a lowercase and others with an uppercase \\ letter (\textquote{Root}, \textquote{json}, \textquote{xml}, \textquote{Credential}).} \\
+    \hline
+    5.3.6.5.1 & Indentation error \\
+    \hline
+    5.3.6.5.4 & Followed by 5.3.6.5.6, so 5.3.6.5.5 is missing. \\
+    \hline
+    5.3.8 - 5.3.10 & \makecell{Do not contain information on whether any field is required.} \\
+    \hline
+    5.4 & \makecell{The description states there are three categories of artifacts. \\ Listed are 4.} \\
+    \hline
+    5.7.1.2 & \makecell{Contains indentation error and \mintinline[bgcolor=lightgray,breaklines]{bash}{derive_from} is not defined.} \\
+    \hline
+    5.8.3 & \makecell{First chapter to contain a type definitions, earlier subchapters \\ do not - this is inconsistent.} \\
+    \hline
+    \makecell{5.8.4.2 till \\ 5.8.4.4} & \makecell{Incomplete chapters and the only provided diagram is incorrect. \\ (State after deletion is \textquote{configured}, which is wrong.)} \\
+    \hline
+    5.8.5 & \makecell{Description text is copied from 5.8.4 and does not apply here. \\ Also, missing descriptions on properties and attributes.} \\
+    \hline
+    5.8.5.2 & Missing illustration. \\
+    \hline
+    5.9.1.3 & Indentation error \\
+    \hline
+    5.9.8 & \makecell{Databases can only have one username-password combination. \\ Additionally, there is a dedicated Credential type, but it is not \\ used here. (Also observed in other occurences.)} \\
+    \hline
+    5.9.9.2 & Definition of capabilities is undefined. \\
+    \hline
+    5.9.10 & \makecell{Default constraints for storage instances are \\ \mintinline[bgcolor=lightgray,breaklines]{bash}{greater_or_equal: 0.1 MB} (or \mintinline[bgcolor=lightgray,breaklines]{bash}{1 MB} or \mintinline[bgcolor=lightgray,breaklines]{bash}{1 GB}). Better: \mintinline[bgcolor=lightgray,breaklines]{bash}{greater_than: 0B}.} \\
+    \hline
+    %TODO research on the following
+    % unkown & Sometimes the map[string]* forces for name finding, but its sometimes unnecessary (as it has a description). While it allows for reference elsewhere, it should be described clearly where this is possible and whats the use-case is. \\
+    % \hline
+  \end{longtable}
+  \label{tab:simple_profile_issues}
+\end{table}
+
+% - recommendation for tosca standard: describe a reference orchestrator
+The specification would also profit greatly from a detailed description of a reference orchestrator like the one by OpenTOSCA (which already is the semi-official reference implementation). That way, the tasks of the orchestrator would be clearer, some hidden design decisions in the standard be be come forward and the development of such orchestrators would be significantly easier.
+\newline\smallskip
 
 % datacenter from scratch / initial deployment
-%   describe both physical and virtual infrastructure with the same language
-%   apart from that (and phyiscal movement / cabling), no manual work required -> no installing of operating systems, etc.
-%   can be used as base for other iac tools like ansible.
-
+% up-to-date tosca orchestrator, compliant with the original standard and Simple-Profile -> IaC tool at least
+Assuming a scenario where a new datacenter should be provisioned from scratch (no \gls{osacr} deployed), the tool described in this thesis can automate the initial setup. Because \gls{toscaacr} is the language of choice, and a compatible orchestrator is embedded in the application, users can make use of all capabilities the \gls{dslacr} provides. Since the original language can already be used for further provisioning and configuration management, the resulting application is a mixture of hardware provisioning, \gls{iacacr} provider and -client.
+\newline
+% describe both physical and virtual infrastructure with the same language
+The resulting application is not only another \gls{iacacr} tool with \gls{toscaacr} as its chosen language. It is also the first tool that can provision bare-metal machines on demand. And together with the hardware extension, it is one of the view tools, where description and deployment of virtual and physical infrastructure as code with the same language are possible.
+\newline
+% existing infrastructure
+%   provisioning of new hardware is possible
+%   migration to tosca necessary, but step by step possible
+In a scenario where infrastructure is already deployed, and with a \gls{dslacr} different than \gls{toscaacr}, it is required to translate/migrate the codebase at least partially. But since \gls{toscaacr} allows integrations of other \gls{dslacr}s and tools, this can happen step by step. The same applies to existing infrastructure without any \gls{iacacr} codebase.
+\newline\smallskip
 % limitations
+The included \gls{toscaacr} orchestrator fulfills all requirements described in the specificiations of the standard and its Simple-Profile extension. Because the hardware extension requires low-level access to some host capabilites (like listening on hostport 67 and 68), the application needs to run with extended privileges.
 
 % scaling: disk read speed (live-os image), network speed of root node
 % speed: deploy without installation; available within a minute. deploy with installation; same amount plus os installation.
 % stability: recovery feature to be done. example solution: ipmi for remote power-off
 
+%TODO actual examples, how to implement a new node, how to implement a k8s cluster, how to implement a webserver
 
-
-Assuming a scenario where a new datacenter should be provisioned from scratch (no \gls{osacr} deployed), the tool described in this thesis can automate the initial setup. Because \gls{toscaacr} is the language of choice, and a compatible orchestrator is embedded in the application, users can make use of all capabilities the \gls{dslacr} provides. Since the original language can already be used for further provisioning and configuration management, the resulting application is a mixture of hardware provisioning and 
-
-
-The resulting application is not only another \gls{iacacr} tool with \gls{toscaacr} as its chosen language. It is also the first tool that can provision bare-metal machines on demand.
-\newline
-The included \gls{toscaacr} orchestrator fulfills all requirements described in the specificiations of the standard and its Simple-Profile extension. Because the hardware extension requires low-level access to some host capabilites (like listening on hostport 67 and 68), the application needs to run with extended privileges. Additionally, the required software
-
-
-
-what were the goals, what are the current capabilities
-\newline
-how stable is it, what can it do in real world settings
-\newline
-types, topology, tests
+% what were the goals, what are the current capabilities
+% how stable is it, what can it do in real world settings
+% types, topology, tests

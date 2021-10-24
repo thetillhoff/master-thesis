@@ -141,7 +141,7 @@ subtopics:
 - [ ] Ensure unified use of pagebreaks before headlines (level 1, 2 etc)
 - [ ] Remove larger unused/commented blocks
 - [ ] The Elements of Style: http://www.bartleby.com/141/
-- [ ] Remove the `\include{content/demo}` from main
+- [x] Remove the `\include{content/demo}` from main
 - [ ] Check for highlighted contents
 - [ ] Search for `%TODO`, `% TODO` and simply `TODO`
 - [ ] Check for sidenodes

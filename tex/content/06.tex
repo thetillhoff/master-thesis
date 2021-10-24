@@ -6,25 +6,33 @@
 % - refer to research questions and answer them (confirm, rejected). can be sections
 % - clarify whether result/software meets requirements as stated earlier.
 % - compare with results/software from others
-% - finish with an outlook on how work could be continued
-%   - ideas
-%   - better technique
-%   - unsolved problems
 
-% own work: additional properties, culling/scope
+% initial problems
+% - provider migrations are hard
+% - orchestrators do the same thing, but have each their own implementation
+% - bootstrapping is always offloaded and not part of the orchestrator
 
-new insights, breakthroughs  and limitations of current approach, recommendation for future research
+% repeat research questions, what are their answers?
+% - can bare-metal machines be deployed on-demand like virtual workloads on providers?
+% - Is it possible to do so without the requirement of an always-on operator (thus removing the initial bootstrapping effort)?
+% - How can hardware constraints be mirrored in an iac language
+
+At the beginning of this thesis, it was unclear, whether bare-metal machines can be deployed on-demand and without an always-on operator. With the hardware extension for \gls{toscaacr} and the introduced commandline tool, it is now clear that this is definitely possible.
 \newline
-What was done, emphazis on own work:
-
-\begin{itemize}
-  \item looked at several DSLs, their requirements and compared X ones in more detail
-  \item added additional elements to the comparison
-  \item improvement recommendations for TOSCA standard
-  \item implemented new approach of orchestrator and go-library for newest tosca standard
-  \item implemented flexible on-demand bare-metal provisioner
-  \item recommendations for tosca standard:
-        merge properties and attributes,
-        provide more examples,
-        describe a reference orchestrator
-\end{itemize}
+The extension also showed how hardware could be modelled in an \gls{iacacr} language and how it blends in with the existing definitions.
+\newline
+Additionally, the hardware detection step with the live-\gls{osacr} made it clear that requirements regarding the hardware (like the minimum amount of RAM required for a certain application) can be fulfilled at runtime, too.
+\newline\smallskip
+% what was the new approach of this thesis?
+The commandline-tool approach that thesis took was initially meant to leave things simple, but as it turned out, it has many benefits over the always-on approach other tools have. Not only can it just run on-demand, but it doesn't require any kind of (infrastructure-)bootstrapping before it can get to work.
+\newline
+% compare with results from others (other provisiong software)
+% ... Can combine provisioning with iac, which was formerly not possible
+On one side, its on-demand nature and the low initial requirements set this tool greatly apart from other hardware-provisioning tools. On the other side, making the ability to describe and provision hardware part of the orchestrator with a admittedly relatively common \gls{iacacr} capability set it apart from other \gls{iacacr} tools. The result is something that did not exist previously and has the potential to initiate a new breed of tools that broaden the infrastructure part of \gls{iacacr}.
+\newline\smallskip
+The \gls{toscaacr} standard was found to be extremely flexible and easy to integrate with other tools - which are not necessarily part of the orchestrator. The two Golang packages around \gls{csaracr} and \gls{toscaacr} are also side successes along the way and might help the standard to increase its userbase.
+\newline
+% own work: additional properties, culling
+During the \gls{dslacr} finding phase, additional dimensions were developed that are important when comparing such languages. While the listed dimensions are helpful in selecting a language, this thesis made it also clear that they are (still) not the only means required to be looked at for choosing the right language for specific usecases.
+\newline
+While working with the \gls{toscaacr} specification, several smaller issues in the document itself were found. But the work also highlighted some larger issues about the design of the standard, that would drastically simplify it and decrease the initially required learning curve.

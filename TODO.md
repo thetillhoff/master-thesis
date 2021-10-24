@@ -24,6 +24,7 @@
 - Check and document which levels were achieved:
   Check qualification of implementation at https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html#_Toc26969414
   Also check conformance targets at https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html#_Toc26969508
+- go through writte notes
 
 ## tex
 - replace "f.e." with "for example"
@@ -39,6 +40,9 @@
   - multiple infrastructure deployments demand too much humand resources
 - unify "vmware" / "VMware" ...
 - unify "linux" / "Linux" and "windows" / "Windows"
+- unify }-server / } server (for example dhcp-server / dhcp server)
+- remove note that python is not implemented. Assume it is there, only have it missing in the application.
+- unify Simple-Profile and Simple Profile
 
 ## general code
 - "Orchestrators MUST" are not yet implemented. Example in 5.3.8.4 of simple-profile spec
