@@ -4,9 +4,37 @@
 % - case studies - how does it work in close to real-world settings
 % - how well does it work (scale, speed, stability)
 
+% todo reference architecture?
+
+% existing infrastructure
+%   up-to-date tosca orchestrator, compliant with the original standard and Simple-Profile -> IaC tool at least
+%   provisioning of new hardware is possible
+%   migration to tosca necessary
+
+% datacenter from scratch / initial deployment
+%   describe both physical and virtual infrastructure with the same language
+%   apart from that (and phyiscal movement / cabling), no manual work required -> no installing of operating systems, etc.
+%   can be used as base for other iac tools like ansible.
+
+% limitations
+
+% scaling: disk read speed (live-os image), network speed of root node
+% speed: deploy without installation; available within a minute. deploy with installation; same amount plus os installation.
+% stability: recovery feature to be done. example solution: ipmi for remote power-off
+
+
+
+Assuming a scenario where a new datacenter should be provisioned from scratch (no \gls{osacr} deployed), the tool described in this thesis can automate the initial setup. Because \gls{toscaacr} is the language of choice, and a compatible orchestrator is embedded in the application, users can make use of all capabilities the \gls{dslacr} provides. Since the original language can already be used for further provisioning and configuration management, the resulting application is a mixture of hardware provisioning and 
+
+
+The resulting application is not only another \gls{iacacr} tool with \gls{toscaacr} as its chosen language. It is also the first tool that can provision bare-metal machines on demand.
+\newline
+The included \gls{toscaacr} orchestrator fulfills all requirements described in the specificiations of the standard and its Simple-Profile extension. Because the hardware extension requires low-level access to some host capabilites (like listening on hostport 67 and 68), the application needs to run with extended privileges. Additionally, the required software
+
+
+
 what were the goals, what are the current capabilities
 \newline
 how stable is it, what can it do in real world settings
-
-
-% types, topology, tests
+\newline
+types, topology, tests

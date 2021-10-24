@@ -198,13 +198,11 @@ While Pulumi has an extremely interesting approach with using actual programming
 \Gls{toscaacr} has several implementations and corresponding (inofficial) extensions like Cloudify, Alien 4 Cloud or Puccini. It is ouf of this thesis' capabilities to compare all of them. Therefore, only the official extension, named \textquote{Simple-Profile} will be included in the comparison.
 
 \begin{table}[H]
-  % \centering
   \caption{Overview of language candidates that are ruled out}
-  % {\small
   \begin{tabular}{ | l | l | }
     \hline
     Language & Reason \\
-    \hline
+    \hline \hline
     Ansible, Chef, Puppet & \makecell{Ruled out because they are made for configuration \\ management, not provisioning.} \\
     \hline
     CloudFormation & Ruled out because it is too AWS-specific. \\
@@ -218,7 +216,6 @@ While Pulumi has an extremely interesting approach with using actual programming
     inofficial TOSCA extensions & \makecell{Ruled out because too many and closely related to \\ original TOSCA.} \\
     \hline
   \end{tabular}
-  % }
   \label{tab:afterculling}
 \end{table}
 
@@ -378,7 +375,7 @@ Another important feature of the \gls{toscaacr} standard is \textquote{substitut
   \includegraphics[width=14cm]{tosca_substitution}
   \centering
   \caption{Substitution of node templates with external topologies \cite{tosca_standard_v2}}
-  \label{image:tosca_layers_and_requirements}
+  \label{image:tosca_substitution}
 \end{figure}
 
 While \gls{toscaacr} does not seem to be very widespread, its origin from OASIS and the many and huge companies backing it and involved in its development make it a very promising standard. The current state of the specification is unfinished, and it is hard to get started in other ways than reading the specification.

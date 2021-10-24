@@ -12,25 +12,146 @@
 %   - analyze and interpret models
 %   - automate workflows from single steps
 
-% why meta models: allows to reuse technology for
-% - storing models in files
-% - storing models in dbs
-% - creating a form-based editor
-% - creating a graphical editor
-% - generating code from models
-% - transforming models into other models
-% metamodel is used to describe abstract syntax, not concrete syntax!
+% check todo.md, note.md, readme.md
 
-\begin{itemize}
-  \item compare metamodels, find similarities, could lead to common ground
-  \item vendor bioses should support http by default or embed ipxe for network boot. Maybe even allow flashing the network-boot system (remotely?). VMware does support this already for its VMs: https://ipxe.org/howto/vmware
-  \item ipmi like interface for provisioning, f.e. provide (remote) kernel path and parameters (addition to "local boot", "net boot" selection)
-  \item common standard for bmc/ipmi features.
-  \item making all bios settings available over an scriptable interface - bmc is not (universal) enough.
-  \item tosca standard improvements from notes. Example: Two types of script execution: one on the orchestrator and one on the nodes.
-  \item improvements to this orchestrator: deploy complete os, instead of only manipulating live-os
-  \item add integrations with external dhcp- tftp- http-servers.
-  \item architecture improvements: plugin-system, so integrations (dhcp, tftp, http) are easier. Like terraform.
-  \item get a list of mac addresses directly from currently attached network cards. Broadcast/ARP?
-  \item boot machines in batches, with an automatic batchsize that scales with the current machines network capacity. For single-initiation systems at least.
-\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% this tool
+
+% - improvements to this orchestrator: deploy complete os, instead of only manipulating live-os
+The currently described software architecture makes it relatively hard to completely install an \gls{osacr} on a machine instead of using the live one deployed during information gathering phase. Additional work is necessary to support not only the unattended installation of one \gls{osacr}, but several different ones.
+
+% - boot machines in batches, with an automatic batchsize that scales with the current machines network capacity. For single-initiation systems at least.
+Another bottleneck of the current design is that all machines have to be booted to gather information on the underlying hardware. All machines are be started simultaniously, producing one huge network traffic and power spike. In the test runs for the proof-of-concept implementations this was not an issue, because the machines were only a few. In larger environments, including larger datacenters, this approach is not an option. Therefore, the machines should be started in batches, where the batchsize might scale with the current load of the issuing host (as the capacity hugely depends on the network bandwidth). Alternatively, a viable solution for bare-metal systems with no other orchestrator might be to provision machines dedicated for further the handling of \gls{dhcpacr}, \gls{tftpacr} and \gls{httpacr}. The number of these can then be scaled separately. While this could partially solve the network bottleneck, the power scaling problem persists nevertheless.
+
+% - add integrations with external dhcp- tftp- http-servers.
+The aforementioned dedicated services needed for provisioning are not necessarily fully managed and integrated into the described orchestrator. Interfaces for external systems like networking hardware should be implemented and integrated.
+
+% - architecture improvements: plugin-system, so integrations (dhcp, tftp, http) are easier. Like terraform.
+Even apart from these services, a plugin system similar to the one provided by Terrafrom would bring huge benefits. While \gls{toscaacr} has a similar feature with its imports, namespaces, and substitutions, the orchestrator itself needs additional capabilities as well. This includes the hardware extension described in this thesis, but also applies to the original \gls{toscaacr} standard as well: Currently limited to Bash and Python, plugins for additional implementation artifact languages are thinkable.
+
+% - get a list of mac addresses directly from currently attached network cards. Broadcast/ARP?
+The currently described provisioning workflow requires an initial list of MAC addresses. Further research should investigate whether retrieval of those addresses could be automated. A first idea would be a network broadcast, which leads to the addresses being communicated via the ARP protocol.
+
+% dsls
+
+% - tosca standard improvements from notes. Example: Two types of script execution: one on the orchestrator and one on the nodes.
+Apart from the implementation details on the tool itself, the \gls{toscaacr} standard or at least its specification has improvement potential as well. In several occasions, the \gls{yamlacr} examples provided along the introduction of a new structure are invalid. The issues range from \gls{yamlacr}-structure errors, inconsistencies or simply missing information. Table \ref{tab:tosca_issues} lists those in the order they occur in the specification. The Simple-Profile extension has similar issues, those are listed in table \ref{tab:simple_profile_issues}.
+% ongoing after tables
+
+\begin{table}[h]
+  \caption{List of issues with the \gls{toscaacr} specification}
+  \begin{tabular}{ | l | l | }
+    \hline
+    Chapter & Issue description \\
+    \hline \hline
+    % 2.1 & \makecell{Ruled out because they are made for configuration \\ management, not provisioning.} \\
+    % \hline
+    % 4.2.1.3.16.3 & missing capability definition name(\textquote{mytypes.myfeatures.transactSQL}) \\
+    \hline
+    4.2.6.2.7.2 & Indentation error \\
+    % \hline
+    4.3.5.6.3.3 & Indentation error \\
+    \hline
+    4.4.2 & \makecell{Paths used in \mintinline[bgcolor=lightgray,breaklines]{bash}{get_property} should adhere to the format of \\ \mintinline[bgcolor=lightgray,breaklines]{bash}{[<entity_name>, <optional_req_or_cap_name>, <property_name>,} \\ \mintinline[bgcolor=lightgray,breaklines]{bash}{<nested_property_name_or_index>*]}.} \\
+    \hline
+    4.4.7.2 & \makecell{It is unclear whether \mintinline[bgcolor=lightgray,breaklines]{bash}{external_schema} is a string or \\ complete schema definition.} \\
+    \hline
+    4.5.5.2 & \makecell{Unclear whether the properties and attributes are a list or a map. \\ (Here they are lists, in all other occurences they are maps.)} \\
+    \hline
+    5.2.1 & Indentation error \\
+    \hline
+    %TODO ?
+    5.3.1.3 & \makecell{Missing output name makes the examples grammar invalid. \\ It is not possible to efficiently detect whether \mintinline[bgcolor=lightgray,breaklines]{bash}{optional_req_or_cap_name} \\ or another \mintinline[bgcolor=lightgray,breaklines]{bash}{nested_property_name_or_index} is set.} \\
+    %Therefore it is assumed, that \mintinline[bgcolor=lightgray,breaklines]{bash}{optional_req_or_cap_name} is NEVER set. \\
+    \hline
+  \end{tabular}
+  \label{tab:tosca_issues}
+\end{table}
+
+
+\begin{table}[h]
+  \caption{List of issues with the Simple-Profile specification}
+  \begin{longtable}{ | l | l | }
+    \hline
+    Chapter & Issue description \\
+    \hline \hline
+    2.1 & Inconsistent value for \mintinline[bgcolor=lightgray,breaklines]{bash}{tosca_definitions_version}. \\
+    \hline
+    3 &  Redundant with \gls{toscaacr} specification. \\
+    \hline
+    %TODO where
+    unkown & \makecell{The Simple-Profile definition of \textquote{Operation Implementation} \\ has an attribute \mintinline[bgcolor=lightgray,breaklines]{bash}{operation_host}, while in the \gls{toscaacr} specification \\ it does not.} \\
+    \hline
+    %TODO where
+    unkown & \makecell{\textquote{operation implementation} and \textquote{notification implementation} \\ of the Simple-Profile specification are completely distinct, while \\ in the \gls{toscaacr} specification they are treated as if they are the \\ same.} \\
+    \hline
+    %TODO where
+    unkown & \makecell{The \textquote{interface definition} keynames do not contain the \\ field \textquote{type}, but it is listed in grammar notations. The \gls{toscaacr} \\ specification complies the former.} \\
+    \hline
+    5.3.4.2.2 & Inconsistent indentation (3 spaces) \\
+    \hline
+    5.3 & \makecell{Inconsistent datatype naming; Whilst case sensitive, some \\ names start with a lowercase and others with an uppercase \\ letter (\textquote{Root}, \textquote{json}, \textquote{xml}, \textquote{Credential}).} \\
+    \hline
+    5.3.6.5.1 & Indentation error \\
+    \hline
+    5.3.6.5.4 & Followed by 5.3.6.5.6, so 5.3.6.5.5 is missing. \\
+    \hline
+    5.3.8 - 5.3.10 & \makecell{Do not contain information on whether any field is required.} \\
+    \hline
+    5.4 & \makecell{The description states there are three categories of artifacts. \\ Listed are 4.} \\
+    \hline
+    5.7.1.2 & \makecell{Contains indentation error and \mintinline[bgcolor=lightgray,breaklines]{bash}{derive_from} is not defined.} \\
+    \hline
+    5.8.3 & \makecell{First chapter to contain a type definitions, earlier subchapters \\ do not - this is inconsistent.} \\
+    \hline
+    \makecell{5.8.4.2 till \\ 5.8.4.4} & \makecell{Incomplete chapters and the only provided diagram is incorrect. \\ (State after deletion is \textquote{configured}, which is wrong.)} \\
+    \hline
+    5.8.5 & \makecell{Description text is copied from 5.8.4 and does not apply here. \\ Also, missing descriptions on properties and attributes.} \\
+    \hline
+    5.8.5.2 & Missing illustration. \\
+    \hline
+    5.9.1.3 & Indentation error \\
+    \hline
+    5.9.8 & \makecell{Databases can only have one username-password combination. \\ Additionally, there is a dedicated Credential type, but it is not \\ used here. (Also observed in other occurences.)} \\
+    \hline
+    5.9.9.2 & Definition of capabilities is undefined. \\
+    \hline
+    5.9.10 & \makecell{Default constraints for storage instances are \\ \mintinline[bgcolor=lightgray,breaklines]{bash}{greater_or_equal: 0.1 MB} (or \mintinline[bgcolor=lightgray,breaklines]{bash}{1 MB} or \mintinline[bgcolor=lightgray,breaklines]{bash}{1 GB}). Better: \mintinline[bgcolor=lightgray,breaklines]{bash}{greater_than: 0B}.} \\
+    \hline
+    %TODO research on the following
+    % unkown & Sometimes the map[string]* forces for name finding, but its sometimes unnecessary (as it has a description). While it allows for reference elsewhere, it should be described clearly where this is possible and whats the use-case is. \\
+    % \hline
+  \end{longtable}
+  \label{tab:simple_profile_issues}
+\end{table}
+
+Apart from these \textquote{obvious} improvements, other improvements would definitely increase the usability of \gls{toscaacr}: For one, the standard currently strongly differentiates between \textquote{attribute} fields and \textquote{property} fields. According to the specification, attributes reflect the actual state of the entity during its lifecycle once instantiated. Properties on the other hand are used to describe the desired state. In the real world, those terms are often used as synonym for each other. Therefore the current approach is extremely confusing, and new users will most probably confuse them several times. Since \gls{toscaacr} already has other means in place to distinguish desired state from current state (like types, templates and - instances), it should only be an implementation detail within the orchestrator how it seperates them. The seperation also introduces additional complexity during derivations and makes it hard to retrieve the values because of the choice between \mintinline[bgcolor=lightgray,breaklines]{bash}{get_propery} or \mintinline[bgcolor=lightgray,breaklines]{bash}{get_attribute}.
+
+% - not everyone should reinvent the wheel... (comic graphic)
+By allowing external artifacts and only describing what should be done with those, \gls{toscaacr} natively allows extending it with additional \gls{dslacr}s. While there currently does not exist such a case, it is for example possible to describe an \gls{apiacr} with the OpenAPI (formerly Swagger) \gls{dslacr} - designed with the single goal to describe \gls{apiacr}s. As already stated elsewhere, there are many \gls{dslacr}s, each with its own usecase. \Gls{toscaacr} allows to integrate them as they are. This is a huge benefit, but such integrations are missing yet. Future work could look at such languages and develop integrations with \gls{toscaacr}.
+%TODO comic graphic missing (many languages)
+
+% - compare metamodels, find similarities, could lead to common ground
+The long list of \gls{dslacr}s specifically for \gls{iacacr} makes clear that there is not a single one that fits them all. In most cases this can be traced to subtle different features between the providers. Further comparing the different \gls{dslacr}s and searching for common ground could help in developing an industry-wide standard. In a perfect world, migrations between infrastructure providers are done by exchanging the provider interface and the credentials. As is done with other standards as well, organizations can research, try, and develop their own products of course. But as soon as there are several providers, and migrations are necessary, those transitions should be as easy as possible. Not only the users would benefit: The providers that collaborate on such a standard encourage third party software to adhere to it as well, making them compatible and therefore increasing potential userbase. A common standard would also distribute necessary work on \gls{apiacr} design across all backing organizations. Another reason for a standard is its long-term lifecycle; Creating meta-models for the \gls{dslacr}s (models describing the language) become more feasable, which might then lead to more reusability, and finally to better tooling around development and migrations (from and to other languages).
+
+% bare-metal
+
+% - vendor bioses should support http by default or embed ipxe for network boot. Maybe even allow flashing the network-boot system (remotely?). VMware does support this already for its VMs: https://ipxe.org/howto/vmware
+In addition to the improvements on the language and standard side, interactions with bare-metal machines would profit from another iteration of interfaces. It is a bit strange that a protocol like \gls{tftpacr} are still the state of the art for transmitting boot images in network boot environments in 2021. Vendors should bake support for \gls{httpacr} or HTTPS into their \gls{biosacr}es and \gls{uefiacr}-systems. They could even use iPXE as their default network boot firmware (so they do not need to reinvent the wheel).
+
+\Gls{ipmiacr} brings many convenient features like remote firmware upgrades, an \gls{apiacr} for sensor data, and the ability to change boot settings remotely. This includes information about the hardware like product ID, serial number and firmware version. Yet, information about the hardware like the amount of RAM is often not accessible directly. Having such a feature would rendering the relatively complex hardware detection step with the live-\gls{osacr} described in this thesis obsolete - significantly decreasing the required time and resources during this step.
+
+By leveraging \gls{ipmiacr}, the hardware provisioning introduced in this thesis can be extended even more: Up- and downgrading firmware automatically, setting the boot-order and other \gls{biosacr} and \gls{uefiacr} configurations, as well as controlling the power cycle in a more direct way (forced power-off for example) are just a few examples. 
+
+Another feature that is not currently available, is setting a network boot url (like the (http-)URL to the live-\gls{osacr} image directly, without requiring additional settings at the \gls{dhcpacr} level.
+
+% - common standard for bmc/ipmi features.
+This goes hand in hand with another problem concerning \gls{bmcacr}s and \gls{ipmiacr}. Currently, the naming of features, including many available \gls{apiacr} calls regarding firmware differ greatly between all vendors. This makes it basically impossible to write such tools around those interfaces, that support all vendors equally at the same time. Instead, vendor support often has to be built one at a time - making it an quite unpleasant journey.
+
+% tooling
+
+% TODO as explained during the description of the hardware package, additional devices should be integrated in there as well. Routers, Switches, partial devices such as graphic cards, psus, rack devices like pdus, cages/? ...
+% Not all of them are required for the upper layers, but it could ensure everything is as it should be, increase monitoring capabilities, and at the same time document the infrastructure, improving the single-source-of-truth experience.
+
+
