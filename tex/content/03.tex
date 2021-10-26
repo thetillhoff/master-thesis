@@ -1,11 +1,11 @@
 \chapter{Related work}
 
 % - 7-22 pages
-% - core element of the thesis, as it shows I'm able to write scientifically.
+% - the core element of the thesis, as it shows I'm able to write scientifically.
 % - explain what other researchers have found on the topic.
-%   - existing approaches (current state of the art, theories, literature (seperated by subtopic))
+%   - existing approaches (current state of the art, theories, literature (separated by subtopic))
 %   - other scientific contributions to solve the task
-% - explain gap in literature, that the thesis is trying to fill.
+% - explain the gap in the literature, that the thesis is trying to fill.
 %   - new method
 %   - new data
 %   - new application
@@ -13,59 +13,49 @@
 %%%%% start writing here
 
 Several tools, frameworks, and even whole ecosystems have evolved around \gls{iacacr}. This chapter is focused on finding the most common, determining their use cases, and identifying their issues.
-Additionally, a simple reference infrastructure will be introduced, which must be deployable with the respective tool.
+%TODO only if done: Additionally, a simple reference infrastructure will be introduced, which must be deployable with the respective tool.
 %TODO Should the reference infrastructure not be at the top of this chapter? Or at least before the comparison?
 
-% There are different parts of IaC that have reached different levels of majority.
-% - Automated provisioning of infrastructure
-% - 
-
-\section{State-of-the-art automated hardware provisioning} %TODO could also be in 02-background
-The interest in \gls{iacacr} has been increasing on a steady level over the last years \cite{googletrends_iac}.
-\newline
-%TODO The part above and below don't fit together very well
-%How infrastructure is managed in modern organizations.
-%Boosted by the COVID-19 pandemic ...
-It is estimated that ninety percent of global enterprises will rely on hybrid cloud by 2022 \cite{idc_covid_multicloud}.
-It is also estimated that on-premise workloads drop from 59 percent in 2019 to 38 percent in 2021 and workloads on public clouds grow from 23 percent to 35 percent \cite{thestreet_public_cloud_spending_covid}.
+\section{State-of-the-art automated hardware provisioning}
+The interest in \gls{iacacr} has been increasing on a steady level over the last years \cite{googletrends_iac}. It is estimated that ninety percent of global enterprises will rely on hybrid cloud by 2022 \cite{idc_covid_multicloud}.
+Surely boosted by the COVID-19 pandemic, it is also estimated that on-premise workloads drop from 59 percent in 2019 to 38 percent in 2021 and workloads on public clouds grow from 23 percent to 35 percent \cite{thestreet_public_cloud_spending_covid}.
 \newline
 Instead of updating deployed instances, recreating them ensures all of them are equal \cite{iac_bare_metal}. This includes software and firmware upgrades.
 \newline
 Another reason is heterogeneity in systems: Even when using only a single vendor or even a single model, variations occur. Be it that newer models have upgraded firmware or other \textquote{under-the-hand} changes \cite{iac_bare_metal}.
 \newline
-It is better not to assume certain states but check them instead. This way, whenever a state is unexpected, the automation can exclude this certain node and tell the responsible humans to check what's wrong. The only reliable source of truth for the current state is the current state itself - not some kind of cached or partial version of it \cite{iac_bare_metal}.
+There are differnt opinions on whether a local version of the state should be cached. Some state that it is a necessary means to improve performance \cite{terraform_state}, while others state that it is better not to assume certain states but instead check them \cite{iac_bare_metal}. In case of the latter, whenever a detected state is unexpected, the automation can exclude this certain node and tell the responsible humans to check what's wrong. The most reliable source of truth for the current state is the current state itself - not some kind of cached or partial version of it \cite{iac_bare_metal}.
 \newline
 So far, public cloud providers haven't exactly published how they are provisioning their bare-metal infrastructure.
 \newline
-But there are some hints, as some of those providers have an on-premises or edge product. The Microsoft Azure Stack HCI cluster is such a case. The documentation recommends starters to get machines with the correct drivers and \gls{osacr} preinstalled \cite{microsoft_azure_stack_deployment}. Apart from that, they describe additional \gls{osacr} deployment options like using an answer file (unattended installation), network deployment (\gls{pxeacr}), System Center Virtual Machine Manager (only for Windows \gls{osacr}s), and even manual provisioning \cite{microsoft_azure_stack_deployment}. The preinstalled \gls{osacr} makes the vendor (in this case Microsoft) responsible for provisioning. So it doesn't solve the problem but shifts it somewhere else. Additionally, it doesn't work in all cases - for example on reinstallations.
+But there are some hints, as some of those providers have an on-premises or edge product. The Microsoft Azure Stack HCI cluster is such a case. The documentation recommends starters to get hardware with the correct drivers and \gls{osacr} preinstalled \cite{microsoft_azure_stack_deployment}. Apart from that, they describe additional \gls{osacr} deployment options like using an answer file (unattended installation), network deployment (\gls{pxeacr}), System Center Virtual Machine Manager (only for Windows \gls{osacr}s), and even manual provisioning \cite{microsoft_azure_stack_deployment}. The preinstalled \gls{osacr} makes the vendor (in this case Microsoft) responsible for provisioning. So it doesn't solve the problem but shifts it somewhere else. Additionally, it doesn't work in all cases - for example on reinstallations.
 \newline
-While Amazon Web Services Outposts is a similar product, it doesn't allow customers to manage it themselves. Instead Amazon dispatch their own service personnel for every necessary manual task \cite{aws_outposts} \cite{aws_outposts_faq}.
+While Amazon Web Services Outposts is a similar product, it doesn't allow customers to manage it themselves (and provides no public documentation around it). Instead Amazon dispatch their own service personnel for every necessary manual task \cite{aws_outposts} \cite{aws_outposts_faq}.
 \newline
-Google doesn't have a product to bring its whole cloud on-premise or to the edge yet, but only dedicated feature sets like the Google Kubernetes Engine. The company relies on an underlying VMware vSphere environment and therefore outsources hardware management \cite{google_anthos_onprem}.
-\newline
-When a company like Google relies on third-party software it has to be special in some way.
+Google doesn't have a product to bring its whole cloud on-premise or to the edge yet, but only dedicated feature sets like the Google Kubernetes Engine. For it, the company relies on an underlying VMware vSphere environment and therefore outsources hardware management \cite{google_anthos_onprem}.
+% \newline
+% TODO add only when numbers are added below: When a company like Google relies on third-party software it has to be special in some way.
 
 % TODO add VMware numbers here!
 
-So how does the deployment of VMware's vSphere clusters work? The most important thing with vSphere is that it can be deployed as a \gls{vmacr} on an ESXi server (since version 7.0 the appliance is the only way - previously a Windows system could be used as well), the hypervisor \gls{osacr} developed by VMware \cite{vmware_farewell_windows} \cite{vmware_vsphere_installation} \cite{vmware_vcenter_deployment}. In other words, vSphere requires (at least one) manually installed ESXi server, which can then host the vSphere Server software, which then has a feature called Auto Deploy \cite{vmware_installing_esxi}. This feature creates a \gls{pxeacr} boot infrastructure that requires an external DHCP server \cite{vmware_intro_autodeploy} \cite{vmware_autodeploy_process}. The latter has to be configured to distribute network boot details that point to the preexisting vSphere Server \cite{vmware_intro_autodeploy}.
-To reduce deployment time, Auto Deploy does not install the ESXi \gls{osacr} on machines but loads the boot image directly into its memory \cite{vmware_provisioning_esxi_using_autodeploy}. This implies that server restarts are equal to redeployments.
+So how does the deployment of VMware's vSphere clusters work? The most important thing with the management software called vSphere Server is that it can be deployed as a \gls{vmacr} on an ESXi server (since version 7.0 the appliance is the only way - previously a Windows system could be used as well \cite{vmware_farewell_windows}), the hypervisor \gls{osacr} developed by VMware \cite{vmware_vsphere_installation} \cite{vmware_vcenter_deployment}. In other words, vSphere requires (at least) one manually installed ESXi server, which can then host the vSphere Server software, which then has a feature called Auto Deploy \cite{vmware_installing_esxi}. This feature creates a \gls{pxeacr} boot infrastructure that requires an external DHCP server \cite{vmware_intro_autodeploy} \cite{vmware_autodeploy_process}. The latter has to be configured to distribute network boot details that point to the preexisting vSphere Server \cite{vmware_intro_autodeploy}.
+To reduce deployment time, Auto Deploy does not install the ESXi \gls{osacr} on machines but loads the boot image directly into its memory \cite{vmware_provisioning_esxi_using_autodeploy}. This implies that server restarts are handled equally as redeployments.
 \newline
-Considering VMware develops most of their software themselves (or owns a company that does it for them), the reliance on third-party products in this field is surprising. But when VMware does rely on this deployment approach, it must have proven to be reliable and hold water. % "stichhaltig"
+Considering VMware develops most of their software themselves (or owns a company that does it for them), the reliance on a third-party product in this field is surprising. But when VMware does rely on this deployment approach, it must have proven to be reliable and hold water. % "stichhaltig"
 Apaches CloudStack supports two hypervisors; For ESXi, it recommends also using vSphere, while for XenServer and KVM it does not specify any deployment options - its documentation starts after the hypervisor is installed \cite{cloudstack_installation}.
 \newline
 One of the most recently published cluster software for bare metal is Google's Anthos. The software and its documentation completely omit the provisioning part up to the point where nodes can only be added when they are already accessible via \gls{sshacr} \cite{anthos_bare_metal}.
 \newline
-Common asset management tools like servicenow or i-doit, use providers like vSphere or public clouds for instantiation \cite{servicenow_setup_guide_vmware_cloud} or don't support hardware provisioning \cite{idoit_vm_provisioning}.
+Common asset management tools like servicenow or i-doit use providers like vSphere or public clouds for instantiation \cite{servicenow_setup_guide_vmware_cloud} or even do not support hardware provisioning \cite{idoit_vm_provisioning} at all.
 \newline
 Other bare-metal lifecycle management tools like Canonical MAAS, Foreman, FOG, FAI, Cobbler, Openstacks Ironic, RackNs Digital Rebar and Equinix Metals Tinkerbell as well as Microsofts System Center Virtual Machine Manager also rely on \gls{pxeacr} for automatic \gls{osacr} deployments \cite{maas_how_it_works} \cite{foreman_what_is} \cite{fog_introduction} \cite{fai_how_does_it_work} \cite{cobbler_documentation} \cite{openstack_ironic_docs} \cite{rackn_what_is_digital_rebar} \cite{tinkerbell_architecture} \cite{microsoft_provision_hyperv_bare_metal}. Most often, they have the required software (the aforementioned \gls{dhcpacr}- and \gls{tftpacr}-server) embedded in some way and only require minor interactions to configure it properly (like setting up the \gls{dhcpacr} range).
 \newline
-Only the minority of bare-metal provisioning software uses or at least supports \gls{ipmiacr} as tool of the trade. This includes Canonical MAAS (only for power management), OpenStacks Ironic (for power management and sensor data), RackNs Digital Rebar and ispsystems DCImanager \cite{maas_snap_power_management} \cite{openstack_ironic_docs} \cite{rackn_what_is_digital_rebar} \cite{ispsystem_dcimanager}.
-The main problem with using \gls{ipmiacr} for provisioning is its vendor-specific implementations. Not only is it not available for all hardware, but different vendors support different features of \gls{ipmiacr} - often even with different \gls{apiacr}s. A second, but closely related issue is its unavailability for \gls{vmacr}s: Most hypervisors don't support \gls{ipmiacr} interfaces for virtual machines. And even if they do (for example via plugins), their documentation is sparse and their development stale \cite{openstack_virtualbmc}.
+Only the minority of bare-metal provisioning software uses or at least supports \gls{ipmiacr} as tool of the trade. This includes Canonical MAAS (only for power management), OpenStacks Ironic (for power management and reading sensor data), RackNs Digital Rebar and ispsystems DCImanager \cite{maas_snap_power_management} \cite{openstack_ironic_docs} \cite{rackn_what_is_digital_rebar} \cite{ispsystem_dcimanager}.
+The main issues with using \gls{ipmiacr} for provisioning are due to is its vendor-specific implementations. Not only is it not available for all hardware, but different vendors support different features (and versions) of \gls{ipmiacr} - often even with different \gls{apiacr}s. A second but closely related issue is its unavailability for \gls{vmacr}s: Most hypervisors don't support \gls{ipmiacr} interfaces for virtual machines. And even if they do (for example via plugins), their documentation is sparse and their development stale \cite{openstack_virtualbmc}.
 \newline
-Another reason for not using \gls{ipmiacr} is its historically low security. Although most vendors had their own credentials for accessing the management interface, they used the same combination of user and password for all of their devices \cite{bmc_default_passwords}. With senate bill 327 chapter 886 (1798.91.04) taking effect in January 2020, the vendors must now use a unique random password for each machine. Most hardware manufacturers make a huge part of their revenue in the United States or even have their headquarter there. 
-This led to them deploying this feature worldwide by default.
+Another reason for not using \gls{ipmiacr} is its historically low security. Although most vendors each had their own credentials for accessing the management interface, they used the same combination of user and password for all of their devices \cite{bmc_default_passwords}. Only with senate bill 327 chapter 886 (1798.91.04) taking effect in January 2020, the vendors must now use a unique random password for each machine. Most hardware manufacturers make a huge part of their revenue in the United States or even have their headquarter there. They have since deployed this feature as default for orders worldwide.
 \newline
-On the other hand, the \gls{bmcacr} has capabilities beyond network boot and \gls{wolacr}. For example, it allows administrators to debug an unresponsive machine, execute hard resets and change BIOS/UEFI settings remotely.
+On the other hand, the \gls{bmcacr} has capabilities beyond network boot and \gls{wolacr}. For example, it allows administrators to debug an unresponsive machine, execute hard resets and change \gls{biosacr}/\gls{uefiacr} settings remotely.
 So while \gls{ipmiacr} has its place, it is not the go-to technology for automated provisioning.
 %TODO outlook: combination of ipmi and pxe/netboot might be the future - like a magic packet that tells the machine what to boot
 \newline

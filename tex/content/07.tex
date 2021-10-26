@@ -4,6 +4,8 @@
 %   - better technique
 %   - unsolved problems
 
+%%%%% start writing here
+
 % aspects of mdsd workflow:
 % - always:
 %   - define modeling language (abstract and concrete syntax)
@@ -17,8 +19,6 @@
 %   - automate workflows from single steps
 
 % check todo.md, note.md, readme.md
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % dsls
 Apart from the \textquote{obvious} improvements described in the Analysis chapter, other improvements would increase the usability of \gls{toscaacr}: For one, the standard currently strongly differentiates between \textquote{attribute} fields and \textquote{property} fields. According to the specification, attributes reflect the actual state of the entity during its lifecycle once instantiated. Properties on the other hand are used to describe the desired state. In the real world, those terms are often used as synonyms for each other. Therefore the current approach is extremely confusing, and new users will most probably confuse them several times. Since \gls{toscaacr} already has other means in place to distinguish the desired state from the current state (like types, templates, and instances), it should only be an implementation detail within the orchestrator how it separates them. The separation also introduces additional complexity during derivations and makes it hard to retrieve the values because of the choice between the functions \mintinline[bgcolor=lightgray,breaklines]{bash}{get_propery} or \mintinline[bgcolor=lightgray,breaklines]{bash}{get_attribute}.
