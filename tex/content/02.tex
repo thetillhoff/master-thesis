@@ -42,63 +42,37 @@ The next generation of servers (since 1998) had such a remote control integrated
 The aforementioned embedded chips are called \gls{bmcacr} and the surrounding technology is often called \gls{oobacr} or \gls{lomacr}. Even though these are universal terms for the chips and the technology, most hardware manufacturers have different names for their specific toolset. Examples are (not needed further in this thesis) DRAC from DELL EMC, ILO from HPE, and IMM from IBM. Not only the product names are different: Many features have different names but are also doing the same. Probably due to their original purpose, those chips are not embedded in every modern mainboard, but only available in server- and enterprise-desktop-mainboards. Since \gls{ipmiacr} adds an attack vector to the device, having such a chip in consumer devices decreases its security.
 \newline
 There are two different sets of problems solved with all those technologies:
-The combination of \gls{ipmiacr} and \gls{lomacr} allows administrators to debug a machine even on the other side of the planet (or even in space \cite{spacex_servers}) by giving them remote input/output capabilities as well as power cycle control and the ability to get hardware sensor information. But \gls{lomacr} is almost impossible to automate. %todo: even space? is there a source for that?
-The network-boot technologies around \gls{pxeacr} on the other side help with automating a high number of servers in parallel but do not help with debugging errors.
+The combination of \gls{ipmiacr} and \gls{lomacr} allows administrators to debug a machine even on the other side of the planet (or even in space \cite{spacex_servers}) by giving them remote input/output capabilities as well as power cycle control and the ability to get hardware sensor information. Since every vendor has a slightly different approach to their \gls{lomacr} interface, it is almost impossible to automate it universally.
+The network-boot technologies around \gls{pxeacr} on the other side are capable of automating a high number of servers in parallel but do not provide necessary Input/Output for debugging issues.
 \newline
-Together, these solutions enable administrators to automate hardware provisioning at scale while at the same time providing them with remote low-level debugging tools.
+Yet, together these solutions enable administrators to automate hardware provisioning at scale while at the same time providing them with remote low-level debugging tools.
 \newline
-These standards are to state-of-the-art remote-server-administration-tools now for several years, along with \gls{sshacr}. They mostly solve the administration scaling problem and form the base for other tools (more on them later). %TODO source
+These standards are the state-of-the-art tools for remote-server-administration for several years now, along with \gls{sshacr}. They mostly solve the administration scaling problem and form the base for other tools (more on them later).
 \newline
+% TODO
 % power down a machine is necessary -> separation of concerns -> inefficient usage
 % vertical scaling of software -> distributed software
-% TODO
-Sometimes, it is necessary to power a machine down. Be it for exchanging/adding hardware components or other maintenance. Therefore a best practice separates different workloads on different machines. This has the advantage that f.e. powering down a web server, doesn't impact a database server. At the same time, it has the downside that servers are not efficiently used: When the database has almost no load, but the web-server is close to its limit, the load cannot be distributed between them. This is where virtualization comes in.
+Sometimes, it is necessary to power a machine down. Be it for exchanging/adding hardware components or other maintenance. Therefore a best practice separates different workloads on different machines. This has the advantage that for example powering down a web server does not impact a database server. At the same time, it has the downside that servers are not used efficiently: When the database has almost no load, but the web-server is close to its limit, the load cannot be distributed properly between them. This is where virtualization comes in.
 
-
-
-
-
-%  - IPMI
-%    - on
-%    - off
-%    - list-sensors
-%    - get-sensor (detailed)
-%    - attachISO
-%    - detachISO
-%    - bootOrder
-%    - (create, delete), virt-equivalent
-%  - BMC
+% TODO add the following sources into text above
 %  - \url{https://en.wikipedia.org/wiki/Out-of-band_management}
 %    - out-of-band management (OOB) == lights-out-management (LOM)
 %  - PXE (DHCP with DNS, Gateway) (wired-for-management by ms and intel)
 %    - TFTP used to download kernel
 %    - NBP (Network Bootstrap Program) is the networking equivalent to GRUB and LiLo (linuxloader) -> it loads the kernel into memory before booting it (\url{https://docs.openstack.org/ironic/latest/user/architecture.html})
-%  - datacenter architecture
-%    - Top-of-rack-switch
 %  - retrieving vendor from mac is possible (\url{https://macvendors.com/api}) - can this be used for ipmi/... distinction?
 
 \section{Virtualization}
-Even though IBM shipped its first production computer system capable of full virtualization in 1966 \cite{ibm_first_hypervisor}, it still took several decades until the "official" break-though of virtualization technologies. Only then were machines powerful enough for virtualization that makes sense in terms of performance, leading to lower management overhead, fewer unused system resources, and therefore overall cost savings \cite{xen_killer}.
-Starting 2005, Intel and AMD added hardware virtualization to their processors and the Xen hypervisor was published. Other hypervisors followed: Microsoft Hyper-V and Proxmox Virtual Environment were both published in 2008. The initial release of VMware's ESX hypervisor even dates back to 2001 but evolved to ESXi in 2004. The first version of the Linux kernel which contained the \gls{kvmacr} hypervisor (not to be mistaken with the equal abbreviation for keyboard, video, mouse described earlier - from this point onwards, \gls{kvmacr} always refers to the hypervisor) was published in 2007.
+Even though IBM shipped its first production computer system capable of full virtualization in 1966 \cite{ibm_first_hypervisor}, it still took several decades until the \textquote{official} break-though of virtualization technologies. Only then were machines powerful enough for virtualization that makes sense in terms of performance, leading to lower management overhead, fewer unused system resources, and therefore overall cost savings \cite{xen_killer}.
+Starting 2005, Intel and AMD added hardware virtualization support to their processors and the Xen hypervisor was published. Other hypervisors followed: Microsoft Hyper-V and Proxmox Virtual Environment were both published in 2008. The initial release of VMware's ESX hypervisor even dates back to 2001 but evolved to its successor ESXi in 2004. The first version of the Linux kernel which contained the \gls{kvmacr} hypervisor (not to be mistaken with the equal abbreviation for keyboard, video, mouse described earlier - from this point onwards, \gls{kvmacr} always refers to the hypervisor) was published in 2007.
 \newline
 Apart from the previously stated advantages, the virtualization of machines enables migrations of them to another host without downtime (\textquote{live-migration}), finally allowing them to evacuate hosts before maintenance work. The same feature also drastically improves disaster recovery capabilities \cite{definition_server_virtualization}.
 \newline
-But the use of hypervisors and clustering them for live-migration and other cross-node functionalities has a downside as well: Vendor lock-in since the different \gls{vmacr} formats are not compatible (there are some migration/translation tools, but best practices for production environments advise against them), license/support fees in addition to the hardware support fees and requiring additional expertise for the management software.
+But the use of hypervisors and clustering them for live-migration and other cross-node functionalities has downsides as well: Vendor lock-in since the different \gls{vmacr} formats are not compatible (there are some migration/translation tools, but best practices for production environments advise against them), license/support fees in addition to the hardware support fees and requiring additional expertise for the management software.
 \newline
-Yet, 100 percent of the fortune 500 and 92 percent of all business used (server-)virtualization technologies in 2019 \cite{adoption_of_virtualization_technologies} \cite{vmware_accelerate_it} \cite{spiceworks_state_of_virtualization}.
+Yet, 100 percent of the fortune 500 and 92 percent of all business used (server-)virtualization technologies in 2019 \cite{adoption_of_virtualization_technologies} \cite{vmware_accelerate_it} \cite{spiceworks_state_of_virtualization}. And VMware claims, that 80 percent of all virtualized workloads run on VMware technology \cite{vmware_accelerate_it}, whereas Statista estimates their share to only 20 percent \cite{statista_vmware}.
 
-% On a sidenote, VMWare claims that 80 percent of all virtualized workloads run on VMWare technology [\url{https://www.vmware.com/files/pdf/VMware-Corporate-Brochure-BR-EN.pdf}]. %TODO whereas Statista estimates their share to only 20 percent [\url{https://www.statista.com/statistics/915091/global-server-share-physical-virtual/}].
-
-
-%  - hypervisor and vm
-%  - \url{https://www.statista.com/statistics/915091/global-server-share-physical-virtual/}
-%    - 2018, 57,2 % of servers worldwide were pyhsical
-%      2019, 55,6 % of servers worldwide were physical
-%    - 2018, vmware accounted for 20.1 % of servers
-%    - 2019, vmware accounted for 20.8 % of servers
-%  - \url{https://www.statista.com/statistics/1139931/adoption-virtualization-technologies-north-america-europe/}
-%    - 2019 92% of all business use virtualization technologies
-%
+% TODO add sources to above text:
 %  - \url{https://searchservervirtualization.techtarget.com/definition/server-virtualization}, \url{https://docs.oracle.com/cd/E26996\_01/E18549/html/BHCJAIHJ.html}
 %    benefits of virtualization
 %    - server consolidation
@@ -116,51 +90,31 @@ Yet, 100 percent of the fortune 500 and 92 percent of all business used (server-
 %    - minor performance decrease -> statistics
 
 % TODO: additional concepts could be explained here, allowing later references
-% - converged infrastructure: combine storage and "normal" network traffic into the same network % -> no fiber channel switches any more
+% - converged infrastructure: combine storage and "normal" network traffic into the same network % -> no fiber channel switches anymore
 %   - simpler and easier to manage, easier and cheaper to purchase
 % - hyper-converged infrastructure: merge storage nodes and compute nodes; or in other words: every node has storage and a powerful processor.
 %   - hope for less over- and underuse of resources, easier to scale
-%   - no additional appliances for data protection, data de-duplication (integrated in HCI software)
+%   - no additional appliances for data protection, data de-duplication (integrated into HCI software)
 %   - performance guarantee, predictable at all times
-% - disaggregated hyper-converged infrastructure / hybrid hyper-converged infrastructure
+% - disaggregated hyper-converged infrastructure/hybrid hyper-converged infrastructure
 % - composable infrastructure
-% - ...
-
-
-
 
 \section{Cloud}
-The term cloud describes a group of servers, that are accessed over the internet and the software and databases that run on those servers \cite{cloudflare_what_is_cloud}. These servers are located in one or multiple data centers. There are three types of clouds: Private clouds, which refers to servers and services which are only available internally (i.e. only shared within the organization). The second type consists of public clouds, which refers to publicly available services (i.e. shared with other organizations) \cite{cloudflare_what_is_private_cloud}. And lastly, there are hybrid clouds, which mix both of the previous types. All of these have five main attributes in common: They allow for on-demand allocation, self-service interfaces, migration between hosts, as well as replication and scaling of services [lecture notes, VSYS, during bachelor, and \cite{microsoft_what_is_private_cloud}].
+The term cloud describes a group of servers that are accessed over the internet and the services (for example databases) that run on those servers \cite{cloudflare_what_is_cloud}. These servers are located in one or (most often) multiple data centers. There are three types of clouds: Private clouds, which refers to servers and services which are only available internally (i.e. only shared within the organization). The second type consists of public clouds, which refers to publicly available services (i.e. shared with other organizations) \cite{cloudflare_what_is_private_cloud}. And lastly, there are hybrid clouds, which mix both of the previous types. All of these have five main attributes in common: They allow for on-demand allocation, self-service interfaces, migration between hosts, as well as replication and scaling of services, % lecture notes, VSYS, during bachelor
+and \cite{microsoft_what_is_private_cloud}].
 \newline
-The public cloud era began with the launch of Amazon's Web Services in 2006. Since then, it evolved into one of the biggest markets with a yearly capacity of \$270 billion and an estimated growth of almost 20 percent \cite{gartner_forecast_cloud_spending}. The current value exceeds even the market capitalization of Norway \cite{indexmundi_ranking}. Considering the amount of revenue generated (at least \$40 billion \cite{indexmundi_ranking}, it is obvious why the likes of Microsoft (in 2010) and Google (in 2013) followed Amazon into the cloud market \cite{cbinsights_multi_cloud_strategies}.
+The public cloud era began with the launch of Amazon's Web Services in 2006. Since then, it evolved into one of the biggest markets with a yearly capacity of \$270 billion and an estimated growth of almost 20 percent \cite{gartner_forecast_cloud_spending}. The current capacity exceeds even the market capitalization of Norway \cite{indexmundi_ranking}. Considering the amount of revenue generated (at least \$40 billion \cite{indexmundi_ranking}, it is obvious why the likes of Microsoft (in 2010) and Google (in 2013) followed Amazon into the cloud market \cite{cbinsights_multi_cloud_strategies}.
 \newline
-Cloud computing can generate these high rates of revenue because they take advantage of economy of scale, very efficient sharing of resources, as well as a combination of a huge amount of developer effort into a low amount of features (in contrast to every organization implementing the same feature set over and over for themselves) \cite{forbes_cloud_economy_scale}.
+Cloud computing can generate these high rates of revenue because they take advantage of economy of scale, very efficient sharing of resources, as well as a focus of a huge amount of developer effort into a relatively low amount of features (in contrast to every organization implementing the same feature set over and over for themselves) \cite{forbes_cloud_economy_scale}.
 \newline
-Apart from financial and developer efficiency, clouds have a long list of advantages and disadvantages [Domain-specific language for infrastructure as code]. %TODO Leave like this?
+Apart from financial and developer efficiency, clouds have a long list of advantages and disadvantages \cite{dsl_for_iac}, but these are out of scope here.
 \newline
-The high degree of automation and possibilities for scaling within a cloud made it possible to scale automatically. The time required to provision (and remove) new nodes plays an important role during autoscaling. This is where containers come in.
-%TODO Where to put the following part? It's an introduction between clouds and IaC...
-%\newline
+The high degree of automation and possibilities for scaling within a cloud environment made it possible to automate the process of this scaling. The time required to provision (and remove) new nodes plays an important role during autoscaling. This is where containers come in.
+
+%TODO Where to put the following part? It's an introduction between clouds and IaC...:
 %Since all cloud providers have their own self-service portals, \gls{apiacr}s and in most cases different features, migration between providers for whatever reason are often very difficult and time consuming.
 
 %TODO Add image with in-house/on-premise infra, off-premise infra, private cloud, public cloud, and hybrid cloud
-
-%  Public clouds have quite the arsenal of pros and cons [Domain-specific language for infrastructure as code].
-%  - vps
-%  - \url{https://www.vpsbenchmarks.com/labs/provisioning_times}
-%    vps provisioning times
-%    - hetzner: 14s
-%    - GCP: 20s
-%    - Amazon EC2: 23s
-%    - DigitalOcean: 24s
-%    - Scaleway: 32s
-%    - Alibaba: 41s
-%    - Amazon Lightsail: 48s
-%    - Oracle Cloud: 60s
-%    - Vultr: 62s
-%    - OVHcloud: 72s
-%    - IBM Cloud: 86s
-%    - MS Azure: 102s
 
 \section{Containers}
 While the idea of containers exists for quite some time already (2006 as so-called cgroups, 2007 with LXC, \cite{cgroups} \cite{lxc}, it only reached mainstream popularity with the release of docker in 2013 \cite{docker_initial_release}. The main difference between a \gls{vmacr} and a container is the kernel: The former has a dedicated kernel, which runs in parallel with the hypervisor kernel (yet controlled by it). The latter however shares the kernel of the underlying operating system, thus not requiring a kernel to be loaded for each new instance. As a result, the provisioning speed is dramatically reduced: While \gls{vmacr}s are not uncommon to exceed 60 seconds until being fully available, containers only require the time the operating system needs to start a new process, which is sub-second in most cases \cite{vps_provisioning_times}.
@@ -169,21 +123,20 @@ Containers also (almost completely) solve the \textquote{works-on-my-machine} sy
 \newline
 Some go even as far as saying containers are the future of cloud computing \cite{containers_future_cloud_computing} \cite{devopsonline_serverless_future} \cite{alibabacloud_serverless_future} \cite{ttpsc_serverless_future} (or maybe the future of container computing looks different then previously thought \cite{azure_modular_datacenter} \cite{google_patent_container}).
 \newline
-Docker Inc. also introduced a cross-machine management tool called Swarm, which allows users to describe the desired state, which the engine tries to realize (at all times). It was accompanied by Google's Kubernetes in 2014 on the short list of container orchestrators. Kubernetes is based on another (internal) software by Google called Borg, which is the underlying system for software like YouTube, Gmail, Google Docs, and their web search. The company had no place to put the open-source software, so they partnered with the Linux Foundation to create the \gls{cncfacr} \cite{cncf_guide_landscape}. The \gls{cncfacr} Landscape has since evolved into a multi-trillion-dollar ecosystem, so the Kubernetes story only scrapes its surface. The cloud-native world has even been labeled as Cloud 2.0 \cite{alibabacloud_serverless_future}.
+Docker Inc. also introduced a cross-machine management tool called Swarm, which allows users to describe the desired state, which the engine tries to turn into reality (consistently). It was accompanied by Google's Kubernetes in 2014 on the short list of container orchestrators. Kubernetes is based on another (internal) software by Google called Borg, which is the underlying system for services like YouTube, Gmail, Google Docs, and their web search. The company had no place to put the open-source software, so they partnered with the Linux Foundation to create the \gls{cncfacr} \cite{cncf_guide_landscape}. The \gls{cncfacr} Landscape has since evolved into a multi-trillion-dollar ecosystem, so the Kubernetes story only scrapes its surface. The cloud-native world has even been labeled as Cloud 2.0 \cite{alibabacloud_serverless_future}.
 \newline
-These orchestrators like Swarm and Kubernetes, along with the cloud providers become more complex with the more features they get, and since the high amount of automation leads to an ever-changing state, several ways to describe the desired state were developed.
-
+Orchestrators like Swarm and Kubernetes, along with the cloud providers become more complex with the more features they get, and since the high amount of automation leads to an ever-changing state, several ways to describe the desired state were developed: The birth of \gls{iacacr}.
 
 %TODO myths:
 %   - virt has significantly lower perf than bare-metal
-%   - bare-metal container is better than container in vm (f.e. lower overhead) -> no live-migration on bare-metal, chunks of bare-metal (sizing)
+%   - bare-metal container is better than container in VM (f.e. lower overhead) -> no live-migration on bare-metal, chunks of bare-metal (sizing)
 
 \section{Infrastructure-as-Code}
-\Gls{iacacr} takes advantage of multiple factors:
+\Gls{iacacr} is the result of multiple factors:
 \begin{itemize}
-  \item Software development encompasses more than running it, f.e. a build pipeline, testing, and compliance. All of this has to be documented.
+  \item Software development encompasses more than running it, for example, a build pipeline, testing, and compliance. All of this has to be documented.
   \item Documentation is hard to hold up to date \cite{software_engineers_documentation} \cite{software_documentation_issues}. This is not special to orchestrators or cloud providers but is true for all software.
-  \item The only source of information that cannot lie (i.e. be out of date) is the source code.
+  \item The only source of information that cannot lie (as in being out of date) is the source code.
   \item Scaling (infrastructure) leads to standardized objects.
   \item To have multiple instances of the same type of nodes, they have to be provisioned the same.
   \item The only (reliable) way to do something the same way over and over is to script/program them.
@@ -194,9 +147,9 @@ The practice of \gls{iacacr} is best described as finding a compromise between h
 \newline
 Due to the trend towards software-defined everything \cite{sde_deloitte} \cite{sde_researchgate}, the advantages gained by using \gls{iacacr} grow steadily. As soon as a certain software has an \gls{apiacr}, it can be integrated into \gls{iacacr}. Since the created code only describes how and when to interact with which \gls{apiacr} and not the actual implementation behind it, some kind of orchestrator is required which processes the requests and runs the actual workflows behind the endpoints.
 \newline
-There are two ways to implement those workflows. The first is a push-based mechanism, where the orchestrator triggers actions on other parts of the system (f.e. commands a hypervisor to create a \gls{vmacr}). The other is a pull-based mechanism, where those subsystems (i.e. a hypervisor) periodically ask the orchestrator whether tasks have to be completed \cite{infoworld_puppet_chef_ansible_salt}.
+There are two ways to implement those workflows. The first is a push-based mechanism, where the orchestrator triggers actions on other parts of the system (for example commanding a hypervisor to create a \gls{vmacr}). The other is a pull-based mechanism, where those subsystems (like a hypervisor) periodically ask the orchestrator whether tasks have to be completed \cite{infoworld_puppet_chef_ansible_salt}.
 \newline
-These mechanisms not only apply to the interaction between the orchestrator and the subsystems but between the source and the orchestrator as well.
+These mechanisms not only apply to the interaction between the orchestrator and the subsystems but between the source code and the orchestrator as well.
 \newline
 To increase the capabilities of the orchestrator or in other words enable more things to get defined via software, middle or abstraction layers are introduced. An example of this is the hypervisor that acts as an \gls{apiacr}-gateway between hard- and software-defined machines. The deployment (and configuration) of that middleware (i.e. the hypervisor) is not within the scope of most \gls{iacacr} frameworks and is outsourced. This layer must be as easy to deploy as possible, making it hard to bring in mistakes and staying as flexible as possible for further configuration via software.
 \newline
