@@ -128,8 +128,8 @@ subtopics:
 ``` -->
 
 ## finishing touches
-- [ ] Check comments in this readme for additional tasks (english and german)
-- [ ] for checking text, make sure to stick to either british or american english
+- [x] Check comments in this readme for additional tasks (english and german)
+- [x] for checking text, make sure to stick to either british or american english
 - [ ] Check text with hemingwayapp https://hemingwayapp.com/
 - [ ] Check text with languagetool https://languagetool.org/
 - [ ] Check text with scribens https://www.scribens.com/
@@ -137,19 +137,16 @@ subtopics:
 - [ ] Check line-endings
 - [ ] Resolve latex-warnings on f.e. overfull lines etc.
 - [ ] Check use of paragraphs instead of empty lines
-- [ ] Use italic to emphasise, NEVER bold, capitals or underlines as those break the flow.
-- [ ] Ensure unified use of pagebreaks before headlines (level 1, 2 etc)
+- [x] Use italic to emphasise, NEVER bold, capitals or underlines as those break the flow.
+- [x] Ensure unified use of pagebreaks before headlines (level 1, 2 etc)
 - [ ] Remove larger unused/commented blocks
-- [ ] The Elements of Style: http://www.bartleby.com/141/
+- [x] The Elements of Style: http://www.bartleby.com/141/
 - [x] Remove the `\include{content/demo}` from main
 - [ ] Check for highlighted contents
 - [ ] Search for `%TODO`, `% TODO` and simply `TODO`
-- [ ] Check for sidenodes
-- [ ] Search for '[' and ']'
-- [ ] Check for unified writing style:
-  - therefore
-  - color
-- [ ] Check the date on the titlepage
+- [x] Check for sidenodes
+- [ ] Search for '[' and ']', check formatting of code listings
+- [x] Check the date on the titlepage
 
 <!-- ## Häufige Fehler
 - Es fehlt der "rote Faden": Die Arbeit lässt keine Logik in Bezug auf die Fragestellung erkennen. Der Zusammenhang zwischen den Kapiteln wird nicht deutlich.

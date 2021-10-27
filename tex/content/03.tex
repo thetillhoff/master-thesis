@@ -48,7 +48,7 @@ One of the most recently published cluster software for bare metal is Google's A
 \newline
 Common asset management tools like servicenow or i-doit use providers like vSphere or public clouds for instantiation \cite{servicenow_setup_guide_vmware_cloud} or even do not support hardware provisioning \cite{idoit_vm_provisioning} at all.
 \newline
-Other bare-metal lifecycle management tools like Canonical MAAS, Foreman, FOG, FAI, Cobbler, Openstacks Ironic, RackNs Digital Rebar and Equinix Metals Tinkerbell as well as Microsofts System Center Virtual Machine Manager also rely on \gls{pxeacr} for automatic \gls{osacr} deployments \cite{maas_how_it_works} \cite{foreman_what_is} \cite{fog_introduction} \cite{fai_how_does_it_work} \cite{cobbler_documentation} \cite{openstack_ironic_docs} \cite{rackn_what_is_digital_rebar} \cite{tinkerbell_architecture} \cite{microsoft_provision_hyperv_bare_metal}. Most often, they have the required software (the aforementioned \gls{dhcpacr}- and \gls{tftpacr}-server) embedded in some way and only require minor interactions to configure it properly (like setting up the \gls{dhcpacr} range).
+Other bare-metal lifecycle management tools like Canonical MAAS, Foreman, FOG, FAI, Cobbler, Openstacks Ironic, RackNs Digital Rebar and Equinix Metals Tinkerbell as well as Microsofts System Center Virtual Machine Manager also rely on \gls{pxeacr} for automatic \gls{osacr} deployments \cite{maas_how_it_works} \cite{foreman_what_is} \cite{fog_introduction} \cite{fai_how_does_it_work} \cite{cobbler_documentation} \cite{openstack_ironic_docs} \cite{rackn_what_is_digital_rebar} \cite{tinkerbell_architecture} \cite{microsoft_provision_hyperv_bare_metal}. Most often, they have the required software (the aforementioned \gls{dhcpacr} and \gls{tftpacr} server) embedded in some way and only require minor interactions to configure it properly (like setting up the \gls{dhcpacr} range).
 \newline
 Only the minority of bare-metal provisioning software uses or at least supports \gls{ipmiacr} as tool of the trade. This includes Canonical MAAS (only for power management), OpenStacks Ironic (for power management and reading sensor data), RackNs Digital Rebar and ispsystems DCImanager \cite{maas_snap_power_management} \cite{openstack_ironic_docs} \cite{rackn_what_is_digital_rebar} \cite{ispsystem_dcimanager}.
 The main issues with using \gls{ipmiacr} for provisioning are due to is its vendor-specific implementations. Not only is it not available for all hardware, but different vendors support different features (and versions) of \gls{ipmiacr} - often even with different \gls{apiacr}s. A second but closely related issue is its unavailability for \gls{vmacr}s: Most hypervisors don't support \gls{ipmiacr} interfaces for virtual machines. And even if they do (for example via plugins), their documentation is sparse and their development stale \cite{openstack_virtualbmc}.
@@ -89,13 +89,13 @@ Since CloudFormation is limited to AWS, it is incompatible with bare metal. This
 \subsection{OpenStack Heat}
 The Heat component from OpenStack is responsible for \gls{iacacr}. It is not a language by itself but supports actually two languages. One is named \gls{hotacr} and the other is Amazon CloudFormation. The former is strongly influenced by CloudFormation \cite{openstack_heat_template_guide}. When the \gls{apiacr} for CloudFormation is used, the Heat component translates the AWS-specific types to OpenStack compatible ones \cite{openstack_heat_architecture}.
 \newline
-\Gls{hotacr} is designed very similar to its counterpart from Amazon, too: They have the same type system (with different types though) and the same overall structure \cite{openstack_heat_architecture}. The contextual jargon (f.e. \textquote{stack}) is also inspired by CloudFormation.
+\Gls{hotacr} is designed very similar to its counterpart from Amazon, too: They have the same type system (with different types though) and the same overall structure \cite{openstack_heat_architecture}. The contextual jargon (for example \textquote{stack}) is also inspired by CloudFormation.
 \newline
 Another similarity is the required knowledge about products/components. Sticking to the earlier example of creating a \gls{vmacr}, new users are required to know that the necessary type is \textquote{OS::NOVA::Server}. The \textquote{NOVA}-part comes from the fact that the compute component of OpenStack is named this way.
 \newline
 There are three ways to communicate with the Heat component; First, the CloudFormation cli-tool. Then an additional commandline tool for \gls{hotacr} \cite{openstack_cli_heat} and an official library in/for python \cite{openstack_python_heat}.
 \newline
-OpenStack supports bare metal via a component called Ironic \cite{openstack_ironic_architecture}. It is the closest implementation of what this thesis desires to accomplish \cite{redhat_bare_metal}. It supports software-defining how new nodes should be provisioned and implements all necessary features - together with other OpenStack components like neutron for networking, glance for \gls{osacr} images, Keystone for service discovery and Nova for compute node management (f.e. metadata).
+OpenStack supports bare metal via a component called Ironic \cite{openstack_ironic_architecture}. It is the closest implementation of what this thesis desires to accomplish \cite{redhat_bare_metal}. It supports software-defining how new nodes should be provisioned and implements all necessary features - together with other OpenStack components like neutron for networking, glance for \gls{osacr} images, Keystone for service discovery and Nova for compute node management (for example metadata).
 %TODO describe later why this doesn't fully satisfy the research question; Bootstrapping is not covered, an OpenStack cluster is required beforehand.
 
 % - OpenStack ironic \url{(https://docs.openstack.org/ironic/latest/user/architecture.html})
@@ -124,7 +124,7 @@ Two non-vendor-specific standards for describing \gls{iacacr} in a formal way ha
 \newline
 \Gls{occiacr} defines a protocol and API for a range of management tasks \cite{occi_about}. Initially designed for \gls{iaasacr}, it has since evolved to serve other models like \gls{paasacr} and \gls{saasacr} \cite{occi_about}. The \gls{ogfacr} is backed by companies such as Dell EMC, NetApp and Oracle \cite{hpcinthecloud_next_ogf} \cite{networkworld_ogf}. Since the launch of the standard, several open-source cloud providers have started to support it, including OpenStack, OpenNebula, and CloudStack \cite{occi_implementations}. The last update of the specification was in 2016 \cite{occi_index}. The IT worlds changes fast, so five years since the last update is a long time.
 
-\subsection{OASIS TOSCA with Simple-Profile}
+\subsection{OASIS TOSCA with Simple Profile}
 The second cross-vendor standard that has emerged is called \gls{toscaacr}. It was first published in 2013 by the \gls{oasisacr}. The organisation is well-known for widespread standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument (used as file format by OpenOffice and LibreOffice), PKCS\#11 (a public-key cryptography standard), \gls{samlacr} (an XML-based Single Sign-On standard and alternative to OpenID Connect), SARIF (standard format for static code analysis results) and VirtIO (the main I/O platform of \gls{kvmacr}) \cite{oasis_standards}. Additionally, its members are not only an overwhelming number of academic or governmental institutions but even more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, the MIT, SAP and VMware \cite{oasis_tosca_members} \cite{oasis_tosca_obligations} \cite{oasis_members}. The latest contribution was only one week before the time of writing, so its actively pursued and developed \cite{tosca_standard_v2} \cite{tosca_releases}.
 \newline
 \gls{toscaacr} has been used in some proof-of-concept projects \cite{dsl_for_iac} in 2019, but their results were disappointing: The interfaces between the core standard and the supported providers are described as always out of date, which made even simple operations impossible. The tools of the ecosystem surrounding the standard are said to be non-user-friendly and their learning curves to be flat \cite{adminmagazin_aria_tosca}.
@@ -139,7 +139,7 @@ The standard contains the specification of a file archive format called \gls{csa
   \item A topology template, that describes the overall design and how the types should interact.
   \item Deployment artifacts, like images and binaries
   \item Implementation artifacts, like scripts
-  \item Management plans that describe certain actions, f.e. how to instantiate a new \gls{vmacr}
+  \item Management plans that describe certain actions, for example how to instantiate a new \gls{vmacr}
 \end{itemize}
 The original \gls{toscaacr} specification has a strong focus on how things should work together but does neither give complete examples nor describe how applications should be designed. Therefore, in addition to the \gls{toscaacr} standard itself, OASIS also published an extending standard called \textquote{TOSCA Simple Profile} \cite{tosca_simple_profile_v1_3}. While large parts of both specifications are redundant, the Simple Profile provides the types and ecosystem needed for real-world applications of \gls{toscaacr}. Examples are types for Compute, Storage, and Credentials. The reference implementation of the \gls{toscaacr} orchestrator, OpenTOSCA interprets and executes whatever is necessary of a \gls{csaracr} definition is also compatible with the \gls{toscaacr} Simple Profile \cite{opentosca_how_to_csar}.
 
@@ -177,7 +177,7 @@ Due to its origin, OpenStack Heat definitely has the ability to possibly solve t
 \newline
 While Pulumi has an extremely interesting approach with using actual programming languages as a medium, it is neither easily extensible nor does it aim at provisioning infrastructure itself. Instead, it parses the infrastructure code and communicates with the corresponding providers. Based on both of these limitations Pulumi is not a valid potential candidate for the scope of this thesis.
 \newline
-\Gls{toscaacr} has several implementations and corresponding (inofficial) extensions like Cloudify, Alien 4 Cloud, or Puccini. It is out of this thesis' capabilities to compare all of them. Therefore, only the official extension, named \textquote{Simple-Profile} will be included in the comparison.
+\Gls{toscaacr} has several implementations and corresponding (inofficial) extensions like Cloudify, Alien 4 Cloud, or Puccini. It is out of this thesis' capabilities to compare all of them. Therefore, only the official extension, named \textquote{Simple Profile} will be included in the comparison.
 
 \begin{table}[H]
   \caption{Overview of language candidates that are ruled out}
@@ -242,7 +242,7 @@ It is important to note that it is out of this thesis' scope to compare the lang
 % - dynamic semantics: what the model means or expresses
 
 \section{Comparison}
-Previously, many \gls{dslacr}s were ruled out, so this thesis is going to look at the remaining three languages in more detail. These are HashiCorp Configuration Language (HCL) with the tool Terraform and TOSCA in combination with its \textquote{Simple-Profile} extension.
+Previously, many \gls{dslacr}s were ruled out, so this thesis is going to look at the remaining three languages in more detail. These are HashiCorp Configuration Language (HCL) with the tool Terraform and TOSCA in combination with its \textquote{Simple Profile} extension.
 
 \subsection{HashiCorp Configuration Language and Terraform}
 The Configuration Language used by Terraform is a mixture between \gls{jsonacr}, \gls{yamlacr} and a programming language like Golang.
@@ -325,7 +325,7 @@ At the same time, it is strongly advised against manual changes in the infrastru
 %     - multiple environments/workspaces sometimes supported; dev, prod, local etc.
 %     - wants every external file to be translated to own file-format, f.e. dockerfile \url{https://learn.hashicorp.com/tutorials/terraform/docker-build?in=terraform/docker-get-started}
 
-\subsection{OASIS TOSCA with Simple-Profile}
+\subsection{OASIS TOSCA with Simple Profile}
 As described earlier, in \gls{toscaacr} infrastructure is modelled via \gls{csaracr} files. As described in figure \ref{image:tosca_overview}, these archives contain multiple parts. These can be defined in one or multiple \gls{yamlacr} files. The main component is the so-called Topology Template. It describes how the different parts of a system interact with each other, gives a holistic overview, and defines variable values.
 
 \begin{figure}[H]
@@ -349,7 +349,7 @@ Figure \ref{image:tosca_layers_and_requirements} displays how types and template
 
 The last part contained in \gls{csaracr} files are management plans. They describe the lifecycle of nodes and how to achieve them. Examples are instantiation, configuration and deallocating/uninstallation/deletion (depending on their type) of nodes \cite{tosca_standard_v2}.
 \newline
-The standard supports imports with or without namespacing. One common import is the Simple-Profile extension.
+The standard supports imports with or without namespacing. One common import is the Simple Profile extension.
 It adds a basic set of predefined types to the standard, for example, the node-types Compute, Webserver, and Webapplication with necessary (default) properties, requirements, and capabilities.
 \newline
 Another important feature of the \gls{toscaacr} standard is \textquote{substitution}. It allows users to outsource the definition of a specific node template to a completely different \gls{csaracr} package. This allows splitting and distribution of concerns and strongly increases the reusability of components. The architecture of the \gls{csaracr} files and the ability of inclusions and substitutions make it also relatively easy to find the corresponding code for a certain component. Figure \ref{image:tosca_substitution} visualizes this substitution approach.
@@ -533,7 +533,7 @@ This is due to the nature of these languages: As soon as one is used, it is not 
 \newline
 As of 2021, Terraform is the state of the art: It supports more providers than any organization should want to use simultaneously, has the largest market share, and is considered by most providers as a key player \cite{jetbrains_devops_ecosystem_2019}. Therefore, its ecosystem grows and matures exponentially. It has achieved economies of scale and almost a monopoly on cross-provider \gls{iacacr}.
 \newline
-\Gls{toscaacr} on the other hand is backed by many important companies and is even more customizable than Terraform. Instead of the plugin system, it is based on importable components. While Terraform supports multiple providers in the same infrastructure, moving between providers for the same feature (for example switching the cloud provider) requires manual work. With \gls{toscaacr}s namespacing and substitution system, it is possible to be completely provider-agnostic. At the same time, it does not force (or at least strongly recommend) a new language on its users, as does Terraform with \gls{hclacr}. Additionally, the preexisting types of \gls{toscaacr}s Simple-Profile extension already include types that are necessary for bare metal, for example, the image file type. Another point goes to \gls{toscaacr} because its extensible design makes it possible to include foreign \gls{dslacr}s for their dedicated tasks. An example is that implementations can be developed in bash- or python-scripts without the need to translate them somehow.
+\Gls{toscaacr} on the other hand is backed by many important companies and is even more customizable than Terraform. Instead of the plugin system, it is based on importable components. While Terraform supports multiple providers in the same infrastructure, moving between providers for the same feature (for example switching the cloud provider) requires manual work. With \gls{toscaacr}s namespacing and substitution system, it is possible to be completely provider-agnostic. At the same time, it does not force (or at least strongly recommend) a new language on its users, as does Terraform with \gls{hclacr}. Additionally, the preexisting types of \gls{toscaacr}s Simple Profile extension already include types that are necessary for bare metal, for example, the image file type. Another point goes to \gls{toscaacr} because its extensible design makes it possible to include foreign \gls{dslacr}s for their dedicated tasks. An example is that implementations can be developed in bash- or python-scripts without the need to translate them somehow.
 \newline
 Since \gls{toscaacr} allows to configure machines on a command-line level (for example bash), it is possible to install any type of application on the machines. Some other provisioning or configuration management tools only provide a subset here because they expose only a few commands in their \gls{dslacr} (like file-creation) and require additional plugins for other installations means (looking at you Ansible).
 \newline

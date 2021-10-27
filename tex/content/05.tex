@@ -22,7 +22,7 @@ Even apart from these services, a plugin system similar to the one provided by T
 The currently described provisioning workflow requires an initial list of MAC addresses. Further research should investigate whether retrieval of those addresses could be automated. A first idea would be a network broadcast, which leads to the addresses being communicated via the ARP protocol.
 
 % - tosca standard improvements from notes. Example: Two types of script execution: one on the orchestrator and one on the nodes.
-Apart from the implementation details on the tool itself, the \gls{toscaacr} standard or at least its specification has improvement potential as well. On several occasions, the \gls{yamlacr} examples provided along with the introduction of a new structure are invalid. The issues range from \gls{yamlacr}-structure errors, inconsistencies or simply missing information. Table \ref{tab:tosca_issues} lists those in the order they occur in the specification. The Simple-Profile extension has similar issues, those are listed in table \ref{tab:simple_profile_issues}.
+Apart from the implementation details on the tool itself, the \gls{toscaacr} standard or at least its specification has improvement potential as well. On several occasions, the \gls{yamlacr} examples provided along with the introduction of a new structure are invalid. The issues range from \gls{yamlacr}-structure errors, inconsistencies or simply missing information. Table \ref{tab:tosca_issues} lists those in the order they occur in the specification. The Simple Profile extension has similar issues, those are listed in table \ref{tab:simple_profile_issues}.
 
 % continued after tables
 
@@ -58,7 +58,7 @@ Apart from the implementation details on the tool itself, the \gls{toscaacr} sta
 
 
 \begin{table}[h]
-  \caption{List of issues with the Simple-Profile specification}
+  \caption{List of issues with the Simple Profile specification}
   \begin{longtable}{ | l | l | }
     \hline
     Chapter & Issue description \\
@@ -68,10 +68,10 @@ Apart from the implementation details on the tool itself, the \gls{toscaacr} sta
     3 &  Redundant with \gls{toscaacr} specification. \\
     \hline
     %TODO where
-    unkown & \makecell{The Simple-Profile definition of \textquote{Operation Implementation} \\ has an attribute \mintinline[bgcolor=lightgray,breaklines]{bash}{operation_host}, while in the \gls{toscaacr} specification \\ it does not.} \\
+    unkown & \makecell{The Simple Profile definition of \textquote{Operation Implementation} \\ has an attribute \mintinline[bgcolor=lightgray,breaklines]{bash}{operation_host}, while in the \gls{toscaacr} specification \\ it does not.} \\
     \hline
     %TODO where
-    unkown & \makecell{\textquote{operation implementation} and \textquote{notification implementation} \\ of the Simple-Profile specification are completely distinct, while \\ in the \gls{toscaacr} specification they are treated as if they are the \\ same.} \\
+    unkown & \makecell{\textquote{operation implementation} and \textquote{notification implementation} \\ of the Simple Profile specification are completely distinct, while \\ in the \gls{toscaacr} specification they are treated as if they are the \\ same.} \\
     \hline
     %TODO where
     unkown & \makecell{The \textquote{interface definition} keynames do not contain the \\ field \textquote{type}, but it is listed in grammar notations. The \gls{toscaacr} \\ specification complies the former.} \\
@@ -118,7 +118,7 @@ The specification would also profit greatly from a detailed description of a ref
 \newline\smallskip
 
 % datacenter from scratch / initial deployment
-% up-to-date tosca orchestrator, compliant with the original standard and Simple-Profile -> IaC tool at least
+% up-to-date tosca orchestrator, compliant with the original standard and Simple Profile -> IaC tool at least
 Assuming a scenario where a new datacenter should be provisioned from scratch (no \gls{osacr} deployed), the tool described in this thesis can automate the initial setup. Because \gls{toscaacr} is the language of choice, and a compatible orchestrator is embedded in the application, users can make use of all capabilities the \gls{dslacr} provides. Since the original language can already be used for further provisioning and configuration management, the resulting application is a mixture of hardware provisioning, \gls{iacacr} provider, and -client.
 \newline
 % describe both physical and virtual infrastructure with the same language
@@ -130,7 +130,7 @@ The resulting application is not only another \gls{iacacr} tool with \gls{toscaa
 In a scenario where infrastructure is already deployed, and with a \gls{dslacr} different than \gls{toscaacr}, it is required to translate/migrate the codebase at least partially. But since \gls{toscaacr} allows integrations of other \gls{dslacr}s and tools, this can happen step by step. The same applies to existing infrastructure without any \gls{iacacr} codebase.
 \newline\smallskip
 % limitations
-The included \gls{toscaacr} orchestrator fulfills all requirements described in the specifications of the standard and its Simple-Profile extension. Because the hardware extension requires low-level access to some host capabilities (like listening on host port 67 and 68), the application needs to run with extended privileges.
+The included \gls{toscaacr} orchestrator fulfills all requirements described in the specifications of the standard and its Simple Profile extension. Because the hardware extension requires low-level access to some host capabilities (like listening on host port 67 and 68), the application needs to run with extended privileges.
 
 % scaling: disk read speed (live-os image), network speed of root node
 % speed: deploy without installation; available within a minute. deploy with installation; same amount plus os installation.

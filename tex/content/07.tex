@@ -6,12 +6,12 @@
 
 %%%%% start writing here
 
-% aspects of mdsd workflow:
+% aspects of MDSD workflow:
 % - always:
 %   - define modeling language (abstract and concrete syntax)
 %   - tool support to define models
-%   - persist models in files or dbs
-%   - tranform models to text
+%   - persist models in files or databases
+%   - transform models to text
 % - often:
 %   - transform model to model
 %   - transform text to model
@@ -20,20 +20,20 @@
 
 % check todo.md, note.md, readme.md
 
-% dsls
+% DSLs
 Apart from the \textquote{obvious} improvements described in the Analysis chapter, other improvements would increase the usability of \gls{toscaacr}: For one, the standard currently strongly differentiates between \textquote{attribute} fields and \textquote{property} fields. According to the specification, attributes reflect the actual state of the entity during its lifecycle once instantiated. Properties on the other hand are used to describe the desired state. In the real world, those terms are often used as synonyms for each other. Therefore the current approach is extremely confusing, and new users will most probably confuse them several times. Since \gls{toscaacr} already has other means in place to distinguish the desired state from the current state (like types, templates, and instances), it should only be an implementation detail within the orchestrator how it separates them. The separation also introduces additional complexity during derivations and makes it hard to retrieve the values because of the choice between the functions \mintinline[bgcolor=lightgray,breaklines]{bash}{get_propery} or \mintinline[bgcolor=lightgray,breaklines]{bash}{get_attribute}.
 
-% - not everyone should reinvent the wheel... (comic graphic)
 By allowing external artifacts and only describing what should be done with those, \gls{toscaacr} natively allows extending it with additional \gls{dslacr}s. While there currently does not exist such a case, it is for example possible to describe an \gls{apiacr} with the OpenAPI (formerly Swagger) \gls{dslacr} - designed with the single goal to describe \gls{apiacr}s. As already stated elsewhere, there are many \gls{dslacr}s, each with its use case. \Gls{toscaacr} allows to integrate them as they are. This is a huge benefit, but such integrations are missing yet. Future work could look at such languages and develop integrations with \gls{toscaacr}.
-%TODO comic graphic missing (many languages)
+
+% xkcd standards image would be great here, but it is not scientific enough
 
 % - compare metamodels, find similarities, could lead to common ground
-The long list of \gls{dslacr}s specifically for \gls{iacacr} makes clear that there is not a single one that fits them all. In most cases, this can be traced to subtle different features between the providers. Further comparing the different \gls{dslacr}s and searching for common ground could help in developing an industry-wide standard. In a perfect world, migrations between infrastructure providers are done by exchanging the provider interface and the credentials. As is done with other standards as well, organizations can research, try, and develop their own products of course. But as soon as there are several providers, and migrations are necessary, those transitions should be as easy as possible. Not only the users would benefit: The providers that collaborate on such a standard encourage third party software to adhere to it as well, making them compatible and therefore increasing the potential userbase. A common standard would also distribute necessary work on \gls{apiacr} design across all backing organizations. Another reason for a standard is its long-term lifecycle; Creating meta-models for the \gls{dslacr}s (models describing the language) become more feasible, which might then lead to more reusability, and finally to better tooling around development and migrations (from and to other languages).
+The long list of \gls{dslacr}s specifically for \gls{iacacr} makes clear that there is not a single one that fits them all. In most cases, this can be traced to subtle different features between the providers. Further comparing the different \gls{dslacr}s and searching for common ground could help in developing an industry-wide standard. In a perfect world, migrations between infrastructure providers are done by exchanging the provider interface and the credentials. As is done with other standards as well, organizations can research, try, and develop their own products of course. But as soon as there are several providers, and migrations are necessary, those transitions should be as easy as possible. Not only the users would benefit: The providers that collaborate on such a standard encourage third-party software to adhere to it as well, making them compatible and therefore increasing the potential userbase. A common standard would also distribute necessary work on \gls{apiacr} design across all backing organizations. Another reason for a standard is its long-term lifecycle; Creating meta-models for the \gls{dslacr}s (models describing the language) become more feasible, which might then lead to more reusability, and finally to better tooling around development and migrations (from and to other languages).
 
 % bare-metal
 
-% - vendor bioses should support http by default or embed ipxe for network boot. Maybe even allow flashing the network-boot system (remotely?). VMware does support this already for its VMs: https://ipxe.org/howto/vmware
-In addition to the improvements on the language and standard side, interactions with bare-metal machines would profit from another iteration of interfaces. It is a bit strange that a protocol like \gls{tftpacr} is still the state of the art for transmitting boot images in network boot environments in 2021. Vendors should bake support for \gls{httpacr} or HTTPS into their \gls{biosacr}es and \gls{uefiacr}-systems. They could even use iPXE as their default network boot firmware (so they do not need to reinvent the wheel).
+% - vendor BIOSes should support HTTP by default or embed iPXE for network boot. Maybe even allow flashing the network-boot system (remotely?). VMware does support this already for its VMs: https://ipxe.org/howto/vmware
+In addition to the improvements on the language and standard side, interactions with bare-metal machines would profit from another iteration of interfaces. It is a bit strange that a protocol like \gls{tftpacr} is still the state of the art for transmitting boot images in network boot environments in 2021. Vendors should bake support for \gls{httpacr} or HTTPS into their \gls{biosacr}es and \gls{uefiacr}-systems. They could even use iPXE as their default network boot firmware (so they do not need to reinvent the wheel). VMware already has such a feature for \gls{vmacr}s running on ESXi \cite{ipxe_vmware}.
 
 \Gls{ipmiacr} brings many convenient features like remote firmware upgrades, and \gls{apiacr} for sensor data, and the ability to change boot settings remotely. This includes information about the hardware like product ID, serial number, and firmware version. Yet, information about the hardware like the amount of RAM is often not accessible directly. Having such a feature would render the relatively complex hardware detection step with the live-\gls{osacr} described in this thesis obsolete - significantly decreasing the required time and resources during this step.
 
@@ -46,7 +46,7 @@ This goes hand in hand with another problem concerning \gls{bmcacr}s and \gls{ip
 
 % tooling
 
-% TODO as explained during the description of the hardware package, additional devices should be integrated in there as well. Routers, Switches, partial devices such as graphic cards, psus, rack devices like pdus, cages/? ...
+% TODO as explained during the description of the hardware package, additional devices should be integrated into it as well. Routers, Switches, partial devices such as graphic cards, PSUs, rack devices like PDUs, cages/? ...
 % Not all of them are required for the upper layers, but it could ensure everything is as it should be, increase monitoring capabilities, and at the same time document the infrastructure, improving the single-source-of-truth experience.
 
 

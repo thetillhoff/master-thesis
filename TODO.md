@@ -24,25 +24,25 @@
 - Check and document which levels were achieved:
   Check qualification of implementation at https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html#_Toc26969414
   Also check conformance targets at https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html#_Toc26969508
-- go through writte notes
+- [x] go through writte notes
 
 ## tex
-- replace "f.e." with "for example"
-- replace "\&" with "and"
-- unify license and licence
-- unify bare-metal and bare metal
-- add more stuff of IaC book (available at oreilly with hs access) - f.e. chapter Challenges and Principles
-- [DSL for IaC] page 1, problems arising while deploying infrastructures in cloud
+- [x] replace "f.e." with "for example"
+- [x] replace "\&" with "and"
+- [x] unify license and licence
+- [ ] add more stuff of IaC book (available at oreilly with hs access) - f.e. chapter Challenges and Principles
+- [ ] [DSL for IaC] page 1, problems arising while deploying infrastructures in cloud
   - heterogeneity of cloud resources
   - lack of compatibility of cloud resource model and api in different clouds
   - lack of integrations between different cloud environments
   - transferring applications between clouds causes unreasonable complexity and errors
   - multiple infrastructure deployments demand too much humand resources
-- unify "vmware" / "VMware" ...
-- unify "linux" / "Linux" and "windows" / "Windows"
-- unify }-server / } server (for example dhcp-server / dhcp server)
-- remove note that python is not implemented. Assume it is there, only have it missing in the application.
-- unify Simple-Profile and Simple Profile
+- [x] unify "vmware" / "VMware" ...
+- [x] unify "linux" / "Linux" and "windows" / "Windows"
+- [x] unify }-server / } server (for example dhcp-server / dhcp server)
+- [x] remove note that python is not implemented. Assume it is there, only have it missing in the application.
+- [x] unify Simple-Profile and Simple Profile
+- [x] search for \url and \hl
 
 ## general code
 - "Orchestrators MUST" are not yet implemented. Example in 5.3.8.4 of simple-profile spec
@@ -126,7 +126,7 @@
 - 5.9.9.2 capabilities are TBD
 - there was one occurence where a constraint was larger_or_equal than 0.1 MB or something like that. Why no 0B?
   example at 5.9.10.1
-- sometimes the map[string]* forces for name finding, but its sometimes unnecessary (as it has a description). While it allows for reference elsewhere, it should be described clearly where this is possible and whats the use-case is.
+- sometimes the map[string]* forces for name finding, but its sometimes unnecessary (as it has a description). While it allows for reference elsewhere, it should be described clearly where this is possible and whats the use case is.
 - 5.8.5 Text is copy-paste error
 
 ## code (csar)

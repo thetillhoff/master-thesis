@@ -82,7 +82,7 @@ Yet, 100 percent of the fortune 500 and 92 percent of all business used (server-
 %    - by being software defined: improved remoting capabilities
 %    downsides:
 %    - vendor-lock in
-%    - licence fees
+%    - license fees
 %    - another part requiring experience
 %    - multiple kernels running
 %    - minor performance decrease -> statistics
@@ -170,7 +170,7 @@ Because \gls{iacacr} always aims at describing the whole state, declarative lang
 \newline
 Some \gls{dslacr}s (called \textquote{internal}) in this field are based on another language like XML, \gls{jsonacr}, or \gls{yamlacr} \cite{iac_oreilly}. This includes both sub- and supersets of them. Libraries are internal \gls{dslacr}s as well \cite{dsl_oreilly}. \textquote{External} \gls{dslacr}s on the other hand are not directly related to other languages \cite{dsl_oreilly}. An example is the \gls{hclacr} used by Terraform \cite{iac_oreilly} \cite{dsl_oreilly}.
 \newline
-An additional difference between the tools and languages is how they are applied. Some use a push-based mechanism, where f.e. the orchestrator initiates communication with nodes and applies changes. Others use a pull-based mechanism, where the nodes need to watch their configuration at the orchestrator level and execute the required actions locally so they become configured as intended. The design decision of push or pull applies to other things as well: How code changes are loaded into the orchestrator for example.
+An additional difference between the tools and languages is how they are applied. Some use a push-based mechanism, where for example the orchestrator initiates communication with nodes and applies changes. Others use a pull-based mechanism, where the nodes need to watch their configuration at the orchestrator level and execute the required actions locally so they become configured as intended. The design decision of push or pull applies to other things as well: How code changes are loaded into the orchestrator for example.
 \newline
 In contrast to a \gls{gplacr}, a \gls{dslacr} allows better separation of infrastructure code from other code \cite{dsl_slides}. Additionally, they are more context-driven, which makes them easier to work with for domain experts and users \cite{dsl_oreilly}. Their syntax is smaller and well-defined too, which makes them less complex as well \cite{dsl_oreilly}.
 \newline
