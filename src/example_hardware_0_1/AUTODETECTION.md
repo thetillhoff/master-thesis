@@ -96,7 +96,7 @@ IPMI-scenario: When machines have IPMI-support it makes sense to use it, too (as
   - detect new (powered off) nodes and make them accessible (i.e. via ssh) -> power on, (install &) run os with predefined ssh-settings
   - delete (poweroff? proper deprovision with deleting disk contents?) nodes
   - instantiate more complex objects like vlans, firewalls, (virtual-/shared-/...)disks, load-balancers, managed databases
-  The first two actions are relatively easy to accomplish. The later seems hard at first, but isn't this the perfect use-case for TOSCA as well?
+  The first two actions are relatively easy to accomplish. The later seems hard at first, but isn't this the perfect use case for TOSCA as well?
   Public cloud providers instantiate those with software-defined everything. Given the fitting hardware (supporting completely software-defining them), it must be possible to create a provider backend easily extensible via TOSCA. And this TOSCA-described provider backend requires only
   - detect new nodes and make them accessible
   - delete (poweroff?) nodes
