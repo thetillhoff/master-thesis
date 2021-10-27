@@ -17,14 +17,14 @@ Several tools, frameworks, and even whole ecosystems have evolved around \gls{ia
 %TODO Should the reference infrastructure not be at the top of this chapter? Or at least before the comparison?
 
 \section{State-of-the-art automated hardware provisioning}
-The interest in \gls{iacacr} has been increasing on a steady level over the last years \cite{googletrends_iac}. It is estimated that ninety percent of global enterprises will rely on hybrid cloud by 2022 \cite{idc_covid_multicloud}.
+The interest in \gls{iacacr} has been increasing on a steady level over the last years \cite{googletrends_iac}. It is estimated that ninety percent of global enterprises will rely on hybrid clouds by 2022 \cite{idc_covid_multicloud}.
 Surely boosted by the COVID-19 pandemic, it is also estimated that on-premise workloads drop from 59 percent in 2019 to 38 percent in 2021 and workloads on public clouds grow from 23 percent to 35 percent \cite{thestreet_public_cloud_spending_covid}.
 \newline
 Instead of updating deployed instances, recreating them ensures all of them are equal \cite{iac_bare_metal}. This includes software and firmware upgrades.
 \newline
 Another reason is heterogeneity in systems: Even when using only a single vendor or even a single model, variations occur. Be it that newer models have upgraded firmware or other \textquote{under-the-hand} changes \cite{iac_bare_metal}.
 \newline
-There are differnt opinions on whether a local version of the state should be cached. Some state that it is a necessary means to improve performance \cite{terraform_state}, while others state that it is better not to assume certain states but instead check them \cite{iac_bare_metal}. In case of the latter, whenever a detected state is unexpected, the automation can exclude this certain node and tell the responsible humans to check what's wrong. The most reliable source of truth for the current state is the current state itself - not some kind of cached or partial version of it \cite{iac_bare_metal}.
+There are different opinions on whether a local version of the state should be cached. Some state that it is a necessary means to improve performance \cite{terraform_state}, while others state that it is better not to assume certain states but instead check them \cite{iac_bare_metal}. In case of the latter, whenever a detected state is unexpected, the automation can exclude this certain node and tell the responsible humans to check what's wrong. The most reliable source of truth for the current state is the current state itself - not some kind of cached or partial version of it \cite{iac_bare_metal}.
 \newline
 So far, public cloud providers haven't exactly published how they are provisioning their bare-metal infrastructure.
 \newline
@@ -46,7 +46,7 @@ Apaches CloudStack supports two hypervisors; For ESXi, it recommends also using 
 \newline
 One of the most recently published cluster software for bare metal is Google's Anthos. The software and its documentation completely omit the provisioning part up to the point where nodes can only be added when they are already accessible via \gls{sshacr} \cite{anthos_bare_metal}.
 \newline
-Common asset management tools like servicenow or i-doit use providers like vSphere or public clouds for instantiation \cite{servicenow_setup_guide_vmware_cloud} or even do not support hardware provisioning \cite{idoit_vm_provisioning} at all.
+Common asset management tools like servicenow or i-doit use providers like \\ vSphere or public clouds for instantiation \cite{servicenow_setup_guide_vmware_cloud} or even do not support hardware provisioning \cite{idoit_vm_provisioning} at all.
 \newline
 Other bare-metal lifecycle management tools like Canonical MAAS, Foreman, FOG, FAI, Cobbler, Openstacks Ironic, RackNs Digital Rebar and Equinix Metals Tinkerbell as well as Microsofts System Center Virtual Machine Manager also rely on \gls{pxeacr} for automatic \gls{osacr} deployments \cite{maas_how_it_works} \cite{foreman_what_is} \cite{fog_introduction} \cite{fai_how_does_it_work} \cite{cobbler_documentation} \cite{openstack_ironic_docs} \cite{rackn_what_is_digital_rebar} \cite{tinkerbell_architecture} \cite{microsoft_provision_hyperv_bare_metal}. Most often, they have the required software (the aforementioned \gls{dhcpacr} and \gls{tftpacr} server) embedded in some way and only require minor interactions to configure it properly (like setting up the \gls{dhcpacr} range).
 \newline
@@ -78,7 +78,7 @@ Nevertheless, AWS holds by far the largest market share of the cloud market \cit
 \newline
 As do most languages for \gls{iacacr}, CloudFormation supports custom functions, too. It does so in both \gls{jsonacr} and \gls{yamlacr}. Examples are
 \newline % mint doesn't automatically make this linebreak...
-\mintinline[bgcolor=lightgray,breaklines]{bash}{{ "Fn::GetAtt" : [ "logicalNameOfResource", "attributeName" ] }} in the former language and \mintinline[bgcolor=lightgray,breaklines]{bash}{Fn::GetAtt: [ logicalNameOfResource, attributeName ]} or the short-version
+\mintinline[bgcolor=lightgray,breaklines]{bash}{{ "Fn::GetAtt" : [ "logicalNameOfResource", "attributeName" ] }} in the former lan- \\guage and \mintinline[bgcolor=lightgray,breaklines]{bash}{Fn::GetAtt: [ logicalNameOfResource, attributeName ]} or the short-version
 \newline % mint doesn't automatically make this linebreak...
 \mintinline[bgcolor=lightgray,breaklines]{bash}{!GetAtt logicalNameOfResource.attributeName} in the latter.
 \newline
@@ -125,7 +125,7 @@ Two non-vendor-specific standards for describing \gls{iacacr} in a formal way ha
 \Gls{occiacr} defines a protocol and API for a range of management tasks \cite{occi_about}. Initially designed for \gls{iaasacr}, it has since evolved to serve other models like \gls{paasacr} and \gls{saasacr} \cite{occi_about}. The \gls{ogfacr} is backed by companies such as Dell EMC, NetApp and Oracle \cite{hpcinthecloud_next_ogf} \cite{networkworld_ogf}. Since the launch of the standard, several open-source cloud providers have started to support it, including OpenStack, OpenNebula, and CloudStack \cite{occi_implementations}. The last update of the specification was in 2016 \cite{occi_index}. The IT worlds changes fast, so five years since the last update is a long time.
 
 \subsection{OASIS TOSCA with Simple Profile}
-The second cross-vendor standard that has emerged is called \gls{toscaacr}. It was first published in 2013 by the \gls{oasisacr}. The organisation is well-known for widespread standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument (used as file format by OpenOffice and LibreOffice), PKCS\#11 (a public-key cryptography standard), \gls{samlacr} (an XML-based Single Sign-On standard and alternative to OpenID Connect), SARIF (standard format for static code analysis results) and VirtIO (the main I/O platform of \gls{kvmacr}) \cite{oasis_standards}. Additionally, its members are not only an overwhelming number of academic or governmental institutions but even more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, the MIT, SAP and VMware \cite{oasis_tosca_members} \cite{oasis_tosca_obligations} \cite{oasis_members}. The latest contribution was only one week before the time of writing, so its actively pursued and developed \cite{tosca_standard_v2} \cite{tosca_releases}.
+The second cross-vendor standard that has emerged is called \gls{toscaacr}. It was first published in 2013 by the \gls{oasisacr}. The organisation is well-known for widespread standards like \gls{amqpacr}, \gls{mqttacr}, OpenDocument (used as file format by OpenOffice and LibreOffice), PKCS\#11 (a cryptography standard), \gls{samlacr} (an XML-based Single Sign-On standard and alternative to OpenID Connect), SARIF (standard format for static code analysis results) and VirtIO (the main I/O platform of \gls{kvmacr}) \cite{oasis_standards}. Additionally, its members are not only an overwhelming number of academic or governmental institutions but even more so global players like Cisco, Dell, Google, Huawei, HP, IBM, ISO/IEC, the MIT, SAP and VMware \cite{oasis_tosca_members} \cite{oasis_tosca_obligations} \cite{oasis_members}. The latest contribution was only one week before the time of writing, so its actively pursued and developed \cite{tosca_standard_v2} \cite{tosca_releases}.
 \newline
 \gls{toscaacr} has been used in some proof-of-concept projects \cite{dsl_for_iac} in 2019, but their results were disappointing: The interfaces between the core standard and the supported providers are described as always out of date, which made even simple operations impossible. The tools of the ecosystem surrounding the standard are said to be non-user-friendly and their learning curves to be flat \cite{adminmagazin_aria_tosca}.
 Still, \gls{toscaacr} has a lot of plugins for platforms like OpenStack, VMWare, \gls{awsacr}, \gls{gcpacr} and \gls{azureacr} (obviously strongly related to the earlier mentioned member organizations), configuration management tools like ansible, chef, puppet and saltstack or container orchestrators like docker swarm and kubernetes \cite{opentosca_presentation} \cite{adminmagazin_aria_tosca}, \cite{vmware_tosca_components}.
@@ -171,7 +171,7 @@ As described earlier, all languages that are imperatively describing infrastruct
 As already stated earlier, Amazon CloudFormation is too AWS-specific to be easily extended to bare-metal and is therefore also not an option.
 \newline
 The implementations of OCCI-compatible software are severely outdated, and their interrelated deprecation/maintenance levels are confusing to say the least \cite{occi_openstack} \cite{occi_opennebula} \cite{github_tmetsch_occi_os} \cite{github_stackforge_occi_os}.
-That, and because the latest release of the OCCI standard was over five years ago, as well as sources stating OCCI software does not work even with basic examples, together with an accompanying recommendation to use \gls{toscaacr} instead \cite{dsl_for_iac}, OCCI will not be looked at in too much detail as well. For example, the documentation for the OpenStack implementation \cite{occi_openstack} recommends to visit the corresponding wiki-site, which is even older \cite{openstack_occi}.
+That, and because the latest release of the OCCI standard was over five years ago, as well as sources stating OCCI software does not work even with basic examples, together with an recommendation to use \gls{toscaacr} instead \cite{dsl_for_iac}, OCCI will not be looked at in too much detail as well. For example, the documentation for the OpenStack implementation \cite{occi_openstack} recommends to visit the corresponding wiki-site, which is even older \cite{openstack_occi}.
 \newline
 Due to its origin, OpenStack Heat definitely has the ability to possibly solve the initially described problems of this thesis. Sadly enough, its documentation leaves much to be desired \cite{openstack_heat}. Additionally, there are few examples, and to run it even in a proof-of-concept style requires installing and running many components of OpenStack. These requirements make it not only unfeasible for smaller infrastructures, but for "from-scratch" deployments like the one desired in this thesis as well.
 \newline
@@ -193,7 +193,7 @@ While Pulumi has an extremely interesting approach with using actual programming
     \hline
     Heat/HOT & Ruled out because of unfeasable prerequisites. \\
     \hline
-    Pulumi & Ruled out because only public clouds and kubernetes are supported. \\
+    Pulumi & \makecell{Ruled out because only public clouds and \\ kubernetes are supported.} \\
     \hline
     inofficial TOSCA extensions & \makecell{Ruled out because too many and closely related to \\ original TOSCA.} \\
     \hline
@@ -235,7 +235,7 @@ Some of the chosen sources describe more dimensions for their comparisons. While
 It is important to note that it is out of this thesis' scope to compare the languages on a deeper level, for example, their abstract syntax (i.e. meta models) or their (Extended) Backus-Naur forms. While the selection process is an important part, the goal of this thesis is not to find the perfect \gls{dslacr} but to find a fitting one and extend it so it can be applied on bare-metal.
 
 % what to compare:
-% http://www.cse.chalmers.se/~bergert/slides/guest\_lecture\_DSLs.pdf
+% http://www.cse.chalmers.se/~bergert/slides/guest\_lecture\_DSLs.pdf <- without the backslashes
 % - abstract syntax: meta-model which defines parts/domain-concepts/model-elements and rules/validation of model
 % - concrete syntax: representation of model (instances) f.e. in an editor
 % - static semantics: evaluatable without executing/interpreting the model
@@ -248,12 +248,14 @@ Previously, many \gls{dslacr}s were ruled out, so this thesis is going to look a
 The Configuration Language used by Terraform is a mixture between \gls{jsonacr}, \gls{yamlacr} and a programming language like Golang.
 To give a first impression, the \gls{jsonacr} in code-snippet \ref{code:json_example} expresses the very same as the \gls{hclacr} in code-snippet \ref{code:hcl_example}.
 
-\begin{listing}[H]\begin{addmargin}[2em]{2em}\begin{minted}[linenos,bgcolor=lightgray,breaklines,escapeinside=||]{json}
-  "resource": {
-    "aws_instance": {
-      "example": {
-        "instance_type": "t2.micro",
-        "ami": "ami-abc123"
+\begin{listing}[H]\begin{addmargin}[2em]{2em}\begin{minted}[linenos,bgcolor=lightgray,breaklines,escapeinside=||]{bash}
+  {
+    "resource": {
+      "aws_instance": {
+        "example": {
+          "instance_type": "t2.micro",
+          "ami": "ami-abc123"
+        }
       }
     }
   }
@@ -347,7 +349,7 @@ Figure \ref{image:tosca_layers_and_requirements} displays how types and template
   \label{image:tosca_layers_and_requirements}
 \end{figure}
 
-The last part contained in \gls{csaracr} files are management plans. They describe the lifecycle of nodes and how to achieve them. Examples are instantiation, configuration and deallocating/uninstallation/deletion (depending on their type) of nodes \cite{tosca_standard_v2}.
+The last things contained in \gls{csaracr} files are management plans. They describe the lifecycle of nodes and how to achieve them. Examples are instantiation, configuration and deallocating/uninstallation/deletion (depending on their type) of nodes \cite{tosca_standard_v2}.
 \newline
 The standard supports imports with or without namespacing. One common import is the Simple Profile extension.
 It adds a basic set of predefined types to the standard, for example, the node-types Compute, Webserver, and Webapplication with necessary (default) properties, requirements, and capabilities.

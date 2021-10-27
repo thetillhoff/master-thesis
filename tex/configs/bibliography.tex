@@ -10,3 +10,14 @@
   maxbibnames=20     %optional for number of authors to be listed in bibliography
 ]{biblatex}
 \addbibresource{bibliography.bib} % add bibliography file
+
+
+% https://stackoverflow.com/questions/51922086/latex-biblatex-bibliography-titles-arent-doing-a-break-line-they-overflow-ins
+% biburlnumpenalty: If this counter is set to a value greater than zero, biblatex will permit linebreaks after numbers in all strings formatted with the \url command from the url package. This will affect urls and dois in the bibliography. The breakpoints will be penalized by the value of this counter. If urls and/or dois in the bibliography run into the margin, try setting this counter to a value greater than zero but less than 10000 (you normally want to use a high value like 9000). Setting the counter to zero disables this feature. This is the default setting.
+
+% If you want to break on URL numbers
+\setcounter{biburlnumpenalty}{9000}
+% If you want to break on URL lower case letters
+\setcounter{biburllcpenalty}{9000}
+% If you want to break on URL UPPER CASE letters
+\setcounter{biburlucpenalty}{9000}
