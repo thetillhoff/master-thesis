@@ -1,4 +1,13 @@
-# `[wip] master thesis on extending Infrastructure-as-Code to bare-metal`
+# `Master thesis on extending Infrastructure-as-Code to bare-metal`
+
+Infrastructure as Code (IaC) is a trend that applies software development techniques to infrastructure.
+Most currently available tools in that area require a (cloud) backend that is available at all times and listens on API-calls like "I want X servers to be provisioned as Y".
+But these backends have to be provisioned as well.
+And still, at some level, hardware needs to be provisioned.
+A simple "Just give me a server X with Y" does not work here - or does it?
+This thesis investigates whether bare-metal machines can be provisioned on-demand with orchestration software that also runs on-demand.
+By doing so, the initially required manual setup could be eliminated or at least dramatically reduced.
+To describe the virtual and physical infrastructure with a consistent language, a domain-specific language is selected and a systematic approach for integrating the description of hardware is developed.
 
 <!-- ultimate goal: Publish as conference paper -->
 
@@ -86,8 +95,8 @@ cloud vs serverless: https://dzone.com/articles/serverless-computing-vs-cloud-co
 - read chapter 13ff of simple-profile
 - don't reinvent the wheel, allow other standards as artifacts, like openapi as api-spec -->
 
-## Vision
-The goal: [`live-demo-vision.md`](./live-demo-vision.md)
+<!-- ## Vision
+The goal: [`live-demo-vision.md`](./live-demo-vision.md) -->
 
 <!-- ## Zeitplan
 - read papers, copy notes for `related work` and `background` (7-22p -> 4w)
@@ -100,11 +109,11 @@ The goal: [`live-demo-vision.md`](./live-demo-vision.md)
 - abstract (1-2p -> 1w)
 -> https://github.com/thetillhoff/master-thesis/milestones?direction=asc&sort=due_date&state=open -->
 
-## Literature sources
+<!-- ## Literature sources
 - google scholar
 - ieee.org/dl
 - acm.org/dl
-- gi.de/service/digitale-bibliothek
+- gi.de/service/digitale-bibliothek -->
 
 <!-- ## Notes for example toc in `notes.yml`
 ```yaml
@@ -127,26 +136,24 @@ subtopics:
  - OSS, support/SLA/stability/maturity
 ``` -->
 
-## finishing touches
+<!-- ## finishing touches
 - [x] Check comments in this readme for additional tasks (english and german)
 - [x] for checking text, make sure to stick to either british or american english
 - [ ] Check text with hemingwayapp https://hemingwayapp.com/
 - [ ] Check text with languagetool https://languagetool.org/
 - [ ] Check text with scribens https://www.scribens.com/
 - [ ] Check the text with reverso https://www.reverso.net/spell-checker/english-spelling-grammar/
-- [ ] Check line-endings
+- [x] Check line-endings
 - [ ] Resolve latex-warnings on f.e. overfull lines etc.
-- [ ] Check use of paragraphs instead of empty lines
 - [x] Use italic to emphasise, NEVER bold, capitals or underlines as those break the flow.
 - [x] Ensure unified use of pagebreaks before headlines (level 1, 2 etc)
-- [ ] Remove larger unused/commented blocks
 - [x] The Elements of Style: http://www.bartleby.com/141/
 - [x] Remove the `\include{content/demo}` from main
-- [ ] Check for highlighted contents
+- [x] Check for highlighted contents
 - [ ] Search for `%TODO`, `% TODO` and simply `TODO`
 - [x] Check for sidenodes
-- [ ] Search for '[' and ']', check formatting of code listings
-- [x] Check the date on the titlepage
+- [x] Search for '[' and ']', check formatting of code listings
+- [x] Check the date on the titlepage -->
 
 <!-- ## Häufige Fehler
 - Es fehlt der "rote Faden": Die Arbeit lässt keine Logik in Bezug auf die Fragestellung erkennen. Der Zusammenhang zwischen den Kapiteln wird nicht deutlich.
