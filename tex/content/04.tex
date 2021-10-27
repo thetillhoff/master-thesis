@@ -1,5 +1,4 @@
 \chapter{Design and Implementation} %  Design Principles and Architecture
-
 % - 5-10 pages
 % - goal: fellow student understands content and would be able to more or less reproduce work
 % - legitimate chosen approach
@@ -17,7 +16,9 @@
 
 %%%%% start writing here
 
-%TODO add chapter introduction
+This chapter is dedicated on the actual implementation details of an orchestration tool that is able to provision bare-metal machines as described by a \gls{dslacr} - more specificaly with \gls{toscaacr} and an extension.
+\newline
+Overall goals are the ability to understand (parse and interpret) \gls{csaracr} files, to provision bare-metal machines on-demand, and to be compatible with \textquote{normal} (meaning non-bare-metal) provisioning to install applications on the machines.
 
 % considerations:
 % - ipv6 not 100 percent necessary, but would be good
@@ -164,14 +165,17 @@ Due to slower release cycles, Debian is considered more stable than Ubuntu. At t
 The resulting image is smaller than one GB, boots in under ten seconds, is as extensible as the Ubuntu image, and due to its textual nature completely scriptable. Especially the last part makes it the perfect fit for putting it in a container. It is therefore the selected way to generate a live-\gls{osacr} image.
 \newline
 The customizations include a webserver that autostarts during boot and a simple service that also starts automatically during the boot process. The service runs some commands and stores the output into files that are then served by the webserver. Due to the proof-of-concept nature, only information about the CPU and RAM is served.
+\newline
+After retrieving information about the hardware, there are two ways to install further applications. One is to go with the live-\gls{osacr}, and just install the necessary applications. The other is to tell the \gls{dhcpacr}- or \gls{httpacr}-server to provide another \gls{osacr} image, which could be configured for unattended installation. The former has the advantage of being a really fast, standardized and low-resource-usage approach. This is also the way how VMware automatically deploys its ESXi hypervisor clusters. The latter has the advantage of being more flexible regarding the \gls{osacr} and its settings.
+\newline
+To decrease provisioning times as much as possible, to bring hardware closer to the ephemeral nature of containers, as well as to push the idea of treating machines like cattle, this thesis will pursue the former approach and use the live-\gls{osacr} to install and run additional applications.
 
 \subsection{DHCP-, TFTP-, HTTP-server}
 The \gls{dhcpacr}-server does not only provide devices with (temporary) IP addresses but additional information about the network as well. Common examples are the subnet mask and the network gateway for routing beyond the current network. But the \gls{dhcpacr}-server can advertise options for network-boot as well. This includes the URL of a boot firmware on a \gls{tftpacr}-server. Since \gls{biosacr} and \gls{uefiacr} require different files there, a condition is required to run on the \gls{dhcpacr}-server. As described earlier, \gls{tftpacr} is not very efficient, and to support \gls{httpacr}, a boot firmware named iPXE is distributed and loaded before the actual operating system. The loaded iPXE will then send another \gls{dhcpacr} request and will as a result begin to load iPXE anew. To escape this loop, the DHCP-server can detect whether the client is iPXE or not. In case it is not, the iPXE firmware for this specific client is provided (as described above). In case it is, a script location is passed. This can be a simple \gls{httpacr} URL. The \gls{httpacr}-server can then dynamically provide the client with special iPXE-instructions and the actual live-\gls{osacr} image.
 \newline
-The software dnsmasq combines \gls{dhcpacr} and \gls{tftpacr} server (DNS as well, but that is not needed here). To start and stop the servers on-demand and in one go, dnsmasq and a webserver of choice are installed in a container image. When running the container, the host port 67 (UDP) is required for \gls{dhcpacr}-, host port 69 (UDP) for \gls{tftpacr}-, and host port 80 (TCP) for the \gls{httpacr}-server. The previously generated live-\gls{osacr} image is provided as a volume mount.
-
-% docker container, ports, variable config vs fixed config
-% why not external ones
+The software dnsmasq combines \gls{dhcpacr} and \gls{tftpacr} server (DNS as well, but that is not needed here). To start and stop the servers on-demand and in one go, dnsmasq and a webserver of choice are installed in a container image. When running the container, the host port 67 (UDP) is required for \gls{dhcpacr}-, host port 69 (UDP) for \gls{tftpacr}-, and host port 80 (TCP) for the \gls{httpacr}-server. The previously generated live-\gls{osacr} image is stored locally to reduce the size of the container image and to have it still available for the next provisioning run.
+\newline
+The approach described so far is for an environment where no active \gls{dhcpacr} server etc. are already up and running. In the case of other scenarios with those services already being deployed, a compatible integration is necessary. This thesis will focus on a proof-of-concept implementation and thus describe a greenfield approach.
 
 \subsection{Wake-on-lan}
 To wake a machine, a so-called magic packet is broadcasted. This packet has a very special format. The only \textquote{real} payload is the MAC-address of the \gls{nicacr} that can power the attached machine when the packet is received.
@@ -179,7 +183,7 @@ To wake a machine, a so-called magic packet is broadcasted. This packet has a ve
 This package contains methods for the creation and broadcasting of the magic packet for a MAC address. Since \gls{wolacr} is incompatible with most hypervisors, an additional mechanism has to check whether a hypervisor hosts a \gls{vmacr} with the specified MAC-address. Should this be the case, it determines its identifier and issues the hypervisor to power the \gls{vmacr} on.
 
 \subsection{Hardware}
-The hardware package manages the bare metal provisioning process. It controls the container that is responsible for the \gls{dhcpacr}-, \gls{tftpacr}- and \gls{httpacr}-servers. It also initiates the live-\gls{osacr} image generation. Additionally, it issues the calls to the Wake-on-LAN package. Because loading and booting the live-\gls{osacr} takes several seconds, a simple \gls{httpacr} request would time out and the provisioning would fail. Therefore, this package also manages the timeouts and retries until the hardware information is available. Because of the (relatively high - minutes or hours instead of seconds) lease time of issued IP addresses, the \gls{dhcpacr}-server assigns different IP addresses to a machine that wants to boot via network, and when the live-\gls{osacr} comes up. The hardware package therefore also checks the lease-list of the \gls{dhcpacr}-server for the latest IP address for each MAC address.
+The hardware package manages the bare metal provisioning process. It controls the container that is responsible for the \gls{dhcpacr}-, \gls{tftpacr}- and \gls{httpacr}-servers. It also initiates the live-\gls{osacr} image generation. Additionally, it issues the calls to the Wake-on-LAN package. Because loading and booting the live-\gls{osacr} takes several seconds, a simple \gls{httpacr} request would time out and the provisioning would fail. Therefore, this package also manages the timeouts and retries until the hardware information is available. Because of the (relatively high - minutes or hours instead of seconds) lease time of issued IP addresses, the \gls{dhcpacr}-server assigns different IP addresses to a machine that wants to boot via the network, and when the live-\gls{osacr} comes up. The hardware package therefore also checks the lease-list of the \gls{dhcpacr}-server for the latest IP address for each MAC address.
 \newline
 Upon having gathered all desired information about the hardware, the package returns the information to the orchestrator package.
 \newline
@@ -193,7 +197,6 @@ In an optimal case, there is a default \gls{osacr}. Then, in order to use bare-m
 Currently, the \gls{toscaacr} specification and the Simple-Profile extension do not describe many nodes that could be \textquote{implemented} in hardware. But some examples are \mintinline[bgcolor=lightgray,breaklines]{bash}{tosca.nodes.LoadBalancer} and the aforementioned \mintinline[bgcolor=lightgray,breaklines]{bash}{tosca.nodes.BlockStorage}. Many other devices could and should be supported by this hardware extension, but computing serves well as a proof-of-concept. Routers, switches, or even a \gls{sanacr} are potential candidates for such further \textquote{devices}. Hardware parts are also an option: That way, graphic cards, multiple processors, and multiple \gls{nicacr}s could become node selectors.
 
 \subsection{SSH}
+\label{chap:ssh}
 %TODO add sources and text on why password auth is bad
-To provide the most possible security for deployed live-\gls{osacr} images, \gls{sshacr} password authentication is disabled. To run remote commands, an \gls{sshacr} public key is included in the image generation workflow. This package manages the generation of a public/private key pair, as well as invoking commands on the remote machines. In the case of the latter, it returns the output to the orchestrator for further processing (like logging).
-
-% TODO Why only manipulate live-os, instead of deploying complete new os
+To provide the highest possible security for deployed live-\gls{osacr} images, \gls{sshacr} password authentication is disabled. To run remote commands, an \gls{sshacr} public key is included in the image generation workflow. This package manages the generation of a public/private key pair, as well as invoking commands on the remote machines. In the case of the latter, it returns the output to the orchestrator for further processing (like logging). The private key is stored locally next to the infrastructure configuration. The public key on the other hand is embedded in the live-\gls{osacr} images. That way, it is ensured that the communication between orchestrator and machine is secure and that only the orchestrator can invoke commands on it. At the same time, it does not lock access without the orchestrator, so in cases where debugging is necessary, manual \gls{sshacr} access is still possible.
