@@ -8,6 +8,7 @@ import (
 
 	"github.com/thetillhoff/eat/pkg/csar"
 	"github.com/thetillhoff/eat/pkg/hardware_inspection"
+	"github.com/thetillhoff/eat/pkg/ssh"
 )
 
 // TODO bindIp is only used for init command, not for install command. This can be changed when the dnsmasq container allows to set the bindip at runtime via environment variables.
@@ -89,7 +90,11 @@ func Install(archive csar.CSAR, inputs []string, bindIp string) {
 	//   Assume a webserver and a database are to be installed - how are the servers selected?
 	//   -> One after another, this means first the whole process runs for the webserver, then for the database
 	//      Make sure the selected server isn't always the first in the list that fits, but a random one.
-	// ssh.RunCommandOnHost(selectedMachine.IpAddress, "hostname") // TODO Replace "hostname" with actual command(s) to run
+	// output := ssh.RunCommandOnHost(selectedMachine.IpAddress, "hostname") // TODO Replace "hostname" with actual command(s) to run
+	if value, ok := archive.ServiceTemplate.TopologyTemplate.NodeTemplates["html"].Properties["index.html"].(string); ok {
+		output := ssh.RunCommandOnHost(selectedMachine.IpAddress, "echo '"+value+"' | sudo tee /var/www/html/index.html >/dev/null") // TODO Replace "hostname" with actual command(s) to run
+		fmt.Println("Deploying...", output)
+	}
 
 	// TODO
 	// After installation succeeded, add a SRV entry in the DNS. This can then later be used for state detection.

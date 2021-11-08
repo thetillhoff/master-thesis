@@ -55,7 +55,7 @@ eat init`,
 		docker.Init()
 
 		// Instead of only creating the iso if it doesn't exist already, this forces building it and overwriting the previous one
-		// if _, err := os.Stat("dnsmasq/isos/debian-live-11.0.0-custom.iso"); os.IsNotExist(err) {
+		// if _, err := os.Stat("dnsmasq/isos/debian-live-11.1.0-custom.iso"); os.IsNotExist(err) {
 		docker.BuildImage("live-os", "live-os-builder", true)
 
 		pwd, err := os.Getwd()
@@ -83,7 +83,7 @@ eat init`,
 		log.Println("SUC Created live-os iso-file at '" + pwd + "/live-os'.")
 
 		// mv live-os/custom.iso dnsmasq/isos/
-		err = os.Rename(path.Join(pwd+"/live-os/container", "debian-live-11.0.0-custom.iso"), "dnsmasq/isos/debian-live-11.0.0-custom.iso")
+		err = os.Rename(path.Join(pwd+"/live-os/container", "debian-live-11.1.0-custom.iso"), "dnsmasq/isos/debian-live-11.1.0-custom.iso")
 		if err != nil {
 			log.Fatalln(err)
 		}

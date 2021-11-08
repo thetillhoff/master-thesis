@@ -7,7 +7,7 @@ import (
 	"github.com/melbahja/goph"
 )
 
-// ssh -i live-os/container/ssh/id_rsa 192.168.122.168 -l user -o UserKnownHostsFile=/dev/null
+// ssh -i ./id_rsa 192.168.122.168 -l user -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 func RunCommandOnHost(ipAddress string, command string) string {
 
@@ -29,7 +29,7 @@ func RunCommandOnHost(ipAddress string, command string) string {
 	out, err := client.Run(command)
 
 	if err != nil {
-		log.Fatalln("ERR Problem while running command on '"+ipAddress+"';", err)
+		log.Fatalln("ERR Problem while running command on '"+ipAddress+"';", err, string(out))
 	}
 
 	// Return your output

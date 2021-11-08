@@ -10,7 +10,7 @@ cpuid --ext 29 && set archl amd64 || set archl i386
 # boot from iso
 echo Booting Debian 
 sleep 1
-sanboot --no-describe ${boot-url}isos/debian-live-11.0.0-amd64-standard.iso || goto failed
+sanboot --no-describe ${boot-url}isos/debian-live-11.1.0-amd64-standard.iso || goto failed
 
 :failed
 echo Booting failed

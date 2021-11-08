@@ -20,7 +20,7 @@ var (
 	BindIp      string        = "0.0.0.0"
 	timeout     time.Duration = 1 * time.Second
 	leasePath   string        = "leases"
-	liveIsoPath string        = "debian-live-11.0.0-custom.iso"
+	liveIsoPath string        = "debian-live-11.1.0-custom.iso"
 )
 
 // Start dnsmasq in container
