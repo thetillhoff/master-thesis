@@ -1,29 +1,5 @@
 tosca_definitions_version: tosca_hardware_0_1
 
-relationship_types:
-  hosted_on: # defined in simple profile, but "copied here" so the import is not necessary
-    valid_target_types: [ phyiscalComputeCapability, virtualComputeCapability ] # This is different from the simple profile spec, but necessary nevertheless.
-
-interfaces: # just interfaces or is it child of something?
-  lifecycle.Standard:
-    create:
-      description: >
-        The create operation is generally used to create the resource or service the node represents in the topology. TOSCA orchestrators expect node templates to provide either a deployment artifact or an implementation artifact of a defined artifact type that it is able to process. This specification defines normative deployment and implementation artifact types all TOSCA Orchestrators are expected to be able to process to support application portability.
-    configure:
-      implementation: configure-host-by-ip.sh
-      inputs:
-        someparam: { get_property: [ SELF, ip ] } # SELF refers to this nodetype/relationshiptype/nodetemplate/(relationshiptemplate)
-    start: #
-    stop: #
-    delete: #
-  Configure:
-    pre_configure_source: # <- this is the operation definition with name pre_configure_source
-      implementation: # <- this contains is the operation implementation definition
-        primary: scripts/pre_configure_source.sh
-        dependencies:
-          - scripts/setup.sh
-          - scripts/pre_setup.sh
-
 artifact_types:
   htmlFile:
     # derived_from: tosca.artifacts.File
@@ -32,58 +8,16 @@ artifact_types:
         type: string
 
 node_types:
-  physicalComputeNode:
-    properties:
-      management_ip: string
-  virtualComputeNode:
-    properties:
-      # assuming no remote hypervisor is used
-      vm_name: string # or vm_id
-
-# TODO: add create, configure, start workflows
-
   abstractComputeNode:
-    requirements: # either physicalComputeNode or virtualComputeNode have to be defined, but not both
-      - physicalComputeCapability: TODO physical compute capability
-      - virtualComputeCapability: TODO virtual compute capability
-    properties: # either hostname or ip has to be defined (or both)
-      hostname: string
+    properties:
       ip: string
-    interfaces: # list which interfaces must be defined in derived types (similar to abstract functions)
-      create: {}
-      destroy: {}
-      detect: {}
-  # ipmiComputeNode: # based on physicalComputeNode
-  #   derived_from: abstractComputeNode
-  #   relationships:
-  #     - type: depends_on # is this the correct name?
-  #       target: phyiscalComputeNode
-  #   interfaces:
-  #     create: # run actions on this.abstractCompute.physicalComputeNode
-  #     destroy: # run actions on this.abstractCompute.physicalComputeNode
-  #     detect: # run actions on this.abstractCompute.physicalComputeNode
-  # simulatedIpmiComputeNode: # based on virtualComputeNode
-  #   derived_from: abstractComputeNode
-  #   interfaces:
-  #     create: # TODO
-  #     destroy: # TODO
-  #     detect: # TODO
-  pxeComputeNode: # based on physicalComputeNode or virtualComputeNode
-    derived_from: abstractComputeNode
-    interfaces:
-      create: #
-      destroy: #
-      detect: #
-  # unmanagedComputeNode:
-  #   properties: # either hostname or ip has to be defined (or both)
-  #     hostname: string
-  #     ip: string
-  #   interfaces:
-  #     create: # manual
-  #     destroy: # manual
-  #     detect: # manual
+      cpu_cores: integer
+      ram: float
+    #capabilities:
+      #tosca.capabilities.Compute # adds compatibility to tosca simple profile
+
   webNode:
-    derived_from: pxeComputeNode
+    derived_from: abstractComputeNode
     properties:
       index.html:
         type: string
@@ -95,7 +29,7 @@ node_types:
         type: htmlFile
     interfaces:
       Standard:
-        create: #TODO What should the orchestrator do when instantiating this type of node?
+        create: # What should the orchestrator do when instantiating this type of node?
           implementation: scripts/web_create.sh
           inputs:
             # Copy index contents to server
